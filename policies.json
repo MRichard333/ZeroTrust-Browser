@@ -2,14 +2,6 @@
   "policies": {
 
     "ExtensionSettings": {
-      "*": {
-        "installation_mode": "blocked",
-        "blocked_install_message": "Only ZeroTrust-approved extensions are allowed.",
-        "install_sources": [
-          "https://addons.mozilla.org/*",
-          "file:///*"
-        ]
-      },
 
       "uBlock0@raymondhill.net": {
         "installation_mode": "force_installed",
@@ -23,16 +15,19 @@
         "default_area": "navbar"
       },
 
+      "zerotrust-newtab@mrichard333.com": {
+        "installation_mode": "force_installed",
+        "install_url": "https://addons.mozilla.org/firefox/downloads/latest/zerotrust-newtab/latest.xpi"
+      },
+
       "{446900e4-71c2-419f-a6a7-df9c091e268b}": {
         "installation_mode": "force_installed",
-        "install_url": "https://addons.mozilla.org/firefox/downloads/latest/bitwarden-password-manager/latest.xpi",
-        "default_area": "navbar"
+        "install_url": "https://addons.mozilla.org/firefox/downloads/latest/bitwarden-password-manager/latest.xpi"
       },
 
       "@testpilot-containers": {
         "installation_mode": "force_installed",
-        "install_url": "https://addons.mozilla.org/firefox/downloads/latest/multi-account-containers/latest.xpi",
-        "default_area": "navbar"
+        "install_url": "https://addons.mozilla.org/firefox/downloads/latest/multi-account-containers/latest.xpi"
       },
 
       "{74145f27-f039-47ce-a470-a662b129930a}": {
@@ -53,12 +48,14 @@
       "StartPage": "homepage"
     },
 
+    "NewTabPage": false,
+
     "SearchEngines": {
       "Default": "DuckDuckGo",
       "PreventInstalls": false
     },
 
-    "NewTabPage": false,
+    "SearchBar": "unified",
 
     "DisplayBookmarksToolbar": "never",
     "DisablePocket": true,
@@ -69,9 +66,7 @@
     "DontCheckDefaultBrowser": true,
 
     "Permissions": {
-      "Autoplay": {
-        "Default": "block-audio"
-      }
+      "Autoplay": { "Default": "block-audio" }
     },
 
     "UserMessaging": {
@@ -94,8 +89,6 @@
       "Locked": false
     },
 
-    "SearchBar": "unified",
-
     "DNSOverHTTPS": {
       "Enabled": true,
       "ProviderURL": "https://cloudflare-dns.com/dns-query",
@@ -103,7 +96,6 @@
     },
 
     "HttpsOnlyMode": "force_enabled",
-
     "SSLVersionMin": "tls1.2",
 
     "EnableTrackingProtection": {
@@ -113,14 +105,9 @@
       "Fingerprinting": true
     },
 
-    "EncryptedMediaExtensions": {
-      "Enabled": true,
-      "Locked": false
-    },
+    "EncryptedMediaExtensions": { "Enabled": true, "Locked": false },
 
-    "PopupBlocking": {
-      "Default": true
-    },
+    "PopupBlocking": { "Default": true },
 
     "Cookies": {
       "Behavior": "reject-tracker-and-partition-foreign",
