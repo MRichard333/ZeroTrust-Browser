@@ -1,0 +1,136 @@
+name: CI — Lint & Validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ──────────────────────────────────────────────
+  # Shell scripts — shellcheck
+  # ──────────────────────────────────────────────
+  shellcheck:
+    name: ShellCheck (bash scripts)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install shellcheck
+        run: sudo apt-get install -y shellcheck
+
+      - name: Lint install.sh
+        run: shellcheck -S warning install.sh
+
+      - name: Lint install-macos.sh
+        run: shellcheck -S warning install-macos.sh
+
+      - name: Lint uninstall.sh
+        run: shellcheck -S warning uninstall.sh
+
+  # ──────────────────────────────────────────────
+  # JSON — validate policies.json
+  # ──────────────────────────────────────────────
+  validate-json:
+    name: Validate policies.json
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check JSON syntax
+        run: python3 -c "import json, sys; json.load(open('policies.json')); print('policies.json — valid JSON')"
+
+      - name: Check required policy keys
+        run: |
+          python3 - <<'EOF'
+          import json, sys
+
+          with open("policies.json") as f:
+              pol = json.load(f)
+
+          p = pol.get("policies", {})
+          required = [
+              "ExtensionSettings",
+              "HttpsOnlyMode",
+              "DNSOverHTTPS",
+              "EnableTrackingProtection",
+              "DisableTelemetry",
+              "SSLVersionMin",
+          ]
+          missing = [k for k in required if k not in p]
+          if missing:
+              print(f"FAIL: missing required policy keys: {missing}", file=sys.stderr)
+              sys.exit(1)
+          print(f"All {len(required)} required policy keys present ✓")
+
+          # Ensure homepage is not a remote URL (phones home)
+          homepage = p.get("Homepage", {}).get("URL", "")
+          if homepage.startswith("http") and "mrichard333.com" in homepage:
+              print("WARN: Homepage URL phones home to mrichard333.com — consider using about:newtab")
+          EOF
+
+  # ──────────────────────────────────────────────
+  # PowerShell — lint install.ps1
+  # ──────────────────────────────────────────────
+  psscriptanalyzer:
+    name: PSScriptAnalyzer (install.ps1)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install PSScriptAnalyzer
+        shell: pwsh
+        run: Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser
+
+      - name: Lint install.ps1
+        shell: pwsh
+        run: |
+          $results = Invoke-ScriptAnalyzer -Path install.ps1 -Severity Warning,Error
+          if ($results) {
+            $results | Format-Table -AutoSize
+            exit 1
+          }
+          Write-Host "install.ps1 — no issues found ✓"
+
+  # ──────────────────────────────────────────────
+  # user.js — basic sanity checks
+  # ──────────────────────────────────────────────
+  validate-userjs:
+    name: Validate user.js
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check critical prefs are present
+        run: |
+          python3 - <<'EOF'
+          import re, sys
+
+          with open("user.js") as f:
+              content = f.read()
+
+          required_prefs = [
+              "dom.security.https_only_mode",
+              "media.peerconnection.enabled",   # WebRTC must be disabled
+              "privacy.resistFingerprinting",
+              "toolkit.telemetry.enabled",
+              "network.dns.echconfig.enabled",   # ECH must be enabled
+              "security.tls.enable_0rtt_data",
+              "security.OCSP.require",
+              "network.cookie.cookieBehavior",
+              "network.dns.disablePrefetch",
+          ]
+
+          missing = []
+          for pref in required_prefs:
+              if pref not in content:
+                  missing.append(pref)
+
+          if missing:
+              print("FAIL: missing required prefs in user.js:", file=sys.stderr)
+              for p in missing:
+                  print(f"  - {p}", file=sys.stderr)
+              sys.exit(1)
+
+          print(f"All {len(required_prefs)} critical prefs found in user.js ✓")
+          EOF

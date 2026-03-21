@@ -65,7 +65,7 @@
     },
     "DNSOverHTTPS": {
       "Enabled": true,
-      "ProviderURL": "https://cloudflare-dns.com/dns-query",
+      "ProviderURL": "https://dns.quad9.net/dns-query",
       "Locked": false
     },
     "HttpsOnlyMode": "force_enabled",
@@ -91,8 +91,10 @@
     "AppUpdateURL": "https://aus5.mozilla.org/update/6/%PRODUCT%/%VERSION%/%BUILD_ID%/%BUILD_TARGET%/%LOCALE%/%CHANNEL%/%OS_VERSION%/%DISTRIBUTION%/%DISTRIBUTION_VERSION%/update.xml",
     "Homepage": {
       "URL": "https://mrichard333.com/start",
-      "Locked": true,
+      "Locked": false,
       "StartPage": "homepage"
-    }
+    },
+    "OverrideFirstRunPage": "",
+    "OverridePostUpdatePage": ""
   }
 }
