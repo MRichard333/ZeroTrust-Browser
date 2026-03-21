@@ -480,9 +480,18 @@ thumb:hover {
   background: var(--zt-surface2) !important;
 }
 
-/* Hide the title bar caption buttons on Linux if using CSD */
-.titlebar-buttonbox-container {
+/* Hide caption buttons ONLY when the OS is not providing its own window chrome.
+   On most Linux desktops with server-side decorations (the default), the WM
+   draws the title bar so Firefox's own buttons are redundant and should be hidden.
+   On macOS and Windows this rule never fires because the OS always provides chrome.
+   If you use a tiling WM or want the buttons back, comment this block out. */
+:root[tabsintitlebar] .titlebar-buttonbox-container {
   display: none !important;
+}
+
+/* Keep the drag region so the tab bar is still draggable */
+:root[tabsintitlebar] #TabsToolbar {
+  -moz-window-dragging: drag !important;
 }
 
 /* Status bar */
