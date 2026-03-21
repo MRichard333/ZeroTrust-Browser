@@ -21,9 +21,14 @@
     },
 
     "Homepage": {
-      "URL": "https://mrichard333.com/webtools|https://mrichard333.com/dashboard|https://mrichard333.com/link-scanner",
+      "URL": "https://mrichard333.com/webtools",
       "Locked": false,
       "StartPage": "homepage"
+    },
+
+    "SearchEngines": {
+      "Default": "DuckDuckGo",
+      "PreventInstalls": false
     },
 
     "NewTabPage": false,

@@ -9,170 +9,255 @@
 
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: #f5f6f8;
-    color: #1a1c1e;
+    background: #080a0c;
+    color: #d4e8d4;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 40px;
-    padding: 40px 20px;
+    gap: 26px;
+    padding: 36px 20px;
   }
 
   /* ── Header ── */
-  .header {
-    text-align: center;
-  }
+  .header { text-align: center; }
 
   .logo {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
-    margin-bottom: 8px;
-  }
-
-  .logo-icon {
-    width: 36px;
-    height: 36px;
+    gap: 11px;
+    margin-bottom: 5px;
   }
 
   .logo-text {
     font-size: 22px;
-    font-weight: 600;
-    color: #1a1c1e;
-    letter-spacing: -0.3px;
+    font-weight: 700;
+    color: #e8f5e8;
+    letter-spacing: -0.5px;
   }
 
-  .logo-text span {
-    color: #1a6ef5;
-  }
+  .logo-text span { color: #00c853; }
 
   .tagline {
-    font-size: 13px;
-    color: #6b7280;
-    letter-spacing: 0.3px;
+    font-size: 11px;
+    color: #3a5040;
+    letter-spacing: 1px;
+    text-transform: uppercase;
   }
 
-  /* ── Search bar ── */
-  .search-container {
-    width: 100%;
-    max-width: 560px;
-  }
+  /* ── Search ── */
+  .search-container { width: 100%; max-width: 600px; }
 
-  .search-bar {
+  .search-wrap {
     display: flex;
     align-items: center;
-    background: #ffffff;
-    border: 1px solid #dde1e7;
-    border-radius: 10px;
-    padding: 12px 16px;
+    background: #0b0e10;
+    border: 1px solid #1e2624;
+    border-radius: 12px;
+    padding: 13px 16px;
     gap: 10px;
     transition: border-color 0.2s, box-shadow 0.2s;
   }
 
-  .search-bar:focus-within {
-    border-color: #1a6ef5;
-    box-shadow: 0 0 0 3px rgba(26,110,245,0.12);
+  .search-wrap:focus-within {
+    border-color: #00c853;
+    box-shadow: 0 0 0 3px rgba(0,200,83,0.10), 0 2px 20px rgba(0,200,83,0.06);
   }
 
-  .search-icon {
-    color: #9ca3af;
-    flex-shrink: 0;
-  }
+  .search-icon { color: #304535; flex-shrink: 0; }
 
   .search-input {
     flex: 1;
     border: none;
     outline: none;
-    font-size: 15px;
-    color: #1a1c1e;
+    font-size: 14px;
+    color: #d4e8d4;
     background: transparent;
+    caret-color: #00c853;
   }
 
-  .search-input::placeholder {
-    color: #9ca3af;
+  .search-input::placeholder { color: #2e3d32; }
+
+  .search-engine {
+    font-size: 10px;
+    color: #2e4035;
+    background: rgba(0,200,83,0.06);
+    border: 1px solid rgba(0,200,83,0.12);
+    border-radius: 4px;
+    padding: 2px 7px;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
 
-  /* ── Quick links ── */
-  .quick-links {
+  /* ── Tools grid ── */
+  .tools-section { width: 100%; max-width: 600px; }
+
+  .section-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: #2e4035;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    padding-left: 2px;
+  }
+
+  .tools-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    width: 100%;
-    max-width: 560px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
   }
 
-  .quick-link {
+  .tool-card {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    padding: 18px 12px;
-    background: #ffffff;
-    border: 1px solid #dde1e7;
-    border-radius: 10px;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 14px 13px 13px;
+    background: #0b0e10;
+    border: 1px solid #181e1c;
+    border-radius: 11px;
     text-decoration: none;
-    color: #1a1c1e;
-    transition: border-color 0.2s, box-shadow 0.2s, transform 0.1s;
-    cursor: pointer;
+    color: #d4e8d4;
+    transition: border-color 0.18s, background 0.18s, transform 0.12s, box-shadow 0.18s;
+    position: relative;
+    overflow: hidden;
   }
 
-  .quick-link:hover {
-    border-color: #1a6ef5;
-    box-shadow: 0 2px 12px rgba(26,110,245,0.1);
-    transform: translateY(-1px);
+  .tool-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(0,200,83,0), transparent);
+    transition: background 0.2s;
   }
 
-  .quick-link-icon {
-    font-size: 22px;
+  .tool-card:hover {
+    border-color: #00c853;
+    background: #0c1210;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,200,83,0.08);
   }
 
-  .quick-link-label {
-    font-size: 12px;
-    font-weight: 500;
-    color: #374151;
-    text-align: center;
+  .tool-card:hover::before {
+    background: linear-gradient(90deg, transparent, rgba(0,200,83,0.4), transparent);
   }
 
-  .quick-link-desc {
-    font-size: 11px;
-    color: #9ca3af;
-    text-align: center;
+  .tool-icon-wrap {
+    width: 30px;
+    height: 30px;
+    background: rgba(0,200,83,0.07);
+    border: 1px solid rgba(0,200,83,0.12);
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+
+  .tool-meta { display: flex; flex-direction: column; gap: 2px; }
+  .tool-name { font-size: 11px; font-weight: 600; color: #c8e0c8; line-height: 1.3; }
+  .tool-desc { font-size: 10px; color: #3a5040; line-height: 1.3; }
+
+  /* ── Dashboard card ── */
+  .dashboard-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    width: 100%;
+    max-width: 600px;
+    padding: 15px 18px;
+    background: #0b0e10;
+    border: 1px solid #1a2e20;
+    border-radius: 12px;
+    text-decoration: none;
+    color: #d4e8d4;
+    transition: border-color 0.18s, background 0.18s, box-shadow 0.18s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .dashboard-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(0,200,83,0.25), transparent);
+  }
+
+  .dashboard-card:hover {
+    border-color: #00c853;
+    background: #0c1210;
+    box-shadow: 0 6px 24px rgba(0,200,83,0.10);
+  }
+
+  .dashboard-left { display: flex; align-items: center; gap: 13px; }
+
+  .dashboard-icon {
+    width: 38px;
+    height: 38px;
+    background: rgba(0,200,83,0.08);
+    border: 1px solid rgba(0,200,83,0.18);
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .dashboard-name { font-size: 13px; font-weight: 700; color: #e8f5e8; }
+  .dashboard-desc { font-size: 11px; color: #3a5040; margin-top: 3px; }
+
+  .dashboard-arrow {
+    font-size: 10px;
+    font-weight: 600;
+    color: #00c853;
+    background: rgba(0,200,83,0.07);
+    border: 1px solid rgba(0,200,83,0.16);
+    border-radius: 6px;
+    padding: 5px 12px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    letter-spacing: 0.3px;
   }
 
   /* ── Status bar ── */
   .status-bar {
     display: flex;
     align-items: center;
-    gap: 20px;
-    padding: 10px 20px;
-    background: #ffffff;
-    border: 1px solid #dde1e7;
+    gap: 18px;
+    padding: 8px 16px;
+    background: #0b0e10;
+    border: 1px solid #181e1c;
     border-radius: 8px;
-    font-size: 12px;
-    color: #6b7280;
+    font-size: 11px;
+    color: #2e4035;
   }
 
-  .status-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
+  .status-item { display: flex; align-items: center; gap: 5px; }
 
   .status-dot {
-    width: 7px;
-    height: 7px;
+    width: 6px;
+    height: 6px;
     border-radius: 50%;
-    background: #22c55e;
+    background: #00c853;
+    box-shadow: 0 0 8px rgba(0,200,83,0.7);
+    animation: pulse 2.5s ease-in-out infinite;
   }
 
-  .time {
-    font-size: 13px;
-    font-weight: 500;
-    color: #374151;
+  @keyframes pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 8px rgba(0,200,83,0.7); }
+    50%       { opacity: 0.65; box-shadow: 0 0 16px rgba(0,200,83,1); }
   }
+
+  .time { font-size: 12px; font-weight: 600; color: #3a5040; }
+  .status-divider { width: 1px; height: 12px; background: #181e1c; }
 </style>
 </head>
 <body>
@@ -180,98 +265,145 @@
   <!-- Header -->
   <div class="header">
     <div class="logo">
-      <svg class="logo-icon" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="36" height="36" rx="8" fill="#1a6ef5"/>
-        <path d="M18 7L9 11V19C9 23.97 13.02 28.6 18 30C22.98 28.6 27 23.97 27 19V11L18 7Z" fill="white" opacity="0.9"/>
-        <path d="M15 18L17 20L21 16" stroke="#1a6ef5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <svg width="30" height="30" viewBox="0 0 36 36" fill="none">
+        <rect width="36" height="36" rx="8" fill="#00c853"/>
+        <path d="M18 7L9 11V19C9 23.97 13.02 28.6 18 30C22.98 28.6 27 23.97 27 19V11L18 7Z" fill="#080a0c" opacity="0.92"/>
+        <path d="M15 18L17 20L21 16" stroke="#00c853" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
       <span class="logo-text">Zero<span>Trust</span> Browser</span>
     </div>
-    <div class="tagline">Powered by Mountain OS · mrichard333.com</div>
+    <div class="tagline">Mountain OS · Secured by ZeroTrust</div>
   </div>
 
   <!-- Search -->
   <div class="search-container">
-    <div class="search-bar">
-      <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+    <div class="search-wrap">
+      <svg class="search-icon" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
         <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
       </svg>
       <input
         class="search-input"
         type="text"
-        placeholder="Search or enter address..."
+        placeholder="Search with DuckDuckGo or enter address..."
         autofocus
         onkeydown="handleSearch(event)"
       />
+      <span class="search-engine">DuckDuckGo</span>
     </div>
   </div>
 
-  <!-- Quick links -->
-  <div class="quick-links">
-    <a class="quick-link" href="https://mrichard333.com/webtools">
-      <span class="quick-link-icon">🛡️</span>
-      <span class="quick-link-label">Cyber Defense Hub</span>
-      <span class="quick-link-desc">Security tools</span>
-    </a>
-    <a class="quick-link" href="https://mrichard333.com/dashboard">
-      <span class="quick-link-icon">📊</span>
-      <span class="quick-link-label">Dashboard</span>
-      <span class="quick-link-desc">Your ZeroTrust panel</span>
-    </a>
-    <a class="quick-link" href="https://mrichard333.com/link-scanner">
-      <span class="quick-link-icon">🔗</span>
-      <span class="quick-link-label">URL Forensics</span>
-      <span class="quick-link-desc">Scan any link</span>
-    </a>
-    <a class="quick-link" href="https://mrichard333.com/password-check">
-      <span class="quick-link-icon">⚡</span>
-      <span class="quick-link-label">Password Entropy</span>
-      <span class="quick-link-desc">Check strength</span>
-    </a>
-    <a class="quick-link" href="https://mrichard333.com/Cyberhealth">
-      <span class="quick-link-icon">🩺</span>
-      <span class="quick-link-label">Cyberhealth Audit</span>
-      <span class="quick-link-desc">Digital hygiene</span>
-    </a>
-    <a class="quick-link" href="https://mrichard333.com/extension">
-      <span class="quick-link-icon">🔒</span>
-      <span class="quick-link-label">ZeroTrust Extension</span>
-      <span class="quick-link-desc">Threat protection</span>
-    </a>
+  <!-- Tools -->
+  <div class="tools-section">
+    <div class="section-label">Security &amp; Utility Tools</div>
+    <div class="tools-grid">
+
+      <a class="tool-card" href="https://mrichard333.com/extension">
+        <div class="tool-icon-wrap">🛡️</div>
+        <div class="tool-meta">
+          <span class="tool-name">ZeroTrust Extension</span>
+          <span class="tool-desc">Real-time protection</span>
+        </div>
+      </a>
+
+      <a class="tool-card" href="https://mrichard333.com/Cyberhealth">
+        <div class="tool-icon-wrap">🩺</div>
+        <div class="tool-meta">
+          <span class="tool-name">Cyberhealth Audit</span>
+          <span class="tool-desc">Digital hygiene check</span>
+        </div>
+      </a>
+
+      <a class="tool-card" href="https://mrichard333.com/password-check">
+        <div class="tool-icon-wrap">⚡</div>
+        <div class="tool-meta">
+          <span class="tool-name">Password Entropy</span>
+          <span class="tool-desc">Brute-force simulation</span>
+        </div>
+      </a>
+
+      <a class="tool-card" href="https://mrichard333.com/link-scanner">
+        <div class="tool-icon-wrap">🔗</div>
+        <div class="tool-meta">
+          <span class="tool-name">URL Forensics</span>
+          <span class="tool-desc">Deep link analysis</span>
+        </div>
+      </a>
+
+      <a class="tool-card" href="https://mrichard333.com/files-compressor">
+        <div class="tool-icon-wrap">🗜️</div>
+        <div class="tool-meta">
+          <span class="tool-name">Files Compressor</span>
+          <span class="tool-desc">Local, no uploads</span>
+        </div>
+      </a>
+
+      <a class="tool-card" href="https://mrichard333.com/seo-analyser">
+        <div class="tool-icon-wrap">📈</div>
+        <div class="tool-meta">
+          <span class="tool-name">SEO Analyser</span>
+          <span class="tool-desc">20+ automated checks</span>
+        </div>
+      </a>
+
+      <a class="tool-card" href="https://mrichard333.com/webtools">
+        <div class="tool-icon-wrap">🔍</div>
+        <div class="tool-meta">
+          <span class="tool-name">View All Free Tools</span>
+          <span class="tool-desc">More tools</span>
+        </div>
+      </a>
+
+      <a class="tool-card" href="https://mrichard333.com">
+        <div class="tool-icon-wrap">🏠</div>
+        <div class="tool-meta">
+          <span class="tool-name">Home</span>
+          <span class="tool-desc">Fraud prevention</span>
+        </div>
+      </a>
+
+    </div>
   </div>
 
-  <!-- Status bar -->
+  <!-- Dashboard -->
+  <a class="dashboard-card" href="https://mrichard333.com/dashboard">
+    <div class="dashboard-left">
+      <div class="dashboard-icon">📊</div>
+      <div>
+        <div class="dashboard-name">Security Dashboard</div>
+        <div class="dashboard-desc">10 modules · scan history · identity breach · dark web intel</div>
+      </div>
+    </div>
+    <span class="dashboard-arrow">Open Dashboard →</span>
+  </a>
+
+  <!-- Status -->
   <div class="status-bar">
     <span class="time" id="clock"></span>
+    <span class="status-divider"></span>
     <div class="status-item">
       <span class="status-dot"></span>
       <span>ZeroTrust Active</span>
     </div>
-    <div class="status-item">
-      <span>Mountain OS</span>
-    </div>
+    <span class="status-divider"></span>
+    <div class="status-item"><span>Mountain OS</span></div>
   </div>
 
 <script>
-  // Live clock
   function updateClock() {
-    const now = new Date();
-    document.getElementById('clock').textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    document.getElementById('clock').textContent =
+      new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   }
   updateClock();
   setInterval(updateClock, 1000);
 
-  // Search handler — uses Firefox's default search
   function handleSearch(e) {
-    if (e.key === 'Enter') {
-      const query = e.target.value.trim();
-      if (!query) return;
-      // If it looks like a URL, navigate directly; otherwise search
-      const isUrl = /^https?:\/\//.test(query) || /^[\w-]+\.[\w]{2,}/.test(query);
-      window.location.href = isUrl
-        ? (query.startsWith('http') ? query : 'https://' + query)
-        : `https://www.google.com/search?q=${encodeURIComponent(query)}`;
-    }
+    if (e.key !== 'Enter') return;
+    const query = e.target.value.trim();
+    if (!query) return;
+    const isUrl = /^https?:\/\//.test(query) || /^[\w-]+\.[\w]{2,}/.test(query);
+    window.location.href = isUrl
+      ? (query.startsWith('http') ? query : 'https://' + query)
+      : `https://duckduckgo.com/?q=${encodeURIComponent(query)}`;
   }
 </script>
 </body>

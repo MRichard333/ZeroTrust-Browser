@@ -1,38 +1,40 @@
 /* ============================================================
    ZeroTrust Browser — userChrome.css
-   Clean & light UI theme for Mountain OS
+   Dark Matrix theme for Mountain OS
    Place in: <profile>/chrome/userChrome.css
-   Requires: toolkit.legacyUserProfileCustomizations.stylesheets = true (set in user.js)
    ============================================================ */
 
-/* ── Variables ─────────────────────────────────────────────── */
 :root {
-  --zt-accent:      #1a6ef5;
-  --zt-accent-dark: #1254c4;
-  --zt-bg:          #f5f6f8;
-  --zt-surface:     #ffffff;
-  --zt-border:      #dde1e7;
-  --zt-text:        #1a1c1e;
-  --zt-text-muted:  #6b7280;
-  --zt-radius:      6px;
+  --zt-accent:       #00c853;
+  --zt-accent-dim:   #00a844;
+  --zt-accent-glow:  rgba(0, 200, 83, 0.18);
+  --zt-bg:           #080a0c;
+  --zt-surface:      #0e1012;
+  --zt-surface2:     #141719;
+  --zt-border:       #1c2020;
+  --zt-border-hi:    #243028;
+  --zt-text:         #d4e8d4;
+  --zt-text-muted:   #4a6050;
+  --zt-radius:       6px;
 }
 
-/* ── Toolbar & nav bar ──────────────────────────────────────── */
+/* ── Navigator toolbox ──────────────────────────────────────── */
 #navigator-toolbox {
-  background: var(--zt-surface) !important;
+  background: var(--zt-bg) !important;
   border-bottom: 1px solid var(--zt-border) !important;
   box-shadow: none !important;
 }
 
+/* ── Nav bar ────────────────────────────────────────────────── */
 #nav-bar {
-  background: var(--zt-surface) !important;
+  background: var(--zt-bg) !important;
   border: none !important;
-  padding: 4px 8px !important;
+  padding: 5px 8px !important;
 }
 
 /* ── URL bar ────────────────────────────────────────────────── */
 #urlbar {
-  background: var(--zt-bg) !important;
+  background: var(--zt-surface2) !important;
   border: 1px solid var(--zt-border) !important;
   border-radius: var(--zt-radius) !important;
   box-shadow: none !important;
@@ -40,13 +42,17 @@
 
 #urlbar:focus-within {
   border-color: var(--zt-accent) !important;
-  box-shadow: 0 0 0 2px rgba(26,110,245,0.15) !important;
+  box-shadow: 0 0 0 2px var(--zt-accent-glow) !important;
 }
 
 #urlbar-background {
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
+}
+
+#urlbar .urlbar-input {
+  color: var(--zt-text) !important;
 }
 
 /* ── Tab bar ────────────────────────────────────────────────── */
@@ -61,47 +67,94 @@
 
 .tab-background {
   border-radius: var(--zt-radius) var(--zt-radius) 0 0 !important;
+  background: transparent !important;
+  border: none !important;
 }
 
+/* Active tab — green top accent */
 .tabbrowser-tab[selected] .tab-background {
   background: var(--zt-surface) !important;
   border-top: 2px solid var(--zt-accent) !important;
+  box-shadow: none !important;
 }
 
+/* Inactive tab hover */
 .tabbrowser-tab:not([selected]):hover .tab-background {
-  background: rgba(26,110,245,0.07) !important;
+  background: var(--zt-surface2) !important;
+}
+
+/* Tab labels */
+.tab-label {
+  color: var(--zt-text-muted) !important;
+}
+
+.tabbrowser-tab[selected] .tab-label {
+  color: var(--zt-text) !important;
 }
 
 /* ── Tab close button ───────────────────────────────────────── */
-.tab-close-button {
-  opacity: 0 !important;
-}
+.tab-close-button { opacity: 0 !important; }
+
 .tabbrowser-tab:hover .tab-close-button {
+  opacity: 0.5 !important;
+  fill: var(--zt-text-muted) !important;
+}
+
+.tabbrowser-tab:hover .tab-close-button:hover {
   opacity: 1 !important;
+  fill: var(--zt-accent) !important;
 }
 
 /* ── Toolbar buttons ────────────────────────────────────────── */
+toolbar .toolbarbutton-1 {
+  color: var(--zt-text-muted) !important;
+  fill: var(--zt-text-muted) !important;
+}
+
 toolbar .toolbarbutton-1:hover {
-  background: rgba(26,110,245,0.08) !important;
+  background: var(--zt-surface2) !important;
   border-radius: var(--zt-radius) !important;
+  color: var(--zt-text) !important;
+  fill: var(--zt-text) !important;
 }
 
 toolbar .toolbarbutton-1:active {
-  background: rgba(26,110,245,0.16) !important;
+  background: var(--zt-border-hi) !important;
 }
 
-/* ── Sidebar (if open) ──────────────────────────────────────── */
+/* ── Sidebar ────────────────────────────────────────────────── */
 #sidebar-box {
-  background: var(--zt-bg) !important;
+  background: var(--zt-surface) !important;
   border-right: 1px solid var(--zt-border) !important;
 }
 
-/* ── Remove title bar clutter ───────────────────────────────── */
+/* ── Title bar ──────────────────────────────────────────────── */
 #titlebar {
   appearance: none !important;
+  background: var(--zt-bg) !important;
 }
 
-/* ── Menu bar (if shown) ────────────────────────────────────── */
+/* ── Menu bar ───────────────────────────────────────────────── */
 #toolbar-menubar {
+  background: var(--zt-bg) !important;
+  color: var(--zt-text) !important;
+}
+
+/* ── New tab button ─────────────────────────────────────────── */
+#tabs-newtab-button,
+.tabs-newtab-button {
+  fill: var(--zt-text-muted) !important;
+}
+
+#tabs-newtab-button:hover,
+.tabs-newtab-button:hover {
+  fill: var(--zt-accent) !important;
+  background: var(--zt-surface2) !important;
+  border-radius: var(--zt-radius) !important;
+}
+
+/* ── Bookmarks toolbar ──────────────────────────────────────── */
+#PersonalToolbar {
   background: var(--zt-surface) !important;
+  border-bottom: 1px solid var(--zt-border) !important;
 }
