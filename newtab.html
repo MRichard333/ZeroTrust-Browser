@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZeroTrust Browser</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f5f6f8;
+    color: #1a1c1e;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    padding: 40px 20px;
+  }
+
+  /* ── Header ── */
+  .header {
+    text-align: center;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+
+  .logo-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .logo-text {
+    font-size: 22px;
+    font-weight: 600;
+    color: #1a1c1e;
+    letter-spacing: -0.3px;
+  }
+
+  .logo-text span {
+    color: #1a6ef5;
+  }
+
+  .tagline {
+    font-size: 13px;
+    color: #6b7280;
+    letter-spacing: 0.3px;
+  }
+
+  /* ── Search bar ── */
+  .search-container {
+    width: 100%;
+    max-width: 560px;
+  }
+
+  .search-bar {
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid #dde1e7;
+    border-radius: 10px;
+    padding: 12px 16px;
+    gap: 10px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .search-bar:focus-within {
+    border-color: #1a6ef5;
+    box-shadow: 0 0 0 3px rgba(26,110,245,0.12);
+  }
+
+  .search-icon {
+    color: #9ca3af;
+    flex-shrink: 0;
+  }
+
+  .search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 15px;
+    color: #1a1c1e;
+    background: transparent;
+  }
+
+  .search-input::placeholder {
+    color: #9ca3af;
+  }
+
+  /* ── Quick links ── */
+  .quick-links {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    width: 100%;
+    max-width: 560px;
+  }
+
+  .quick-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 18px 12px;
+    background: #ffffff;
+    border: 1px solid #dde1e7;
+    border-radius: 10px;
+    text-decoration: none;
+    color: #1a1c1e;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.1s;
+    cursor: pointer;
+  }
+
+  .quick-link:hover {
+    border-color: #1a6ef5;
+    box-shadow: 0 2px 12px rgba(26,110,245,0.1);
+    transform: translateY(-1px);
+  }
+
+  .quick-link-icon {
+    font-size: 22px;
+  }
+
+  .quick-link-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #374151;
+    text-align: center;
+  }
+
+  .quick-link-desc {
+    font-size: 11px;
+    color: #9ca3af;
+    text-align: center;
+  }
+
+  /* ── Status bar ── */
+  .status-bar {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 10px 20px;
+    background: #ffffff;
+    border: 1px solid #dde1e7;
+    border-radius: 8px;
+    font-size: 12px;
+    color: #6b7280;
+  }
+
+  .status-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #22c55e;
+  }
+
+  .time {
+    font-size: 13px;
+    font-weight: 500;
+    color: #374151;
+  }
+</style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="logo">
+      <svg class="logo-icon" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="36" height="36" rx="8" fill="#1a6ef5"/>
+        <path d="M18 7L9 11V19C9 23.97 13.02 28.6 18 30C22.98 28.6 27 23.97 27 19V11L18 7Z" fill="white" opacity="0.9"/>
+        <path d="M15 18L17 20L21 16" stroke="#1a6ef5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="logo-text">Zero<span>Trust</span> Browser</span>
+    </div>
+    <div class="tagline">Powered by Mountain OS · mrichard333.com</div>
+  </div>
+
+  <!-- Search -->
+  <div class="search-container">
+    <div class="search-bar">
+      <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+      </svg>
+      <input
+        class="search-input"
+        type="text"
+        placeholder="Search or enter address..."
+        autofocus
+        onkeydown="handleSearch(event)"
+      />
+    </div>
+  </div>
+
+  <!-- Quick links -->
+  <div class="quick-links">
+    <a class="quick-link" href="https://mrichard333.com/webtools">
+      <span class="quick-link-icon">🛡️</span>
+      <span class="quick-link-label">Cyber Defense Hub</span>
+      <span class="quick-link-desc">Security tools</span>
+    </a>
+    <a class="quick-link" href="https://mrichard333.com/dashboard">
+      <span class="quick-link-icon">📊</span>
+      <span class="quick-link-label">Dashboard</span>
+      <span class="quick-link-desc">Your ZeroTrust panel</span>
+    </a>
+    <a class="quick-link" href="https://mrichard333.com/link-scanner">
+      <span class="quick-link-icon">🔗</span>
+      <span class="quick-link-label">URL Forensics</span>
+      <span class="quick-link-desc">Scan any link</span>
+    </a>
+    <a class="quick-link" href="https://mrichard333.com/password-check">
+      <span class="quick-link-icon">⚡</span>
+      <span class="quick-link-label">Password Entropy</span>
+      <span class="quick-link-desc">Check strength</span>
+    </a>
+    <a class="quick-link" href="https://mrichard333.com/Cyberhealth">
+      <span class="quick-link-icon">🩺</span>
+      <span class="quick-link-label">Cyberhealth Audit</span>
+      <span class="quick-link-desc">Digital hygiene</span>
+    </a>
+    <a class="quick-link" href="https://mrichard333.com/extension">
+      <span class="quick-link-icon">🔒</span>
+      <span class="quick-link-label">ZeroTrust Extension</span>
+      <span class="quick-link-desc">Threat protection</span>
+    </a>
+  </div>
+
+  <!-- Status bar -->
+  <div class="status-bar">
+    <span class="time" id="clock"></span>
+    <div class="status-item">
+      <span class="status-dot"></span>
+      <span>ZeroTrust Active</span>
+    </div>
+    <div class="status-item">
+      <span>Mountain OS</span>
+    </div>
+  </div>
+
+<script>
+  // Live clock
+  function updateClock() {
+    const now = new Date();
+    document.getElementById('clock').textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  // Search handler — uses Firefox's default search
+  function handleSearch(e) {
+    if (e.key === 'Enter') {
+      const query = e.target.value.trim();
+      if (!query) return;
+      // If it looks like a URL, navigate directly; otherwise search
+      const isUrl = /^https?:\/\//.test(query) || /^[\w-]+\.[\w]{2,}/.test(query);
+      window.location.href = isUrl
+        ? (query.startsWith('http') ? query : 'https://' + query)
+        : `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+    }
+  }
+</script>
+</body>
+</html>
