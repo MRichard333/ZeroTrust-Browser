@@ -5,20 +5,70 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ZeroTrust Browser</title>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg:        #05070a;
+    --surface:   #0a0d10;
+    --surface2:  #0f1318;
+    --border:    #141c18;
+    --border-hi: #1e2e24;
+    --green:     #00e664;
+    --green-dim: #00c853;
+    --green-muted: rgba(0,230,100,0.08);
+    --green-glow:  rgba(0,230,100,0.15);
+    --text:      #dff0df;
+    --text-dim:  #8aab90;
+    --text-muted:#3a5040;
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
 
   body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: #080a0c;
-    color: #d4e8d4;
-    min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 26px;
-    padding: 36px 20px;
+    min-height: 100vh;
+    gap: 0;
+    padding: 0 20px 20px;
+    position: relative;
+    overflow-x: hidden;
   }
+
+  /* ── Ambient background glow ── */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -30vh;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70vw;
+    height: 60vh;
+    background: radial-gradient(ellipse, rgba(0,200,83,0.045) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: -10vh;
+    right: -10vw;
+    width: 40vw;
+    height: 40vh;
+    background: radial-gradient(ellipse, rgba(0,200,83,0.025) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .page { position: relative; z-index: 1; width: 100%; max-width: 680px; display: flex; flex-direction: column; align-items: center; gap: 32px; padding-top: 40px; }
 
   /* ── Header ── */
   .header { text-align: center; }
@@ -27,81 +77,130 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 11px;
-    margin-bottom: 5px;
+    gap: 12px;
+    margin-bottom: 8px;
   }
+
+  .logo svg { filter: drop-shadow(0 0 12px rgba(0,230,100,0.35)); }
 
   .logo-text {
-    font-size: 22px;
-    font-weight: 700;
-    color: #e8f5e8;
-    letter-spacing: -0.5px;
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -1px;
+    line-height: 1;
   }
 
-  .logo-text span { color: #00c853; }
+  .logo-text em {
+    font-style: normal;
+    color: var(--green);
+    text-shadow: 0 0 20px rgba(0,230,100,0.4);
+  }
 
   .tagline {
     font-size: 11px;
-    color: #3a5040;
-    letter-spacing: 1px;
+    color: var(--text-muted);
+    letter-spacing: 2px;
     text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  /* ── Clock ── */
+  .clock {
+    font-size: 52px;
+    font-weight: 200;
+    color: var(--text);
+    letter-spacing: -2px;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 0 40px rgba(0,230,100,0.12);
+  }
+
+  .clock-date {
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-top: 4px;
+    text-align: center;
   }
 
   /* ── Search ── */
-  .search-container { width: 100%; max-width: 600px; }
-
   .search-wrap {
+    width: 100%;
+    position: relative;
+  }
+
+  .search-bar {
     display: flex;
     align-items: center;
-    background: #0b0e10;
-    border: 1px solid #1e2624;
-    border-radius: 12px;
-    padding: 13px 16px;
-    gap: 10px;
+    background: var(--surface);
+    border: 1px solid var(--border-hi);
+    border-radius: 14px;
+    padding: 14px 18px;
+    gap: 12px;
     transition: border-color 0.2s, box-shadow 0.2s;
   }
 
-  .search-wrap:focus-within {
-    border-color: #00c853;
-    box-shadow: 0 0 0 3px rgba(0,200,83,0.10), 0 2px 20px rgba(0,200,83,0.06);
+  .search-bar:focus-within {
+    border-color: var(--green-dim);
+    box-shadow: 0 0 0 3px rgba(0,200,83,0.12), 0 4px 30px rgba(0,200,83,0.08);
   }
 
-  .search-icon { color: #304535; flex-shrink: 0; }
+  .search-icon { color: var(--text-muted); flex-shrink: 0; }
 
   .search-input {
     flex: 1;
     border: none;
     outline: none;
-    font-size: 14px;
-    color: #d4e8d4;
+    font-size: 15px;
+    color: var(--text);
     background: transparent;
-    caret-color: #00c853;
+    caret-color: var(--green);
+    font-weight: 400;
   }
 
-  .search-input::placeholder { color: #2e3d32; }
+  .search-input::placeholder { color: var(--text-muted); }
 
-  .search-engine {
-    font-size: 10px;
-    color: #2e4035;
-    background: rgba(0,200,83,0.06);
-    border: 1px solid rgba(0,200,83,0.12);
-    border-radius: 4px;
-    padding: 2px 7px;
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
-
-  /* ── Tools grid ── */
-  .tools-section { width: 100%; max-width: 600px; }
-
-  .section-label {
+  .ddg-badge {
+    display: flex;
+    align-items: center;
+    gap: 5px;
     font-size: 10px;
     font-weight: 600;
-    color: #2e4035;
+    color: var(--text-muted);
+    background: var(--green-muted);
+    border: 1px solid var(--border-hi);
+    border-radius: 6px;
+    padding: 4px 9px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    letter-spacing: 0.5px;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 10px;
-    padding-left: 2px;
+  }
+
+  /* ── Tools section ── */
+  .tools-section { width: 100%; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .section-title {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+  }
+
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
   }
 
   .tools-grid {
@@ -113,55 +212,75 @@
   .tool-card {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
     gap: 10px;
-    padding: 14px 13px 13px;
-    background: #0b0e10;
-    border: 1px solid #181e1c;
-    border-radius: 11px;
+    padding: 14px 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
     text-decoration: none;
-    color: #d4e8d4;
-    transition: border-color 0.18s, background 0.18s, transform 0.12s, box-shadow 0.18s;
+    color: var(--text);
+    transition: border-color 0.2s, background 0.2s, transform 0.15s, box-shadow 0.2s;
     position: relative;
     overflow: hidden;
   }
 
-  .tool-card::before {
+  /* Scan line effect on top */
+  .tool-card::after {
     content: '';
     position: absolute;
-    top: 0; left: 0; right: 0;
+    top: 0; left: -100%;
+    width: 60%;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(0,200,83,0), transparent);
-    transition: background 0.2s;
+    background: linear-gradient(90deg, transparent, var(--green), transparent);
+    transition: left 0.4s ease;
+    opacity: 0;
   }
 
   .tool-card:hover {
-    border-color: #00c853;
-    background: #0c1210;
+    border-color: rgba(0,230,100,0.35);
+    background: var(--surface2);
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0,200,83,0.08);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4), 0 0 0 0px rgba(0,230,100,0.1);
   }
 
-  .tool-card:hover::before {
-    background: linear-gradient(90deg, transparent, rgba(0,200,83,0.4), transparent);
+  .tool-card:hover::after {
+    left: 120%;
+    opacity: 1;
   }
 
   .tool-icon-wrap {
-    width: 30px;
-    height: 30px;
-    background: rgba(0,200,83,0.07);
-    border: 1px solid rgba(0,200,83,0.12);
-    border-radius: 7px;
+    width: 32px;
+    height: 32px;
+    background: var(--green-muted);
+    border: 1px solid rgba(0,230,100,0.14);
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 15px;
+    font-size: 16px;
     flex-shrink: 0;
+    transition: background 0.2s, border-color 0.2s;
   }
 
-  .tool-meta { display: flex; flex-direction: column; gap: 2px; }
-  .tool-name { font-size: 11px; font-weight: 600; color: #c8e0c8; line-height: 1.3; }
-  .tool-desc { font-size: 10px; color: #3a5040; line-height: 1.3; }
+  .tool-card:hover .tool-icon-wrap {
+    background: rgba(0,230,100,0.13);
+    border-color: rgba(0,230,100,0.28);
+  }
+
+  .tool-name {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.3;
+    letter-spacing: -0.1px;
+  }
+
+  .tool-desc {
+    font-size: 10px;
+    color: var(--text-muted);
+    line-height: 1.4;
+    margin-top: 1px;
+  }
 
   /* ── Dashboard card ── */
   .dashboard-card {
@@ -170,194 +289,254 @@
     justify-content: space-between;
     gap: 16px;
     width: 100%;
-    max-width: 600px;
-    padding: 15px 18px;
-    background: #0b0e10;
-    border: 1px solid #1a2e20;
-    border-radius: 12px;
+    padding: 16px 20px;
+    background: var(--surface);
+    border: 1px solid var(--border-hi);
+    border-radius: 14px;
     text-decoration: none;
-    color: #d4e8d4;
-    transition: border-color 0.18s, background 0.18s, box-shadow 0.18s;
+    color: var(--text);
+    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
     position: relative;
     overflow: hidden;
   }
 
+  /* Permanent top shimmer on dashboard */
   .dashboard-card::before {
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(0,200,83,0.25), transparent);
+    background: linear-gradient(90deg, transparent 5%, rgba(0,230,100,0.4) 50%, transparent 95%);
   }
 
   .dashboard-card:hover {
-    border-color: #00c853;
-    background: #0c1210;
-    box-shadow: 0 6px 24px rgba(0,200,83,0.10);
+    border-color: rgba(0,230,100,0.4);
+    background: var(--surface2);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 40px rgba(0,200,83,0.06);
   }
 
-  .dashboard-left { display: flex; align-items: center; gap: 13px; }
+  .db-left { display: flex; align-items: center; gap: 14px; }
 
-  .dashboard-icon {
-    width: 38px;
-    height: 38px;
-    background: rgba(0,200,83,0.08);
-    border: 1px solid rgba(0,200,83,0.18);
-    border-radius: 9px;
+  .db-icon {
+    width: 42px;
+    height: 42px;
+    background: var(--green-muted);
+    border: 1px solid rgba(0,230,100,0.18);
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 18px;
+    font-size: 20px;
     flex-shrink: 0;
   }
 
-  .dashboard-name { font-size: 13px; font-weight: 700; color: #e8f5e8; }
-  .dashboard-desc { font-size: 11px; color: #3a5040; margin-top: 3px; }
+  .db-name {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.3px;
+  }
 
-  .dashboard-arrow {
-    font-size: 10px;
+  .db-desc { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+
+  .db-modules {
+    display: flex;
+    gap: 5px;
+    margin-top: 7px;
+    flex-wrap: wrap;
+  }
+
+  .db-pill {
+    font-size: 9px;
     font-weight: 600;
-    color: #00c853;
-    background: rgba(0,200,83,0.07);
-    border: 1px solid rgba(0,200,83,0.16);
-    border-radius: 6px;
-    padding: 5px 12px;
+    color: var(--green-dim);
+    background: var(--green-muted);
+    border: 1px solid rgba(0,200,83,0.15);
+    border-radius: 4px;
+    padding: 2px 6px;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+  }
+
+  .db-cta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--bg);
+    background: var(--green);
+    border-radius: 8px;
+    padding: 9px 16px;
     white-space: nowrap;
     flex-shrink: 0;
-    letter-spacing: 0.3px;
+    letter-spacing: -0.2px;
+    transition: background 0.15s, box-shadow 0.15s;
+    box-shadow: 0 0 20px rgba(0,230,100,0.2);
+  }
+
+  .dashboard-card:hover .db-cta {
+    background: #00f070;
+    box-shadow: 0 0 28px rgba(0,230,100,0.35);
   }
 
   /* ── Status bar ── */
   .status-bar {
     display: flex;
     align-items: center;
-    gap: 18px;
-    padding: 8px 16px;
-    background: #0b0e10;
-    border: 1px solid #181e1c;
-    border-radius: 8px;
+    gap: 0;
+    padding: 0;
     font-size: 11px;
-    color: #2e4035;
+    color: var(--text-muted);
+    width: 100%;
+    justify-content: center;
   }
 
-  .status-item { display: flex; align-items: center; gap: 5px; }
+  .status-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 16px;
+  }
+
+  .status-item + .status-item {
+    border-left: 1px solid var(--border);
+  }
 
   .status-dot {
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: #00c853;
-    box-shadow: 0 0 8px rgba(0,200,83,0.7);
-    animation: pulse 2.5s ease-in-out infinite;
+    background: var(--green);
+    box-shadow: 0 0 8px var(--green);
+    animation: beat 2.5s ease-in-out infinite;
   }
 
-  @keyframes pulse {
-    0%, 100% { opacity: 1; box-shadow: 0 0 8px rgba(0,200,83,0.7); }
-    50%       { opacity: 0.65; box-shadow: 0 0 16px rgba(0,200,83,1); }
+  @keyframes beat {
+    0%, 100% { opacity: 1; box-shadow: 0 0 6px var(--green); }
+    50%       { opacity: 0.6; box-shadow: 0 0 14px var(--green); }
   }
 
-  .time { font-size: 12px; font-weight: 600; color: #3a5040; }
-  .status-divider { width: 1px; height: 12px; background: #181e1c; }
+  .status-time {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-dim);
+    font-variant-numeric: tabular-nums;
+  }
 </style>
 </head>
 <body>
+<div class="page">
 
   <!-- Header -->
   <div class="header">
     <div class="logo">
-      <svg width="30" height="30" viewBox="0 0 36 36" fill="none">
-        <rect width="36" height="36" rx="8" fill="#00c853"/>
-        <path d="M18 7L9 11V19C9 23.97 13.02 28.6 18 30C22.98 28.6 27 23.97 27 19V11L18 7Z" fill="#080a0c" opacity="0.92"/>
-        <path d="M15 18L17 20L21 16" stroke="#00c853" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      <svg width="34" height="34" viewBox="0 0 36 36" fill="none">
+        <rect width="36" height="36" rx="9" fill="#00c853"/>
+        <path d="M18 6L8 11V19.5C8 25.3 12.5 30.6 18 32C23.5 30.6 28 25.3 28 19.5V11L18 6Z" fill="#05070a" opacity="0.95"/>
+        <path d="M14.5 18.5L17 21L22 15.5" stroke="#00e664" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
-      <span class="logo-text">Zero<span>Trust</span> Browser</span>
+      <span class="logo-text">Zero<em>Trust</em> Browser</span>
     </div>
     <div class="tagline">Mountain OS · Secured by ZeroTrust</div>
   </div>
 
+  <!-- Clock -->
+  <div style="text-align:center">
+    <div class="clock" id="clock">00:00</div>
+    <div class="clock-date" id="date"></div>
+  </div>
+
   <!-- Search -->
-  <div class="search-container">
-    <div class="search-wrap">
-      <svg class="search-icon" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+  <div class="search-wrap">
+    <div class="search-bar">
+      <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
         <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
       </svg>
       <input
         class="search-input"
         type="text"
-        placeholder="Search with DuckDuckGo or enter address..."
+        placeholder="Search or enter address..."
         autofocus
+        id="search"
         onkeydown="handleSearch(event)"
       />
-      <span class="search-engine">DuckDuckGo</span>
+      <span class="ddg-badge">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        DuckDuckGo
+      </span>
     </div>
   </div>
 
   <!-- Tools -->
   <div class="tools-section">
-    <div class="section-label">Security &amp; Utility Tools</div>
+    <div class="section-header">
+      <span class="section-title">Security &amp; Utility Tools</span>
+      <span class="section-line"></span>
+    </div>
     <div class="tools-grid">
 
       <a class="tool-card" href="https://mrichard333.com/extension">
         <div class="tool-icon-wrap">🛡️</div>
-        <div class="tool-meta">
-          <span class="tool-name">ZeroTrust Extension</span>
-          <span class="tool-desc">Real-time protection</span>
+        <div>
+          <div class="tool-name">ZeroTrust Extension</div>
+          <div class="tool-desc">Real-time threat protection</div>
         </div>
       </a>
 
       <a class="tool-card" href="https://mrichard333.com/Cyberhealth">
         <div class="tool-icon-wrap">🩺</div>
-        <div class="tool-meta">
-          <span class="tool-name">Cyberhealth Audit</span>
-          <span class="tool-desc">Digital hygiene check</span>
+        <div>
+          <div class="tool-name">Cyberhealth Audit</div>
+          <div class="tool-desc">Digital hygiene check</div>
         </div>
       </a>
 
       <a class="tool-card" href="https://mrichard333.com/password-check">
         <div class="tool-icon-wrap">⚡</div>
-        <div class="tool-meta">
-          <span class="tool-name">Password Entropy</span>
-          <span class="tool-desc">Brute-force simulation</span>
+        <div>
+          <div class="tool-name">Password Entropy</div>
+          <div class="tool-desc">Brute-force simulation</div>
         </div>
       </a>
 
       <a class="tool-card" href="https://mrichard333.com/link-scanner">
         <div class="tool-icon-wrap">🔗</div>
-        <div class="tool-meta">
-          <span class="tool-name">URL Forensics</span>
-          <span class="tool-desc">Deep link analysis</span>
+        <div>
+          <div class="tool-name">URL Forensics</div>
+          <div class="tool-desc">Deep link analysis</div>
         </div>
       </a>
 
       <a class="tool-card" href="https://mrichard333.com/files-compressor">
         <div class="tool-icon-wrap">🗜️</div>
-        <div class="tool-meta">
-          <span class="tool-name">Files Compressor</span>
-          <span class="tool-desc">Local, no uploads</span>
+        <div>
+          <div class="tool-name">Files Compressor</div>
+          <div class="tool-desc">Local, no uploads</div>
         </div>
       </a>
 
       <a class="tool-card" href="https://mrichard333.com/seo-analyser">
         <div class="tool-icon-wrap">📈</div>
-        <div class="tool-meta">
-          <span class="tool-name">SEO Analyser</span>
-          <span class="tool-desc">20+ automated checks</span>
+        <div>
+          <div class="tool-name">SEO Analyser</div>
+          <div class="tool-desc">20+ automated checks</div>
         </div>
       </a>
 
       <a class="tool-card" href="https://mrichard333.com/webtools">
         <div class="tool-icon-wrap">🔍</div>
-        <div class="tool-meta">
-          <span class="tool-name">View All Free Tools</span>
-          <span class="tool-desc">More tools</span>
+        <div>
+          <div class="tool-name">View All Free Tools</div>
+          <div class="tool-desc">More tools</div>
         </div>
       </a>
 
       <a class="tool-card" href="https://mrichard333.com">
         <div class="tool-icon-wrap">🏠</div>
-        <div class="tool-meta">
-          <span class="tool-name">Home</span>
-          <span class="tool-desc">Fraud prevention</span>
+        <div>
+          <div class="tool-name">Home</div>
+          <div class="tool-desc">Fraud prevention</div>
         </div>
       </a>
 
@@ -366,45 +545,67 @@
 
   <!-- Dashboard -->
   <a class="dashboard-card" href="https://mrichard333.com/dashboard">
-    <div class="dashboard-left">
-      <div class="dashboard-icon">📊</div>
+    <div class="db-left">
+      <div class="db-icon">📊</div>
       <div>
-        <div class="dashboard-name">Security Dashboard</div>
-        <div class="dashboard-desc">10 modules · scan history · identity breach · dark web intel</div>
+        <div class="db-name">Security Dashboard</div>
+        <div class="db-desc">Full suite · login required</div>
+        <div class="db-modules">
+          <span class="db-pill">Dark Web</span>
+          <span class="db-pill">CVE Tracker</span>
+          <span class="db-pill">Identity Breach</span>
+          <span class="db-pill">Vendor Risk</span>
+          <span class="db-pill">+6 more</span>
+        </div>
       </div>
     </div>
-    <span class="dashboard-arrow">Open Dashboard →</span>
+    <span class="db-cta">Open Dashboard →</span>
   </a>
 
   <!-- Status -->
   <div class="status-bar">
-    <span class="time" id="clock"></span>
-    <span class="status-divider"></span>
     <div class="status-item">
       <span class="status-dot"></span>
       <span>ZeroTrust Active</span>
     </div>
-    <span class="status-divider"></span>
-    <div class="status-item"><span>Mountain OS</span></div>
+    <div class="status-item">
+      <span class="status-time" id="status-time"></span>
+    </div>
+    <div class="status-item">
+      <span>Mountain OS</span>
+    </div>
   </div>
 
+</div>
 <script>
-  function updateClock() {
-    document.getElementById('clock').textContent =
-      new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const DAYS   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  function tick() {
+    const n = new Date();
+    const h = String(n.getHours()).padStart(2,'0');
+    const m = String(n.getMinutes()).padStart(2,'0');
+    document.getElementById('clock').textContent = h + ':' + m;
+    document.getElementById('date').textContent =
+      DAYS[n.getDay()] + ', ' + MONTHS[n.getMonth()] + ' ' + n.getDate();
+    document.getElementById('status-time').textContent =
+      h + ':' + m + ':' + String(n.getSeconds()).padStart(2,'0');
   }
-  updateClock();
-  setInterval(updateClock, 1000);
+
+  tick();
+  setInterval(tick, 1000);
 
   function handleSearch(e) {
     if (e.key !== 'Enter') return;
-    const query = e.target.value.trim();
-    if (!query) return;
-    const isUrl = /^https?:\/\//.test(query) || /^[\w-]+\.[\w]{2,}/.test(query);
+    const q = e.target.value.trim();
+    if (!q) return;
+    const isUrl = /^https?:\/\//.test(q) || /^[\w-]+\.[\w]{2,}(\/|$)/.test(q);
     window.location.href = isUrl
-      ? (query.startsWith('http') ? query : 'https://' + query)
-      : `https://duckduckgo.com/?q=${encodeURIComponent(query)}`;
+      ? (q.startsWith('http') ? q : 'https://' + q)
+      : 'https://duckduckgo.com/?q=' + encodeURIComponent(q);
   }
+
+  document.getElementById('search').focus();
 </script>
 </body>
 </html>
