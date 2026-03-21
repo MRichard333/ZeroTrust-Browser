@@ -153,7 +153,7 @@ if [[ -f "$NEWTAB_XPI" ]]; then
 
   # Add to policies so it's trusted
   if command -v python3 &>/dev/null; then
-    python3 - "$POLICIES_DIR/policies.json" "$NEWTAB_XPI" "$EXT_ID" <<'PYEOF'
+   sudo python3 - "$POLICIES_DIR/policies.json" "$NEWTAB_XPI" "$EXT_ID" <<'PYEOF'
 import json, sys
 pol_path, xpi_path, ext_id = sys.argv[1], sys.argv[2], sys.argv[3]
 with open(pol_path) as f: pol = json.load(f)
