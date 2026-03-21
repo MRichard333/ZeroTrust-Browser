@@ -2,6 +2,14 @@
   "policies": {
 
     "ExtensionSettings": {
+      "*": {
+        "installation_mode": "blocked",
+        "blocked_install_message": "Only ZeroTrust-approved extensions are allowed.",
+        "install_sources": [
+          "https://addons.mozilla.org/*",
+          "file:///*"
+        ]
+      },
       "uBlock0@raymondhill.net": {
         "installation_mode": "force_installed",
         "install_url": "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi"
@@ -13,7 +21,7 @@
     },
 
     "Homepage": {
-      "URL": "https://mrichard333.com/webtools",
+      "URL": "https://mrichard333.com/webtools|https://mrichard333.com/dashboard|https://mrichard333.com/link-scanner",
       "Locked": false,
       "StartPage": "homepage"
     },
@@ -64,6 +72,8 @@
 
     "HttpsOnlyMode": "force_enabled",
 
+    "SSLVersionMin": "tls1.2",
+
     "EnableTrackingProtection": {
       "Value": true,
       "Locked": false,
@@ -75,6 +85,17 @@
       "Enabled": true,
       "Locked": false
     },
+
+    "PopupBlocking": {
+      "Default": true
+    },
+
+    "Cookies": {
+      "Behavior": "reject-tracker-and-partition-foreign",
+      "BehaviorPrivateBrowsing": "reject-tracker-and-partition-foreign"
+    },
+
+    "PasswordManagerEnabled": true,
 
     "AppUpdateURL": "https://aus5.mozilla.org/update/6/%PRODUCT%/%VERSION%/%BUILD_ID%/%BUILD_TARGET%/%LOCALE%/%CHANNEL%/%OS_VERSION%/%DISTRIBUTION%/%DISTRIBUTION_VERSION%/update.xml"
 
