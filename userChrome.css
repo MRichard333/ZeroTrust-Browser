@@ -1,103 +1,143 @@
 /* ============================================================
-   ZeroTrust Browser — userChrome.css  v2.2
-   Dark Matrix theme for Mountain OS
+   ZeroTrust Browser — userChrome.css  v2.3
+   Dark Mountain theme · Window controls always visible
    Place in: <profile>/chrome/userChrome.css
-
-   Sections:
-     [TOKENS]       Design tokens / CSS variables
-     [TOOLBOX]      Navigator toolbox (outermost chrome container)
-     [NAVBAR]       Nav bar background and padding
-     [URLBAR]       URL bar shape, focus ring, identity icon
-     [TABS]         Tab bar, active/inactive tabs, close button
-     [BUTTONS]      Toolbar buttons (back, forward, menu, extensions)
-     [SIDEBAR]      Sidebar panel
-     [FINDBAR]      In-page find bar
-     [BOOKMARKS]    Bookmarks toolbar
-     [MENUS]        Context menus and panel menus
-     [SCROLLBARS]   Custom thin scrollbars
-     [MISC]         Misc tweaks (about:blank, devtools, drag region)
    ============================================================ */
 
-/* ── [TOKENS] ─────────────────────────────────────────────── */
+/* ── TOKENS ──────────────────────────────────────────────── */
 :root {
-  --zt-accent:           #00c853;   /* neon green — primary accent */
-  --zt-accent-dim:       #00a844;   /* hover/pressed accent */
-  --zt-accent-glow:      rgba(0, 200, 83, 0.15);
-  --zt-accent-glow-hi:   rgba(0, 200, 83, 0.28);
+  --zt-accent:        #00c853;
+  --zt-accent-dim:    #00a844;
+  --zt-accent-glow:   rgba(0, 200, 83, 0.14);
 
-  --zt-bg:               #080a0c;   /* deepest background */
-  --zt-surface:          #0e1012;   /* tab bar, active tab */
-  --zt-surface2:         #141719;   /* URL bar, inactive tab hover */
-  --zt-surface3:         #1a1e20;   /* menus, panels */
-  --zt-border:           #1c2020;   /* default border */
-  --zt-border-hi:        #243028;   /* highlighted border */
-  --zt-border-accent:    #00c85340; /* accent-tinted border */
+  --zt-bg:            #090d0b;
+  --zt-surface:       #101614;
+  --zt-surface2:      #161d1a;
+  --zt-surface3:      #1c2420;
 
-  --zt-text:             #d4e8d4;   /* primary text */
-  --zt-text-muted:       #4a6050;   /* secondary/inactive text */
-  --zt-text-dim:         #2a3830;   /* very dim text */
+  --zt-border:        #1e2622;
+  --zt-border-hi:     #273330;
 
-  --zt-radius:           6px;
-  --zt-radius-lg:        10px;
+  --zt-text:          #cce4cc;
+  --zt-text-soft:     #6a8870;
+  --zt-text-dim:      #2e3e32;
 
-  --zt-tab-height:       36px;
-  --zt-navbar-height:    44px;
-
-  /* scan-line effect — very subtle, adds the "matrix" feel */
-  --zt-scanline: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 2px,
-    rgba(0, 200, 83, 0.012) 2px,
-    rgba(0, 200, 83, 0.012) 4px
-  );
+  --zt-r:             8px;
+  --zt-r-sm:          5px;
+  --zt-r-lg:          12px;
 }
 
-/* ── [TOOLBOX] ────────────────────────────────────────────── */
+/* ── TOOLBOX ─────────────────────────────────────────────── */
 #navigator-toolbox {
   background: var(--zt-bg) !important;
   border-bottom: 1px solid var(--zt-border) !important;
   box-shadow: none !important;
-  /* Subtle scanline overlay */
-  background-image: var(--zt-scanline) !important;
 }
 
+/* Thin green accent line at the very bottom of the chrome */
 #navigator-toolbox::after {
   content: "";
   display: block;
   height: 1px;
-  background: linear-gradient(90deg,
+  background: linear-gradient(
+    90deg,
     transparent 0%,
-    var(--zt-accent) 30%,
-    var(--zt-accent-dim) 70%,
+    var(--zt-accent) 25%,
+    var(--zt-accent-dim) 75%,
     transparent 100%
   );
-  opacity: 0.35;
+  opacity: 0.3;
 }
 
-/* ── [NAVBAR] ─────────────────────────────────────────────── */
+/* ── TITLE BAR ───────────────────────────────────────────── */
+#titlebar {
+  appearance: none !important;
+  background: var(--zt-bg) !important;
+}
+
+/* Window control buttons — always visible, macOS-style circles */
+.titlebar-buttonbox-container {
+  display: flex !important;
+  align-items: center !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.titlebar-buttonbox {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 0 10px !important;
+}
+
+.titlebar-button {
+  appearance: none !important;
+  border-radius: 50% !important;
+  width: 12px !important;
+  height: 12px !important;
+  min-width: 12px !important;
+  min-height: 12px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  opacity: 0.85;
+  transition: opacity 0.12s, transform 0.1s !important;
+}
+
+.titlebar-button:hover {
+  opacity: 1 !important;
+  transform: scale(1.1) !important;
+}
+
+.titlebar-button > .toolbarbutton-icon { display: none !important; }
+
+/* Close — red */
+.titlebar-close {
+  background: #ff5f57 !important;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.2) inset !important;
+}
+.titlebar-close:hover { background: #ff3b30 !important; }
+
+/* Minimize — amber */
+.titlebar-min {
+  background: #febc2e !important;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.15) inset !important;
+}
+.titlebar-min:hover { background: #f0a500 !important; }
+
+/* Maximize/restore — green */
+.titlebar-max,
+.titlebar-restore {
+  background: var(--zt-accent) !important;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.15) inset !important;
+}
+.titlebar-max:hover,
+.titlebar-restore:hover { background: #00e664 !important; }
+
+/* ── NAV BAR ─────────────────────────────────────────────── */
 #nav-bar {
   background: var(--zt-bg) !important;
   border: none !important;
-  padding: 4px 6px !important;
-  min-height: var(--zt-navbar-height) !important;
+  padding: 5px 8px !important;
   box-shadow: none !important;
 }
 
-/* ── [URLBAR] ─────────────────────────────────────────────── */
+/* ── URL BAR ─────────────────────────────────────────────── */
 #urlbar {
   background: var(--zt-surface2) !important;
-  border: 1px solid var(--zt-border) !important;
-  border-radius: var(--zt-radius-lg) !important;
+  border: 1px solid var(--zt-border-hi) !important;
+  border-radius: var(--zt-r-lg) !important;
   box-shadow: none !important;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
-  min-height: 34px !important;
+  transition: border-color 0.15s, box-shadow 0.15s !important;
+  min-height: 36px !important;
 }
 
 #urlbar:focus-within,
-#urlbar[focused] {
+#urlbar[focused="true"] {
   border-color: var(--zt-accent) !important;
-  box-shadow: 0 0 0 2px var(--zt-accent-glow), 0 0 8px var(--zt-accent-glow) !important;
+  box-shadow:
+    0 0 0 2px var(--zt-accent-glow),
+    0 4px 20px rgba(0,0,0,0.5) !important;
   background: var(--zt-surface) !important;
 }
 
@@ -107,129 +147,96 @@
   box-shadow: none !important;
 }
 
-/* URL bar text */
 #urlbar .urlbar-input {
   color: var(--zt-text) !important;
   caret-color: var(--zt-accent) !important;
-  font-size: 13px !important;
+  font-size: 13.5px !important;
 }
 
-/* Identity icon (lock icon) */
-#identity-icon {
-  fill: var(--zt-accent) !important;
-  opacity: 0.8;
-}
-
+#identity-icon,
 #identity-box[pageproxystate="valid"] > #identity-icon {
   fill: var(--zt-accent) !important;
+  opacity: 0.85;
 }
 
-/* Tracking protection icon */
-#tracking-protection-icon {
-  fill: var(--zt-accent) !important;
-}
+#tracking-protection-icon { fill: var(--zt-accent) !important; }
 
-/* URL bar results dropdown */
+/* Dropdown */
 #urlbar .urlbarView {
   background: var(--zt-surface) !important;
   border: 1px solid var(--zt-border-hi) !important;
-  border-radius: var(--zt-radius-lg) !important;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.6) !important;
+  border-radius: var(--zt-r-lg) !important;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.7) !important;
   margin-top: 4px !important;
+  overflow: hidden !important;
 }
 
 #urlbar .urlbarView-row[selected],
 #urlbar .urlbarView-row:hover {
   background: var(--zt-surface2) !important;
-  border-radius: var(--zt-radius) !important;
 }
 
-#urlbar .urlbarView-url {
-  color: var(--zt-accent) !important;
-}
+#urlbar .urlbarView-url   { color: var(--zt-accent) !important; }
+#urlbar .urlbarView-title { color: var(--zt-text) !important; }
 
-#urlbar .urlbarView-title {
-  color: var(--zt-text) !important;
-}
-
-/* ── [TABS] ───────────────────────────────────────────────── */
+/* ── TABS ────────────────────────────────────────────────── */
 #TabsToolbar {
   background: var(--zt-bg) !important;
   border-bottom: 1px solid var(--zt-border) !important;
-  padding: 0 4px !important;
+  padding: 0 6px !important;
 }
 
 .tabbrowser-tab {
-  border-radius: var(--zt-radius) var(--zt-radius) 0 0 !important;
-  min-height: var(--zt-tab-height) !important;
-  padding: 0 2px !important;
+  min-height: 38px !important;
+  padding: 0 1px !important;
 }
 
 .tab-background {
-  border-radius: var(--zt-radius) var(--zt-radius) 0 0 !important;
+  border-radius: var(--zt-r) var(--zt-r) 0 0 !important;
   background: transparent !important;
   border: none !important;
-  margin-top: 4px !important;
-  transition: background 0.12s ease !important;
+  margin-top: 5px !important;
+  transition: background 0.1s !important;
 }
 
 /* Active tab */
 .tabbrowser-tab[selected] .tab-background {
   background: var(--zt-surface) !important;
-  border: 1px solid var(--zt-border-hi) !important;
-  border-bottom: none !important;
-  /* Green top accent line */
-  box-shadow: inset 0 2px 0 var(--zt-accent) !important;
+  box-shadow:
+    inset 0 2px 0 var(--zt-accent),
+    inset 1px 0 0 var(--zt-border-hi),
+    inset -1px 0 0 var(--zt-border-hi) !important;
 }
 
-/* Inactive tab hover */
+/* Inactive hover */
 .tabbrowser-tab:not([selected]):hover .tab-background {
   background: var(--zt-surface2) !important;
 }
 
-/* Multi-select highlight */
+/* Multi-select */
 .tabbrowser-tab[multiselected] .tab-background {
   background: var(--zt-surface2) !important;
   box-shadow: inset 0 2px 0 var(--zt-accent-dim) !important;
 }
 
-/* Tab labels */
 .tab-label {
-  color: var(--zt-text-muted) !important;
+  color: var(--zt-text-soft) !important;
   font-size: 12px !important;
   font-weight: 400 !important;
 }
-
 .tabbrowser-tab[selected] .tab-label {
   color: var(--zt-text) !important;
   font-weight: 500 !important;
 }
 
-/* Tab favicon */
-.tab-icon-image {
-  opacity: 0.7;
-}
+.tab-icon-image { opacity: 0.65; }
+.tabbrowser-tab[selected] .tab-icon-image { opacity: 1; }
 
-.tabbrowser-tab[selected] .tab-icon-image {
-  opacity: 1;
-}
-
-/* Audio playing indicator */
 .tab-icon-overlay[soundplaying],
-.tab-icon-overlay[muted] {
-  fill: var(--zt-accent) !important;
-}
+.tab-icon-overlay[muted] { fill: var(--zt-accent) !important; }
 
-/* Close button — hidden until hover */
-.tab-close-button {
-  opacity: 0 !important;
-  transition: opacity 0.1s ease !important;
-}
-
-.tabbrowser-tab:hover .tab-close-button {
-  opacity: 0.5 !important;
-}
-
+.tab-close-button { opacity: 0 !important; transition: opacity 0.1s !important; }
+.tabbrowser-tab:hover .tab-close-button { opacity: 0.45 !important; }
 .tabbrowser-tab:hover .tab-close-button:hover {
   opacity: 1 !important;
   fill: var(--zt-accent) !important;
@@ -237,304 +244,92 @@
   border-radius: 4px !important;
 }
 
-/* New tab button */
 #tabs-newtab-button,
-.tabs-newtab-button {
-  fill: var(--zt-text-muted) !important;
-  transition: fill 0.1s, background 0.1s !important;
-}
-
+.tabs-newtab-button { fill: var(--zt-text-soft) !important; transition: fill 0.1s, background 0.1s !important; }
 #tabs-newtab-button:hover,
 .tabs-newtab-button:hover {
   fill: var(--zt-accent) !important;
   background: var(--zt-accent-glow) !important;
-  border-radius: var(--zt-radius) !important;
+  border-radius: var(--zt-r-sm) !important;
 }
 
-/* Tab container color bar (Multi-Account Containers) */
-.tabbrowser-tab[usercontextid] .tab-context-line {
-  height: 2px !important;
-  border-radius: 0 !important;
-}
+.tabbrowser-tab[usercontextid] .tab-context-line { height: 2px !important; border-radius: 0 !important; }
 
-/* ── [BUTTONS] ────────────────────────────────────────────── */
+/* ── TOOLBAR BUTTONS ─────────────────────────────────────── */
 toolbar .toolbarbutton-1 {
-  color: var(--zt-text-muted) !important;
-  fill: var(--zt-text-muted) !important;
-  transition: fill 0.1s ease, background 0.1s ease !important;
-  border-radius: var(--zt-radius) !important;
+  fill: var(--zt-text-soft) !important;
+  color: var(--zt-text-soft) !important;
+  border-radius: var(--zt-r-sm) !important;
+  transition: fill 0.1s, background 0.1s !important;
 }
-
 toolbar .toolbarbutton-1:hover {
   background: var(--zt-surface2) !important;
-  border-radius: var(--zt-radius) !important;
   fill: var(--zt-text) !important;
   color: var(--zt-text) !important;
 }
-
 toolbar .toolbarbutton-1:active {
-  background: var(--zt-border-hi) !important;
+  background: var(--zt-surface3) !important;
   fill: var(--zt-accent) !important;
 }
-
-/* Pressed/checked state (e.g. extensions panel open) */
 toolbar .toolbarbutton-1[open="true"],
 toolbar .toolbarbutton-1[checked="true"] {
   background: var(--zt-surface2) !important;
   fill: var(--zt-accent) !important;
   color: var(--zt-accent) !important;
-  box-shadow: inset 0 0 0 1px var(--zt-border-accent) !important;
+  box-shadow: inset 0 0 0 1px var(--zt-accent-glow) !important;
 }
 
-/* Extensions / unified extensions button */
-#unified-extensions-button {
-  fill: var(--zt-text-muted) !important;
-}
+#unified-extensions-button       { fill: var(--zt-text-soft) !important; }
+#unified-extensions-button:hover  { fill: var(--zt-accent) !important; }
+#nav-bar-overflow-button .toolbarbutton-icon { fill: var(--zt-text-soft) !important; }
 
-#unified-extensions-button:hover {
-  fill: var(--zt-accent) !important;
-}
+/* ── SIDEBAR ─────────────────────────────────────────────── */
+#sidebar-box { background: var(--zt-surface) !important; border-right: 1px solid var(--zt-border) !important; }
+#sidebar-header { background: var(--zt-surface2) !important; border-bottom: 1px solid var(--zt-border) !important; color: var(--zt-text) !important; }
+#sidebar { background: var(--zt-surface) !important; color: var(--zt-text) !important; }
+#sidebar-splitter { border: none !important; background: var(--zt-border) !important; min-width: 1px !important; width: 1px !important; cursor: col-resize !important; transition: background 0.15s !important; }
+#sidebar-splitter:hover { background: var(--zt-accent) !important; }
 
-/* Overflow menu button */
-#nav-bar-overflow-button .toolbarbutton-icon {
-  fill: var(--zt-text-muted) !important;
-}
+/* ── FINDBAR ─────────────────────────────────────────────── */
+.findbar-container { background: var(--zt-surface) !important; border-top: 1px solid var(--zt-border) !important; padding: 5px 10px !important; }
+.findbar-textbox { background: var(--zt-surface2) !important; border: 1px solid var(--zt-border-hi) !important; border-radius: var(--zt-r-sm) !important; color: var(--zt-text) !important; caret-color: var(--zt-accent) !important; }
+.findbar-textbox:focus { border-color: var(--zt-accent) !important; box-shadow: 0 0 0 2px var(--zt-accent-glow) !important; }
+.findbar-textbox[status="notfound"] { background: rgba(200,30,30,0.12) !important; border-color: #b83030 !important; }
 
-/* ── [SIDEBAR] ────────────────────────────────────────────── */
-#sidebar-box {
-  background: var(--zt-surface) !important;
-  border-right: 1px solid var(--zt-border) !important;
-}
+/* ── BOOKMARKS ───────────────────────────────────────────── */
+#PersonalToolbar { background: var(--zt-surface) !important; border-bottom: 1px solid var(--zt-border) !important; padding: 2px 8px !important; }
+.bookmark-item { color: var(--zt-text-soft) !important; border-radius: var(--zt-r-sm) !important; transition: background 0.1s, color 0.1s !important; }
+.bookmark-item:hover { background: var(--zt-surface2) !important; color: var(--zt-text) !important; }
+.bookmark-item > .toolbarbutton-icon { opacity: 0.65; }
+.bookmark-item:hover > .toolbarbutton-icon { opacity: 1; }
 
-#sidebar-header {
-  background: var(--zt-surface2) !important;
-  border-bottom: 1px solid var(--zt-border) !important;
-  color: var(--zt-text) !important;
-}
+/* ── MENUS ───────────────────────────────────────────────── */
+menupopup, panel { background: var(--zt-surface3) !important; border: 1px solid var(--zt-border-hi) !important; border-radius: var(--zt-r-lg) !important; box-shadow: 0 16px 56px rgba(0,0,0,0.8) !important; padding: 4px !important; }
+menuitem, menu { color: var(--zt-text) !important; border-radius: var(--zt-r-sm) !important; padding: 5px 10px !important; transition: background 0.08s !important; }
+menuitem:hover, menu:hover, menuitem[_moz-menuactive="true"], menu[_moz-menuactive="true"] { background: var(--zt-surface2) !important; color: var(--zt-text) !important; }
+menuitem[disabled="true"] { color: var(--zt-text-dim) !important; }
+menuseparator { border-color: var(--zt-border) !important; margin: 3px 6px !important; }
+menuitem[checked="true"]::before { color: var(--zt-accent) !important; }
 
-#sidebar {
-  background: var(--zt-surface) !important;
-  color: var(--zt-text) !important;
-}
+/* ── MENU BAR ────────────────────────────────────────────── */
+#toolbar-menubar { background: var(--zt-bg) !important; color: var(--zt-text) !important; }
+#toolbar-menubar menuitem, #toolbar-menubar menu { color: var(--zt-text-soft) !important; }
+#toolbar-menubar menu:hover { color: var(--zt-text) !important; background: var(--zt-surface2) !important; }
 
-#sidebar-splitter {
-  border: none !important;
-  background: var(--zt-border) !important;
-  min-width: 1px !important;
-  width: 1px !important;
-  cursor: col-resize !important;
-  opacity: 0.6;
-  transition: opacity 0.15s;
-}
-
-#sidebar-splitter:hover {
-  background: var(--zt-accent) !important;
-  opacity: 0.8;
-}
-
-/* ── [FINDBAR] ────────────────────────────────────────────── */
-.findbar-container {
-  background: var(--zt-surface) !important;
-  border-top: 1px solid var(--zt-border) !important;
-  padding: 4px 8px !important;
-}
-
-.findbar-textbox {
-  background: var(--zt-surface2) !important;
-  border: 1px solid var(--zt-border) !important;
-  border-radius: var(--zt-radius) !important;
-  color: var(--zt-text) !important;
-  caret-color: var(--zt-accent) !important;
-}
-
-.findbar-textbox:focus {
-  border-color: var(--zt-accent) !important;
-  box-shadow: 0 0 0 2px var(--zt-accent-glow) !important;
-}
-
-.findbar-textbox[status="notfound"] {
-  background: rgba(200, 0, 0, 0.15) !important;
-  border-color: #c83030 !important;
-}
-
-/* ── [BOOKMARKS] ──────────────────────────────────────────── */
-#PersonalToolbar {
-  background: var(--zt-surface) !important;
-  border-bottom: 1px solid var(--zt-border) !important;
-  padding: 2px 6px !important;
-}
-
-.bookmark-item {
-  color: var(--zt-text-muted) !important;
-  border-radius: var(--zt-radius) !important;
-  transition: background 0.1s, color 0.1s !important;
-}
-
-.bookmark-item:hover {
-  background: var(--zt-surface2) !important;
-  color: var(--zt-text) !important;
-}
-
-.bookmark-item > .toolbarbutton-icon {
-  opacity: 0.7;
-}
-
-.bookmark-item:hover > .toolbarbutton-icon {
-  opacity: 1;
-}
-
-/* ── [MENUS] ──────────────────────────────────────────────── */
-menupopup,
-panel {
-  background: var(--zt-surface3) !important;
-  border: 1px solid var(--zt-border-hi) !important;
-  border-radius: var(--zt-radius-lg) !important;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.7) !important;
-  padding: 4px !important;
-}
-
-menuitem,
-menu {
-  color: var(--zt-text) !important;
-  border-radius: var(--zt-radius) !important;
-  padding: 4px 8px !important;
-  transition: background 0.1s !important;
-}
-
-menuitem:hover,
-menu:hover,
-menuitem[_moz-menuactive="true"],
-menu[_moz-menuactive="true"] {
-  background: var(--zt-surface2) !important;
-  color: var(--zt-text) !important;
-}
-
-menuitem[disabled="true"] {
-  color: var(--zt-text-dim) !important;
-}
-
-menuseparator {
-  border-color: var(--zt-border) !important;
-  margin: 3px 6px !important;
-}
-
-/* Checkmark on checked menu items */
-menuitem[checked="true"]::before {
-  color: var(--zt-accent) !important;
-}
-
-/* ── [SCROLLBARS] ─────────────────────────────────────────── */
+/* ── SCROLLBARS ──────────────────────────────────────────── */
 @namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+scrollbar { background: transparent !important; -moz-appearance: none !important; }
+scrollbar[orient="vertical"]   { width: 5px !important; min-width: 5px !important; }
+scrollbar[orient="horizontal"] { height: 5px !important; min-height: 5px !important; }
+scrollbarbutton { display: none !important; }
+thumb { background: var(--zt-border-hi) !important; border-radius: 3px !important; border: none !important; transition: background 0.12s !important; }
+thumb:hover { background: var(--zt-accent-dim) !important; }
 
-scrollbar {
-  background: transparent !important;
-  -moz-appearance: none !important;
-}
-
-scrollbar[orient="vertical"] {
-  width: 6px !important;
-  min-width: 6px !important;
-}
-
-scrollbar[orient="horizontal"] {
-  height: 6px !important;
-  min-height: 6px !important;
-}
-
-scrollbarbutton {
-  display: none !important;
-}
-
-thumb {
-  background: var(--zt-border-hi) !important;
-  border-radius: 3px !important;
-  border: none !important;
-  transition: background 0.15s !important;
-}
-
-thumb:hover {
-  background: var(--zt-accent-dim) !important;
-}
-
-/* ── [MISC] ───────────────────────────────────────────────── */
-
-/* Title bar */
-#titlebar {
-  appearance: none !important;
-  background: var(--zt-bg) !important;
-}
-
-/* Menu bar */
-#toolbar-menubar {
-  background: var(--zt-bg) !important;
-  color: var(--zt-text) !important;
-}
-
-#toolbar-menubar menuitem,
-#toolbar-menubar menu {
-  color: var(--zt-text-muted) !important;
-}
-
-#toolbar-menubar menu:hover {
-  color: var(--zt-text) !important;
-  background: var(--zt-surface2) !important;
-}
-
-/* Hide caption buttons ONLY when the OS is not providing its own window chrome.
-   On most Linux desktops with server-side decorations (the default), the WM
-   draws the title bar so Firefox's own buttons are redundant and should be hidden.
-   On macOS and Windows this rule never fires because the OS always provides chrome.
-   If you use a tiling WM or want the buttons back, comment this block out. */
-:root[tabsintitlebar] .titlebar-buttonbox-container {
-  display: none !important;
-}
-
-/* Keep the drag region so the tab bar is still draggable */
-:root[tabsintitlebar] #TabsToolbar {
-  -moz-window-dragging: drag !important;
-}
-
-/* Status bar */
-#statuspanel-label {
-  background: var(--zt-surface3) !important;
-  border: 1px solid var(--zt-border) !important;
-  border-radius: var(--zt-radius) !important;
-  color: var(--zt-text-muted) !important;
-  font-size: 11px !important;
-  padding: 2px 8px !important;
-}
-
-/* Private browsing indicator */
-#private-browsing-indicator-icon {
-  fill: var(--zt-accent) !important;
-}
-
-/* Reader mode */
-#reader-mode-button[readeractive] {
-  fill: var(--zt-accent) !important;
-}
-
-/* Notification bars (permissions, updates) */
-notification {
-  background: var(--zt-surface2) !important;
-  border-bottom: 1px solid var(--zt-border) !important;
-  color: var(--zt-text) !important;
-}
-
-notification button {
-  background: var(--zt-surface3) !important;
-  border: 1px solid var(--zt-border-hi) !important;
-  border-radius: var(--zt-radius) !important;
-  color: var(--zt-text) !important;
-}
-
-notification button:hover {
-  border-color: var(--zt-accent) !important;
-  color: var(--zt-accent) !important;
-}
-
-/* Picture-in-picture toggle button */
-.pip-wrapper {
-  border: 1px solid var(--zt-accent) !important;
-  border-radius: var(--zt-radius) !important;
-}
+/* ── MISC ────────────────────────────────────────────────── */
+#statuspanel-label { background: var(--zt-surface3) !important; border: 1px solid var(--zt-border-hi) !important; border-radius: var(--zt-r-sm) !important; color: var(--zt-text-soft) !important; font-size: 11px !important; padding: 2px 10px !important; }
+#private-browsing-indicator-icon { fill: var(--zt-accent) !important; }
+#reader-mode-button[readeractive] { fill: var(--zt-accent) !important; }
+notification { background: var(--zt-surface2) !important; border-bottom: 1px solid var(--zt-border) !important; color: var(--zt-text) !important; }
+notification button { background: var(--zt-surface3) !important; border: 1px solid var(--zt-border-hi) !important; border-radius: var(--zt-r-sm) !important; color: var(--zt-text) !important; }
+notification button:hover { border-color: var(--zt-accent) !important; color: var(--zt-accent) !important; }
+.pip-wrapper { border: 1px solid var(--zt-accent) !important; border-radius: var(--zt-r-sm) !important; }
