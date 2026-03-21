@@ -9,9 +9,11 @@
 
 
 // ── STARTUP ─────────────────────────────────────────────────
-user_pref("browser.startup.homepage", "https://mrichard333.com/webtools");
-user_pref("browser.startup.page", 1);
-user_pref("browser.newtabpage.enabled", false);
+// Open the ZeroTrust new tab page on startup (same as new tab)
+// browser.startup.page 3 = restore previous session; we use
+// page 0 (blank) + the newtab extension handles the display.
+user_pref("browser.startup.page", 0);                          // 0 = blank/newtab on startup
+user_pref("browser.newtabpage.enabled", true);                 // let the extension take over new tab
 user_pref("browser.newtabpage.activity-stream.enabled", false);
 
 
