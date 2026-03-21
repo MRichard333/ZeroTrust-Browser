@@ -55,22 +55,29 @@
   background: var(--zt-bg) !important;
 }
 
-/* Window control buttons — always visible, macOS-style circles */
-.titlebar-buttonbox-container {
+/* Firefox puts window buttons in TWO places when tabsintitlebar is active:
+   - Inside #titlebar (a separate row above the tab bar)
+   - Inside #TabsToolbar (integrated into the tab bar row)
+   We hide the #titlebar duplicate and style only the #TabsToolbar set. */
+#titlebar .titlebar-buttonbox-container {
+  display: none !important;
+}
+
+/* Window buttons in the tab bar — always show, macOS-style circles */
+#TabsToolbar .titlebar-buttonbox-container {
   display: flex !important;
   align-items: center !important;
   visibility: visible !important;
-  opacity: 1 !important;
 }
 
-.titlebar-buttonbox {
+#TabsToolbar .titlebar-buttonbox {
   display: flex !important;
   align-items: center !important;
   gap: 6px !important;
-  padding: 0 10px !important;
+  padding: 0 10px 0 6px !important;
 }
 
-.titlebar-button {
+#TabsToolbar .titlebar-button {
   appearance: none !important;
   border-radius: 50% !important;
   width: 12px !important;
@@ -84,35 +91,35 @@
   transition: opacity 0.12s, transform 0.1s !important;
 }
 
-.titlebar-button:hover {
+#TabsToolbar .titlebar-button:hover {
   opacity: 1 !important;
-  transform: scale(1.1) !important;
+  transform: scale(1.12) !important;
 }
 
-.titlebar-button > .toolbarbutton-icon { display: none !important; }
+#TabsToolbar .titlebar-button > .toolbarbutton-icon { display: none !important; }
 
 /* Close — red */
-.titlebar-close {
+#TabsToolbar .titlebar-close {
   background: #ff5f57 !important;
   box-shadow: 0 0 0 1px rgba(0,0,0,0.2) inset !important;
 }
-.titlebar-close:hover { background: #ff3b30 !important; }
+#TabsToolbar .titlebar-close:hover { background: #ff3b30 !important; }
 
 /* Minimize — amber */
-.titlebar-min {
+#TabsToolbar .titlebar-min {
   background: #febc2e !important;
   box-shadow: 0 0 0 1px rgba(0,0,0,0.15) inset !important;
 }
-.titlebar-min:hover { background: #f0a500 !important; }
+#TabsToolbar .titlebar-min:hover { background: #f0a500 !important; }
 
-/* Maximize/restore — green */
-.titlebar-max,
-.titlebar-restore {
+/* Maximize/restore — green (ZeroTrust accent) */
+#TabsToolbar .titlebar-max,
+#TabsToolbar .titlebar-restore {
   background: var(--zt-accent) !important;
   box-shadow: 0 0 0 1px rgba(0,0,0,0.15) inset !important;
 }
-.titlebar-max:hover,
-.titlebar-restore:hover { background: #00e664 !important; }
+#TabsToolbar .titlebar-max:hover,
+#TabsToolbar .titlebar-restore:hover { background: #00e664 !important; }
 
 /* ── NAV BAR ─────────────────────────────────────────────── */
 #nav-bar {
