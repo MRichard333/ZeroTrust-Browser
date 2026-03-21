@@ -114,15 +114,19 @@ fi
 
 # Patch all extension install_urls to use local file:// paths where available.
 # This is done with a single clean Python script — no heredoc string escaping issues.
-python3 "$SCRIPT_DIR/patch_policies.py" \
+sudo python3 "$SCRIPT_DIR/patch_policies.py" \
   "$POLICIES_DIR/policies.json" \
   "$EXT_CACHE" \
-  "$ZEROTRUST_ID" "$UBLOCK_ID" "$BITWARDEN_ID" "$CONTAINERS_ID" "$CLEARURLS_ID" "$LOCALCDN_ID" \
-  2>/dev/null && ok "Extension URLs patched to local file:// paths" \
-  || warn "Could not patch extension URLs (python3 error) — AMO URLs will be used"
+  "$SCRIPT_DIR" \
+  && ok "Extension URLs patched to local file:// paths" \
+  || warn "Could not patch extension URLs — check patch_policies.py is in $SCRIPT_DIR"
 
 if [[ "$IS_SNAP" == true ]]; then
-  cp "$POLICIES_DIR/policies.json" "$POLICIES_DIR_USER/policies.json" 2>/dev/null || true
+  python3 "$SCRIPT_DIR/patch_policies.py" \
+    "$POLICIES_DIR_USER/policies.json" \
+    "$EXT_CACHE" \
+    "$SCRIPT_DIR" \
+    && ok "User policy also patched" || true
 fi
 
 # ════════════════════════════════════════════════════════════
@@ -227,13 +231,32 @@ stage "$CONTAINERS_ID" "$EXT_CACHE/containers.xpi" "Multi-Account Containers"
 stage "$CLEARURLS_ID"  "$EXT_CACHE/clearurls.xpi"  "ClearURLs"
 stage "$LOCALCDN_ID"   "$EXT_CACHE/localcdn.xpi"   "LocalCDN"
 
-# Newtab extension — from project folder, not ext-cache
+# Newtab extension — from project folder, copy to ext-cache then stage
 NEWTAB_XPI="$SCRIPT_DIR/zerotrust-newtab.xpi"
 if [[ -f "$NEWTAB_XPI" ]]; then
+  cp "$NEWTAB_XPI" "$EXT_CACHE/zerotrust-newtab.xpi"
   cp "$NEWTAB_XPI" "$EXT_DIR/${NEWTAB_ID}.xpi"
-  ok "ZeroTrust New Tab staged"
+
+  # Patch the deployed policies.json directly with the absolute staged path
+  STAGED_PATH="$EXT_DIR/${NEWTAB_ID}.xpi"
+  sudo python3 -c "
+import json
+pol_path = '$POLICIES_DIR/policies.json'
+with open(pol_path) as f:
+    pol = json.load(f)
+ext = pol.setdefault('policies', {}).setdefault('ExtensionSettings', {})
+ext['$NEWTAB_ID'] = {
+    'installation_mode': 'force_installed',
+    'install_url': 'file://$STAGED_PATH'
+}
+with open(pol_path, 'w') as f:
+    json.dump(pol, f, indent=2)
+print('  [ok] zerotrust-newtab patched ->  file://$STAGED_PATH')
+"
+  ok "ZeroTrust New Tab staged and policies updated"
 else
-  warn "zerotrust-newtab.xpi not found in $SCRIPT_DIR — new tab page will not load"
+  warn "zerotrust-newtab.xpi not found in $SCRIPT_DIR — new tab page will be blank"
+  warn "Place zerotrust-newtab.xpi alongside install.sh and re-run"
 fi
 
 # ════════════════════════════════════════════════════════════
