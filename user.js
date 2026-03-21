@@ -5,10 +5,12 @@
 
 
 // ── HOMEPAGE & NEW TAB ──────────────────────────────────────
-user_pref("browser.startup.homepage", "https://mrichard333.com/webtools");
+// FIX: Use pipe-separated URLs to open multiple tabs on startup.
+// browser.newtab.url is dead since Firefox 41 — removed.
+// New tab page override requires a WebExtension (zerotrust-newtab.xpi).
+user_pref("browser.startup.homepage", "https://mrichard333.com/webtools|https://mrichard333.com/dashboard|https://mrichard333.com/link-scanner");
 user_pref("browser.startup.page", 1);                          // 1 = homepage on startup
 user_pref("browser.newtabpage.enabled", false);                // disable default new tab page
-user_pref("browser.newtab.url", "https://mrichard333.com/webtools");
 user_pref("browser.newtabpage.activity-stream.enabled", false);
 
 
@@ -89,3 +91,6 @@ user_pref("browser.send_pings", false);                        // disable hyperl
 user_pref("geo.enabled", false);                               // disable geolocation
 user_pref("permissions.default.geo", 2);
 user_pref("camera.control.face_detection.enabled", false);
+
+// ── UI CUSTOMIZATION ────────────────────────────────────────
+user_pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);

@@ -57,15 +57,25 @@ POLICIES_SRC="$SCRIPT_DIR/policies.json"
 [[ -f "$POLICIES_SRC" ]] || err "policies.json not found in $SCRIPT_DIR"
 
 if [[ "$IS_SNAP" == true ]]; then
-  POLICIES_DIR="/etc/firefox/policies"
+  # FIX: Snap Firefox does NOT read /etc/firefox/policies.
+  # It reads from /var/snap/firefox/common/policies (system-wide)
+  # AND from $HOME/snap/firefox/common/policies (per-user, no sudo needed).
+  # We write to both to be safe.
+  POLICIES_DIR="/var/snap/firefox/common/policies"
+  POLICIES_DIR_USER="$HOME/snap/firefox/common/policies"
+  sudo mkdir -p "$POLICIES_DIR"
+  sudo cp "$POLICIES_SRC" "$POLICIES_DIR/policies.json"
+  mkdir -p "$POLICIES_DIR_USER"
+  cp "$POLICIES_SRC" "$POLICIES_DIR_USER/policies.json"
+  ok "policies.json → $POLICIES_DIR (+ user copy)"
 else
   POLICIES_DIR="/usr/lib/firefox/distribution"
   [[ -d "/usr/lib/firefox-esr/distribution" ]] && POLICIES_DIR="/usr/lib/firefox-esr/distribution"
+  sudo mkdir -p "$POLICIES_DIR"
+  sudo cp "$POLICIES_SRC" "$POLICIES_DIR/policies.json"
+  ok "policies.json → $POLICIES_DIR"
 fi
 
-sudo mkdir -p "$POLICIES_DIR"
-sudo cp "$POLICIES_SRC" "$POLICIES_DIR/policies.json"
-ok "policies.json → $POLICIES_DIR"
 ok "uBlock Origin + ZeroTrust Extension will auto-install on first Firefox launch"
 
 # ════════════════════════════════════════════════════════════
@@ -152,8 +162,9 @@ if [[ -f "$NEWTAB_XPI" ]]; then
   cp "$NEWTAB_XPI" "$PROFILE_PATH/extensions/${EXT_ID}.xpi"
 
   # Add to policies so it's trusted
+  POLICIES_JSON_TARGET="$POLICIES_DIR/policies.json"
   if command -v python3 &>/dev/null; then
-   sudo python3 - "$POLICIES_DIR/policies.json" "$NEWTAB_XPI" "$EXT_ID" <<'PYEOF'
+   sudo python3 - "$POLICIES_JSON_TARGET" "$NEWTAB_XPI" "$EXT_ID" <<'PYEOF'
 import json, sys
 pol_path, xpi_path, ext_id = sys.argv[1], sys.argv[2], sys.argv[3]
 with open(pol_path) as f: pol = json.load(f)
@@ -167,7 +178,7 @@ PYEOF
   fi
   ok "New tab extension installed"
 else
-  warn "zerotrust-newtab.xpi not found — skipping"
+  warn "zerotrust-newtab.xpi not found — skipping (new tab page will use homepage fallback)"
 fi
 
 # ════════════════════════════════════════════════════════════
