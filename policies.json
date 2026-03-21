@@ -42,14 +42,6 @@
 
     },
 
-    "Homepage": {
-      "URL": "about:newtab",
-      "Locked": false,
-      "StartPage": "homepage"
-    },
-
-    "NewTabPage": false,
-
     "SearchEngines": {
       "Default": "DuckDuckGo",
       "PreventInstalls": false
