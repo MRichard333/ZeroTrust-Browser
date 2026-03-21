@@ -1,0 +1,107 @@
+/* ============================================================
+   ZeroTrust Browser — userChrome.css
+   Clean & light UI theme for Mountain OS
+   Place in: <profile>/chrome/userChrome.css
+   Requires: toolkit.legacyUserProfileCustomizations.stylesheets = true (set in user.js)
+   ============================================================ */
+
+/* ── Variables ─────────────────────────────────────────────── */
+:root {
+  --zt-accent:      #1a6ef5;
+  --zt-accent-dark: #1254c4;
+  --zt-bg:          #f5f6f8;
+  --zt-surface:     #ffffff;
+  --zt-border:      #dde1e7;
+  --zt-text:        #1a1c1e;
+  --zt-text-muted:  #6b7280;
+  --zt-radius:      6px;
+}
+
+/* ── Toolbar & nav bar ──────────────────────────────────────── */
+#navigator-toolbox {
+  background: var(--zt-surface) !important;
+  border-bottom: 1px solid var(--zt-border) !important;
+  box-shadow: none !important;
+}
+
+#nav-bar {
+  background: var(--zt-surface) !important;
+  border: none !important;
+  padding: 4px 8px !important;
+}
+
+/* ── URL bar ────────────────────────────────────────────────── */
+#urlbar {
+  background: var(--zt-bg) !important;
+  border: 1px solid var(--zt-border) !important;
+  border-radius: var(--zt-radius) !important;
+  box-shadow: none !important;
+}
+
+#urlbar:focus-within {
+  border-color: var(--zt-accent) !important;
+  box-shadow: 0 0 0 2px rgba(26,110,245,0.15) !important;
+}
+
+#urlbar-background {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* ── Tab bar ────────────────────────────────────────────────── */
+#TabsToolbar {
+  background: var(--zt-bg) !important;
+  border-bottom: 1px solid var(--zt-border) !important;
+}
+
+.tabbrowser-tab {
+  border-radius: var(--zt-radius) var(--zt-radius) 0 0 !important;
+}
+
+.tab-background {
+  border-radius: var(--zt-radius) var(--zt-radius) 0 0 !important;
+}
+
+.tabbrowser-tab[selected] .tab-background {
+  background: var(--zt-surface) !important;
+  border-top: 2px solid var(--zt-accent) !important;
+}
+
+.tabbrowser-tab:not([selected]):hover .tab-background {
+  background: rgba(26,110,245,0.07) !important;
+}
+
+/* ── Tab close button ───────────────────────────────────────── */
+.tab-close-button {
+  opacity: 0 !important;
+}
+.tabbrowser-tab:hover .tab-close-button {
+  opacity: 1 !important;
+}
+
+/* ── Toolbar buttons ────────────────────────────────────────── */
+toolbar .toolbarbutton-1:hover {
+  background: rgba(26,110,245,0.08) !important;
+  border-radius: var(--zt-radius) !important;
+}
+
+toolbar .toolbarbutton-1:active {
+  background: rgba(26,110,245,0.16) !important;
+}
+
+/* ── Sidebar (if open) ──────────────────────────────────────── */
+#sidebar-box {
+  background: var(--zt-bg) !important;
+  border-right: 1px solid var(--zt-border) !important;
+}
+
+/* ── Remove title bar clutter ───────────────────────────────── */
+#titlebar {
+  appearance: none !important;
+}
+
+/* ── Menu bar (if shown) ────────────────────────────────────── */
+#toolbar-menubar {
+  background: var(--zt-surface) !important;
+}

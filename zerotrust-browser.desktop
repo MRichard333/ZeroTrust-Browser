@@ -1,0 +1,14 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=ZeroTrust Browser
+GenericName=Web Browser
+Comment=ZeroTrust Browser — Powered by Mountain OS
+Exec=firefox --name "ZeroTrust Browser" %u
+Icon=/usr/share/icons/zerotrust-browser.png
+Terminal=false
+Categories=Network;WebBrowser;Security;
+MimeType=text/html;text/xml;application/xhtml+xml;application/xml;application/rss+xml;application/rdf+xml;x-scheme-handler/http;x-scheme-handler/https;x-scheme-handler/ftp;
+StartupNotify=true
+StartupWMClass=firefox
+Keywords=zerotrust;browser;security;mountain;
