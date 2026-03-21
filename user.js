@@ -3,15 +3,17 @@
 //  Mountain OS / mrichard333.com
 // ============================================================
 
-// ── STARTUP — opens newtab extension on launch and new tab ───
-user_pref("browser.startup.page", 0);                          // 0 = show newtab on startup
-user_pref("browser.newtabpage.enabled", true);                 // MUST be true for extension to override
+// ── STARTUP & NEW TAB ────────────────────────────────────────
+user_pref("browser.startup.page", 1);                          // 1 = always open homepage
+user_pref("browser.startup.homepage", "https://mrichard333.com/start");
+user_pref("browser.newtabpage.enabled", false);
 user_pref("browser.newtabpage.activity-stream.enabled", false);
+// Prevent Firefox from restoring previous session instead of homepage
+user_pref("browser.sessionstore.resume_from_crash", false);
+user_pref("browser.sessionstore.resume_session_once", false);
+user_pref("browser.sessionrestore.enabled", false);
 
-// ── EXTENSION SIGNATURE — allow unsigned local XPIs ──────────
-// Required so the locally-built zerotrust-newtab.xpi loads.
-// force_installed policy extensions are exempt from this in
-// theory, but Firefox ESR enforces it anyway for file:// URLs.
+// ── EXTENSION SIGNATURE ───────────────────────────────────────
 user_pref("xpinstall.signatures.required", false);
 user_pref("extensions.langpacks.signatures.required", false);
 

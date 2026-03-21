@@ -5,607 +5,273 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ZeroTrust Browser</title>
 <style>
-  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-  :root {
-    --bg:        #05070a;
-    --surface:   #0a0d10;
-    --surface2:  #0f1318;
-    --border:    #141c18;
-    --border-hi: #1e2e24;
-    --green:     #00e664;
-    --green-dim: #00c853;
-    --green-muted: rgba(0,230,100,0.08);
-    --green-glow:  rgba(0,230,100,0.15);
-    --text:      #dff0df;
-    --text-dim:  #8aab90;
-    --text-muted:#3a5040;
-  }
-
-  html, body {
-    height: 100%;
-    background: var(--bg);
-    color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    gap: 0;
-    padding: 0 20px 20px;
-    position: relative;
-    overflow-x: hidden;
-  }
-
-  /* ── Ambient background glow ── */
-  body::before {
-    content: '';
-    position: fixed;
-    top: -30vh;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 70vw;
-    height: 60vh;
-    background: radial-gradient(ellipse, rgba(0,200,83,0.045) 0%, transparent 70%);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  body::after {
-    content: '';
-    position: fixed;
-    bottom: -10vh;
-    right: -10vw;
-    width: 40vw;
-    height: 40vh;
-    background: radial-gradient(ellipse, rgba(0,200,83,0.025) 0%, transparent 70%);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .page { position: relative; z-index: 1; width: 100%; max-width: 680px; display: flex; flex-direction: column; align-items: center; gap: 32px; padding-top: 40px; }
-
-  /* ── Header ── */
-  .header { text-align: center; }
-
-  .logo {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    margin-bottom: 8px;
-  }
-
-  .logo svg { filter: drop-shadow(0 0 12px rgba(0,230,100,0.35)); }
-
-  .logo-text {
-    font-size: 26px;
-    font-weight: 800;
-    color: var(--text);
-    letter-spacing: -1px;
-    line-height: 1;
-  }
-
-  .logo-text em {
-    font-style: normal;
-    color: var(--green);
-    text-shadow: 0 0 20px rgba(0,230,100,0.4);
-  }
-
-  .tagline {
-    font-size: 11px;
-    color: var(--text-muted);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    font-weight: 500;
-  }
-
-  /* ── Clock ── */
-  .clock {
-    font-size: 52px;
-    font-weight: 200;
-    color: var(--text);
-    letter-spacing: -2px;
-    line-height: 1;
-    font-variant-numeric: tabular-nums;
-    text-shadow: 0 0 40px rgba(0,230,100,0.12);
-  }
-
-  .clock-date {
-    font-size: 12px;
-    color: var(--text-muted);
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    margin-top: 4px;
-    text-align: center;
-  }
-
-  /* ── Search ── */
-  .search-wrap {
-    width: 100%;
-    position: relative;
-  }
-
-  .search-bar {
-    display: flex;
-    align-items: center;
-    background: var(--surface);
-    border: 1px solid var(--border-hi);
-    border-radius: 14px;
-    padding: 14px 18px;
-    gap: 12px;
-    transition: border-color 0.2s, box-shadow 0.2s;
-  }
-
-  .search-bar:focus-within {
-    border-color: var(--green-dim);
-    box-shadow: 0 0 0 3px rgba(0,200,83,0.12), 0 4px 30px rgba(0,200,83,0.08);
-  }
-
-  .search-icon { color: var(--text-muted); flex-shrink: 0; }
-
-  .search-input {
-    flex: 1;
-    border: none;
-    outline: none;
-    font-size: 15px;
-    color: var(--text);
-    background: transparent;
-    caret-color: var(--green);
-    font-weight: 400;
-  }
-
-  .search-input::placeholder { color: var(--text-muted); }
-
-  .ddg-badge {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 10px;
-    font-weight: 600;
-    color: var(--text-muted);
-    background: var(--green-muted);
-    border: 1px solid var(--border-hi);
-    border-radius: 6px;
-    padding: 4px 9px;
-    white-space: nowrap;
-    flex-shrink: 0;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-  }
-
-  /* ── Tools section ── */
-  .tools-section { width: 100%; }
-
-  .section-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 12px;
-  }
-
-  .section-title {
-    font-size: 10px;
-    font-weight: 700;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-  }
-
-  .section-line {
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
-
-  .tools-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-  }
-
-  .tool-card {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 14px 12px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    text-decoration: none;
-    color: var(--text);
-    transition: border-color 0.2s, background 0.2s, transform 0.15s, box-shadow 0.2s;
-    position: relative;
-    overflow: hidden;
-  }
-
-  /* Scan line effect on top */
-  .tool-card::after {
-    content: '';
-    position: absolute;
-    top: 0; left: -100%;
-    width: 60%;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--green), transparent);
-    transition: left 0.4s ease;
-    opacity: 0;
-  }
-
-  .tool-card:hover {
-    border-color: rgba(0,230,100,0.35);
-    background: var(--surface2);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.4), 0 0 0 0px rgba(0,230,100,0.1);
-  }
-
-  .tool-card:hover::after {
-    left: 120%;
-    opacity: 1;
-  }
-
-  .tool-icon-wrap {
-    width: 32px;
-    height: 32px;
-    background: var(--green-muted);
-    border: 1px solid rgba(0,230,100,0.14);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    flex-shrink: 0;
-    transition: background 0.2s, border-color 0.2s;
-  }
-
-  .tool-card:hover .tool-icon-wrap {
-    background: rgba(0,230,100,0.13);
-    border-color: rgba(0,230,100,0.28);
-  }
-
-  .tool-name {
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--text);
-    line-height: 1.3;
-    letter-spacing: -0.1px;
-  }
-
-  .tool-desc {
-    font-size: 10px;
-    color: var(--text-muted);
-    line-height: 1.4;
-    margin-top: 1px;
-  }
-
-  /* ── Dashboard card ── */
-  .dashboard-card {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    width: 100%;
-    padding: 16px 20px;
-    background: var(--surface);
-    border: 1px solid var(--border-hi);
-    border-radius: 14px;
-    text-decoration: none;
-    color: var(--text);
-    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
-    position: relative;
-    overflow: hidden;
-  }
-
-  /* Permanent top shimmer on dashboard */
-  .dashboard-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent 5%, rgba(0,230,100,0.4) 50%, transparent 95%);
-  }
-
-  .dashboard-card:hover {
-    border-color: rgba(0,230,100,0.4);
-    background: var(--surface2);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 40px rgba(0,200,83,0.06);
-  }
-
-  .db-left { display: flex; align-items: center; gap: 14px; }
-
-  .db-icon {
-    width: 42px;
-    height: 42px;
-    background: var(--green-muted);
-    border: 1px solid rgba(0,230,100,0.18);
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    flex-shrink: 0;
-  }
-
-  .db-name {
-    font-size: 14px;
-    font-weight: 800;
-    color: var(--text);
-    letter-spacing: -0.3px;
-  }
-
-  .db-desc { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
-
-  .db-modules {
-    display: flex;
-    gap: 5px;
-    margin-top: 7px;
-    flex-wrap: wrap;
-  }
-
-  .db-pill {
-    font-size: 9px;
-    font-weight: 600;
-    color: var(--green-dim);
-    background: var(--green-muted);
-    border: 1px solid rgba(0,200,83,0.15);
-    border-radius: 4px;
-    padding: 2px 6px;
-    letter-spacing: 0.3px;
-    text-transform: uppercase;
-  }
-
-  .db-cta {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--bg);
-    background: var(--green);
-    border-radius: 8px;
-    padding: 9px 16px;
-    white-space: nowrap;
-    flex-shrink: 0;
-    letter-spacing: -0.2px;
-    transition: background 0.15s, box-shadow 0.15s;
-    box-shadow: 0 0 20px rgba(0,230,100,0.2);
-  }
-
-  .dashboard-card:hover .db-cta {
-    background: #00f070;
-    box-shadow: 0 0 28px rgba(0,230,100,0.35);
-  }
-
-  /* ── Status bar ── */
-  .status-bar {
-    display: flex;
-    align-items: center;
-    gap: 0;
-    padding: 0;
-    font-size: 11px;
-    color: var(--text-muted);
-    width: 100%;
-    justify-content: center;
-  }
-
-  .status-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 0 16px;
-  }
-
-  .status-item + .status-item {
-    border-left: 1px solid var(--border);
-  }
-
-  .status-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--green);
-    box-shadow: 0 0 8px var(--green);
-    animation: beat 2.5s ease-in-out infinite;
-  }
-
-  @keyframes beat {
-    0%, 100% { opacity: 1; box-shadow: 0 0 6px var(--green); }
-    50%       { opacity: 0.6; box-shadow: 0 0 14px var(--green); }
-  }
-
-  .status-time {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--text-dim);
-    font-variant-numeric: tabular-nums;
-  }
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --green:#00e664;--green-dim:#00c853;
+  --gm:rgba(0,230,100,0.08);
+  --text:#e2f0e2;--dim:#7a9e82;--muted:#3a5040;
+  --surface:rgba(8,14,10,0.82);--surface2:rgba(10,18,13,0.92);
+  --border:rgba(0,230,100,0.1);--border-hi:rgba(0,230,100,0.2);
+}
+html,body{height:100%;background:#060c09;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased;color:var(--text);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:100vh;overflow-y:auto;overflow-x:hidden;position:relative}
+canvas{position:fixed;inset:0;z-index:0;pointer-events:none}
+.aurora{position:fixed;top:0;left:0;right:0;height:45vh;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 30% -10%,rgba(0,200,83,0.13) 0%,transparent 70%),
+    radial-gradient(ellipse 60% 40% at 70% -5%,rgba(0,160,80,0.09) 0%,transparent 65%),
+    radial-gradient(ellipse 40% 30% at 50% 0%,rgba(0,230,100,0.06) 0%,transparent 60%);
+  animation:ashift 12s ease-in-out infinite alternate}
+@keyframes ashift{0%{opacity:.8;transform:scaleX(1)}100%{opacity:1;transform:scaleX(1.06)}}
+svg.mtn{position:fixed;inset:0;z-index:1;pointer-events:none}
+.page{position:relative;z-index:10;width:100%;max-width:700px;
+  display:flex;flex-direction:column;align-items:center;gap:22px;padding:28px 20px 32px}
+.logo{display:flex;align-items:center;gap:11px}
+.logo svg{filter:drop-shadow(0 0 12px rgba(0,230,100,0.45))}
+.lt{font-size:25px;font-weight:800;color:var(--text);letter-spacing:-.8px}
+.lt em{font-style:normal;color:var(--green);text-shadow:0 0 22px rgba(0,230,100,0.5)}
+.tl{font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;font-weight:500;text-align:center;margin-top:5px}
+.clk{font-size:60px;font-weight:100;color:var(--text);letter-spacing:-4px;line-height:1;
+  font-variant-numeric:tabular-nums;
+  text-shadow:0 0 60px rgba(0,230,100,0.15),0 2px 40px rgba(0,0,0,.6);text-align:center}
+.dt{font-size:11px;color:var(--dim);letter-spacing:2px;text-transform:uppercase;text-align:center;margin-top:4px}
+.sb{display:flex;align-items:center;width:100%;background:var(--surface);
+  border:1px solid var(--border-hi);border-radius:14px;padding:13px 17px;gap:11px;
+  transition:border-color .2s,box-shadow .2s}
+.sb:focus-within{border-color:var(--green-dim);box-shadow:0 0 0 3px rgba(0,200,83,.12),0 8px 32px rgba(0,0,0,.5)}
+.sico{color:var(--muted);flex-shrink:0}
+.inp{flex:1;border:none;outline:none;font-size:15px;color:var(--text);background:transparent;caret-color:var(--green)}
+.inp::placeholder{color:var(--muted)}
+.ddg{display:flex;align-items:center;gap:5px;font-size:9px;font-weight:700;color:var(--dim);
+  background:var(--gm);border:1px solid var(--border);border-radius:5px;padding:3px 8px;
+  white-space:nowrap;text-transform:uppercase;letter-spacing:.5px;flex-shrink:0}
+.sec-hdr{display:flex;align-items:center;gap:10px;width:100%}
+.sec-t{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;white-space:nowrap}
+.sec-l{flex:1;height:1px;background:var(--border)}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:100%;margin-top:10px}
+.card{display:flex;flex-direction:column;gap:9px;padding:13px 11px;background:var(--surface);
+  border:1px solid var(--border);border-radius:12px;text-decoration:none;color:var(--text);
+  transition:border-color .2s,background .2s,transform .15s,box-shadow .2s;
+  position:relative;overflow:hidden}
+.card::after{content:'';position:absolute;top:0;left:-100%;width:55%;height:1px;
+  background:linear-gradient(90deg,transparent,var(--green),transparent);
+  transition:left .45s ease;opacity:0}
+.card:hover{border-color:rgba(0,230,100,.35);background:var(--surface2);
+  transform:translateY(-2px);box-shadow:0 10px 30px rgba(0,0,0,.5)}
+.card:hover::after{left:120%;opacity:1}
+.iw{width:30px;height:30px;background:var(--gm);border:1px solid rgba(0,230,100,.14);
+  border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;
+  transition:background .2s,border-color .2s}
+.card:hover .iw{background:rgba(0,230,100,.14);border-color:rgba(0,230,100,.3)}
+.cn{font-size:10px;font-weight:700;color:var(--text);line-height:1.3}
+.cd{font-size:9px;color:var(--muted);line-height:1.4;margin-top:1px}
+.db{display:flex;align-items:center;justify-content:space-between;gap:14px;width:100%;
+  padding:15px 18px;background:var(--surface);border:1px solid var(--border-hi);
+  border-radius:14px;text-decoration:none;color:var(--text);
+  transition:border-color .2s,background .2s,box-shadow .2s;position:relative;overflow:hidden}
+.db::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent 5%,rgba(0,230,100,.5) 50%,transparent 95%)}
+.db:hover{border-color:rgba(0,230,100,.4);background:var(--surface2);
+  box-shadow:0 12px 40px rgba(0,0,0,.6)}
+.dl{display:flex;align-items:center;gap:13px}
+.di{width:40px;height:40px;background:var(--gm);border:1px solid rgba(0,230,100,.2);
+  border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.dn{font-size:13px;font-weight:800;color:var(--text);letter-spacing:-.3px}
+.ds{font-size:10px;color:var(--muted);margin-top:2px}
+.pills{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
+.pill{font-size:8px;font-weight:700;color:var(--green-dim);background:var(--gm);
+  border:1px solid rgba(0,200,83,.15);border-radius:3px;padding:2px 5px;letter-spacing:.3px;text-transform:uppercase}
+.cta{font-size:11px;font-weight:800;color:#060c09;background:var(--green);border-radius:8px;
+  padding:9px 15px;white-space:nowrap;flex-shrink:0;letter-spacing:-.2px;
+  transition:background .15s,box-shadow .15s;box-shadow:0 0 20px rgba(0,230,100,.25)}
+.db:hover .cta{background:#10ff70;box-shadow:0 0 32px rgba(0,230,100,.45)}
+.status{display:flex;align-items:center;font-size:10px;color:var(--muted)}
+.si2{display:flex;align-items:center;gap:5px;padding:0 14px}
+.si2+.si2{border-left:1px solid var(--border)}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--green);
+  box-shadow:0 0 7px var(--green);animation:beat 2.5s ease-in-out infinite}
+.stm{font-variant-numeric:tabular-nums;font-weight:600;color:var(--dim)}
+@keyframes beat{0%,100%{opacity:1;box-shadow:0 0 6px var(--green)}50%{opacity:.6;box-shadow:0 0 13px var(--green)}}
 </style>
 </head>
 <body>
+
+<canvas id="sc"></canvas>
+<div class="aurora"></div>
+
+<svg class="mtn" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="mf" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0a1f12"/><stop offset="100%" stop-color="#061009"/></linearGradient>
+    <linearGradient id="mm" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0d2818"/><stop offset="100%" stop-color="#071510"/></linearGradient>
+    <linearGradient id="mn" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#071a0e"/><stop offset="100%" stop-color="#040d07"/></linearGradient>
+    <linearGradient id="sn" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(200,240,210,0.55)"/><stop offset="100%" stop-color="rgba(100,160,120,0)"/></linearGradient>
+  </defs>
+  <ellipse cx="720" cy="620" rx="500" ry="80" fill="rgba(0,200,83,0.04)"/>
+  <ellipse cx="720" cy="620" rx="300" ry="50" fill="rgba(0,200,83,0.06)"/>
+  <path d="M0 680 L80 560 L160 620 L260 490 L360 580 L440 520 L540 460 L640 540 L720 470 L800 530 L880 460 L980 510 L1080 440 L1180 510 L1280 470 L1360 540 L1440 500 L1440 900 L0 900Z" fill="url(#mf)" opacity=".9"/>
+  <path d="M540 460 L490 490 L540 460 L590 485Z" fill="url(#sn)"/>
+  <path d="M720 470 L680 500 L720 470 L760 498Z" fill="url(#sn)"/>
+  <path d="M1080 440 L1030 475 L1080 440 L1130 472Z" fill="url(#sn)"/>
+  <path d="M0 720 L60 630 L140 680 L220 600 L320 650 L420 560 L500 620 L580 540 L680 610 L760 550 L860 600 L960 520 L1060 590 L1160 530 L1260 600 L1360 550 L1440 580 L1440 900 L0 900Z" fill="url(#mm)" opacity=".95"/>
+  <path d="M420 560 L380 590 L420 560 L465 585Z" fill="url(#sn)" opacity=".8"/>
+  <path d="M580 540 L545 570 L580 540 L618 567Z" fill="url(#sn)" opacity=".8"/>
+  <path d="M960 520 L920 555 L960 520 L1002 553Z" fill="url(#sn)" opacity=".8"/>
+  <path d="M0 720 L60 630 L140 680 L220 600 L320 650 L420 560 L500 620 L580 540 L680 610 L760 550 L860 600 L960 520 L1060 590 L1160 530 L1260 600 L1360 550 L1440 580" fill="none" stroke="rgba(0,200,83,0.12)" stroke-width="2"/>
+  <path d="M0 800 L100 710 L200 760 L300 690 L420 740 L520 660 L620 720 L720 650 L820 710 L920 640 L1020 700 L1120 650 L1220 710 L1320 660 L1440 720 L1440 900 L0 900Z" fill="url(#mn)"/>
+  <path d="M0 800 L100 710 L200 760 L300 690 L420 740 L520 660 L620 720 L720 650 L820 710 L920 640 L1020 700 L1120 650 L1220 710 L1320 660 L1440 720" fill="none" stroke="rgba(0,200,83,0.08)" stroke-width="1.5"/>
+  <path d="M0 860 Q360 820 720 840 Q1080 860 1440 830 L1440 900 L0 900Z" fill="#020806" opacity=".8"/>
+  <ellipse cx="360" cy="820" rx="200" ry="20" fill="rgba(0,200,83,0.025)"/>
+  <ellipse cx="1080" cy="810" rx="180" ry="18" fill="rgba(0,200,83,0.025)"/>
+</svg>
+
 <div class="page">
 
-  <!-- Header -->
-  <div class="header">
+  <div style="text-align:center">
     <div class="logo">
-      <svg width="34" height="34" viewBox="0 0 36 36" fill="none">
+      <svg width="32" height="32" viewBox="0 0 36 36" fill="none">
         <rect width="36" height="36" rx="9" fill="#00c853"/>
-        <path d="M18 6L8 11V19.5C8 25.3 12.5 30.6 18 32C23.5 30.6 28 25.3 28 19.5V11L18 6Z" fill="#05070a" opacity="0.95"/>
+        <path d="M18 6L8 11V19.5C8 25.3 12.5 30.6 18 32C23.5 30.6 28 25.3 28 19.5V11L18 6Z" fill="#060c09" opacity=".95"/>
         <path d="M14.5 18.5L17 21L22 15.5" stroke="#00e664" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
-      <span class="logo-text">Zero<em>Trust</em> Browser</span>
+      <span class="lt">Zero<em>Trust</em> Browser</span>
     </div>
-    <div class="tagline">Mountain OS · Secured by ZeroTrust</div>
+    <div class="tl">Mountain OS · Secured by ZeroTrust</div>
   </div>
 
-  <!-- Clock -->
   <div style="text-align:center">
-    <div class="clock" id="clock">00:00</div>
-    <div class="clock-date" id="date"></div>
+    <div class="clk" id="clk">00:00</div>
+    <div class="dt" id="dt"></div>
   </div>
 
-  <!-- Search -->
-  <div class="search-wrap">
-    <div class="search-bar">
-      <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
-      </svg>
-      <input
-        class="search-input"
-        type="text"
-        placeholder="Search or enter address..."
-        autofocus
-        id="search"
-        onkeydown="handleSearch(event)"
-      />
-      <span class="ddg-badge">
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        DuckDuckGo
-      </span>
+  <div class="sb">
+    <svg class="sico" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+    </svg>
+    <input class="inp" type="text" id="search" placeholder="Search or enter address...">
+    <span class="ddg">
+      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      DuckDuckGo
+    </span>
+  </div>
+
+  <div style="width:100%">
+    <div class="sec-hdr">
+      <span class="sec-t">Security &amp; Utility Tools</span>
+      <span class="sec-l"></span>
+    </div>
+    <div class="grid">
+      <a class="card" href="https://mrichard333.com/extension">
+        <div class="iw">🛡️</div><div><div class="cn">ZeroTrust Extension</div><div class="cd">Real-time protection</div></div>
+      </a>
+      <a class="card" href="https://mrichard333.com/Cyberhealth">
+        <div class="iw">🩺</div><div><div class="cn">Cyberhealth Audit</div><div class="cd">Digital hygiene check</div></div>
+      </a>
+      <a class="card" href="https://mrichard333.com/password-check">
+        <div class="iw">⚡</div><div><div class="cn">Password Entropy</div><div class="cd">Brute-force simulation</div></div>
+      </a>
+      <a class="card" href="https://mrichard333.com/link-scanner">
+        <div class="iw">🔗</div><div><div class="cn">URL Forensics</div><div class="cd">Deep link analysis</div></div>
+      </a>
+      <a class="card" href="https://mrichard333.com/files-compressor">
+        <div class="iw">🗜️</div><div><div class="cn">Files Compressor</div><div class="cd">Local, no uploads</div></div>
+      </a>
+      <a class="card" href="https://mrichard333.com/seo-analyser">
+        <div class="iw">📈</div><div><div class="cn">SEO Analyser</div><div class="cd">20+ automated checks</div></div>
+      </a>
+      <a class="card" href="https://mrichard333.com/webtools">
+        <div class="iw">🔍</div><div><div class="cn">View All Free Tools</div><div class="cd">More tools</div></div>
+      </a>
+      <a class="card" href="https://mrichard333.com">
+        <div class="iw">🏠</div><div><div class="cn">Home</div><div class="cd">Fraud prevention</div></div>
+      </a>
     </div>
   </div>
 
-  <!-- Tools -->
-  <div class="tools-section">
-    <div class="section-header">
-      <span class="section-title">Security &amp; Utility Tools</span>
-      <span class="section-line"></span>
-    </div>
-    <div class="tools-grid">
-
-      <a class="tool-card" href="https://mrichard333.com/extension">
-        <div class="tool-icon-wrap">🛡️</div>
-        <div>
-          <div class="tool-name">ZeroTrust Extension</div>
-          <div class="tool-desc">Real-time threat protection</div>
-        </div>
-      </a>
-
-      <a class="tool-card" href="https://mrichard333.com/Cyberhealth">
-        <div class="tool-icon-wrap">🩺</div>
-        <div>
-          <div class="tool-name">Cyberhealth Audit</div>
-          <div class="tool-desc">Digital hygiene check</div>
-        </div>
-      </a>
-
-      <a class="tool-card" href="https://mrichard333.com/password-check">
-        <div class="tool-icon-wrap">⚡</div>
-        <div>
-          <div class="tool-name">Password Entropy</div>
-          <div class="tool-desc">Brute-force simulation</div>
-        </div>
-      </a>
-
-      <a class="tool-card" href="https://mrichard333.com/link-scanner">
-        <div class="tool-icon-wrap">🔗</div>
-        <div>
-          <div class="tool-name">URL Forensics</div>
-          <div class="tool-desc">Deep link analysis</div>
-        </div>
-      </a>
-
-      <a class="tool-card" href="https://mrichard333.com/files-compressor">
-        <div class="tool-icon-wrap">🗜️</div>
-        <div>
-          <div class="tool-name">Files Compressor</div>
-          <div class="tool-desc">Local, no uploads</div>
-        </div>
-      </a>
-
-      <a class="tool-card" href="https://mrichard333.com/seo-analyser">
-        <div class="tool-icon-wrap">📈</div>
-        <div>
-          <div class="tool-name">SEO Analyser</div>
-          <div class="tool-desc">20+ automated checks</div>
-        </div>
-      </a>
-
-      <a class="tool-card" href="https://mrichard333.com/webtools">
-        <div class="tool-icon-wrap">🔍</div>
-        <div>
-          <div class="tool-name">View All Free Tools</div>
-          <div class="tool-desc">More tools</div>
-        </div>
-      </a>
-
-      <a class="tool-card" href="https://mrichard333.com">
-        <div class="tool-icon-wrap">🏠</div>
-        <div>
-          <div class="tool-name">Home</div>
-          <div class="tool-desc">Fraud prevention</div>
-        </div>
-      </a>
-
-    </div>
-  </div>
-
-  <!-- Dashboard -->
-  <a class="dashboard-card" href="https://mrichard333.com/dashboard">
-    <div class="db-left">
-      <div class="db-icon">📊</div>
+  <a class="db" href="https://mrichard333.com/dashboard">
+    <div class="dl">
+      <div class="di">📊</div>
       <div>
-        <div class="db-name">Security Dashboard</div>
-        <div class="db-desc">Full suite · login required</div>
-        <div class="db-modules">
-          <span class="db-pill">Dark Web</span>
-          <span class="db-pill">CVE Tracker</span>
-          <span class="db-pill">Identity Breach</span>
-          <span class="db-pill">Vendor Risk</span>
-          <span class="db-pill">+6 more</span>
+        <div class="dn">Security Dashboard</div>
+        <div class="ds">Full suite · login required</div>
+        <div class="pills">
+          <span class="pill">Dark Web</span>
+          <span class="pill">CVE Tracker</span>
+          <span class="pill">Identity Breach</span>
+          <span class="pill">Vendor Risk</span>
+          <span class="pill">+6 more</span>
         </div>
       </div>
     </div>
-    <span class="db-cta">Open Dashboard →</span>
+    <span class="cta">Open Dashboard →</span>
   </a>
 
-  <!-- Status -->
-  <div class="status-bar">
-    <div class="status-item">
-      <span class="status-dot"></span>
-      <span>ZeroTrust Active</span>
-    </div>
-    <div class="status-item">
-      <span class="status-time" id="status-time"></span>
-    </div>
-    <div class="status-item">
-      <span>Mountain OS</span>
-    </div>
+  <div class="status">
+    <div class="si2"><span class="dot"></span><span>ZeroTrust Active</span></div>
+    <div class="si2"><span class="stm" id="st"></span></div>
+    <div class="si2"><span>Mountain OS</span></div>
   </div>
 
 </div>
+
 <script>
-  const DAYS   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-
-  function tick() {
-    const n = new Date();
-    const h = String(n.getHours()).padStart(2,'0');
-    const m = String(n.getMinutes()).padStart(2,'0');
-    document.getElementById('clock').textContent = h + ':' + m;
-    document.getElementById('date').textContent =
-      DAYS[n.getDay()] + ', ' + MONTHS[n.getMonth()] + ' ' + n.getDate();
-    document.getElementById('status-time').textContent =
-      h + ':' + m + ':' + String(n.getSeconds()).padStart(2,'0');
+(function() {
+  // Stars
+  var cv = document.getElementById('sc');
+  var cx = cv.getContext('2d');
+  function rs() {
+    cv.width = window.innerWidth;
+    cv.height = window.innerHeight;
+    ds();
   }
+  function ds() {
+    cx.clearRect(0, 0, cv.width, cv.height);
+    var n = Math.floor(cv.width * cv.height / 3000);
+    for (var i = 0; i < n; i++) {
+      var x = Math.random() * cv.width;
+      var y = Math.random() * cv.height * 0.65;
+      var r = Math.random() * 0.9 + 0.1;
+      var a = Math.random() * 0.6 + 0.1;
+      cx.beginPath();
+      cx.arc(x, y, r, 0, Math.PI * 2);
+      cx.fillStyle = 'rgba(180,240,200,' + a + ')';
+      cx.fill();
+    }
+  }
+  rs();
+  window.addEventListener('resize', rs);
 
+  // Clock
+  var DD = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var MM = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  function tick() {
+    var n = new Date();
+    var h = String(n.getHours()).padStart(2, '0');
+    var m = String(n.getMinutes()).padStart(2, '0');
+    var s = String(n.getSeconds()).padStart(2, '0');
+    document.getElementById('clk').textContent = h + ':' + m;
+    document.getElementById('dt').textContent = DD[n.getDay()] + ', ' + MM[n.getMonth()] + ' ' + n.getDate();
+    document.getElementById('st').textContent = h + ':' + m + ':' + s;
+  }
   tick();
   setInterval(tick, 1000);
 
-  function handleSearch(e) {
+  // Search
+  document.getElementById('search').addEventListener('keydown', function(e) {
     if (e.key !== 'Enter') return;
-    const q = e.target.value.trim();
+    var q = e.target.value.trim();
     if (!q) return;
-    const isUrl = /^https?:\/\//.test(q) || /^[\w-]+\.[\w]{2,}(\/|$)/.test(q);
+    var isUrl = /^https?:\/\//.test(q) || /^[\w-]+\.[\w]{2,}(\/|$)/.test(q);
     window.location.href = isUrl
       ? (q.startsWith('http') ? q : 'https://' + q)
       : 'https://duckduckgo.com/?q=' + encodeURIComponent(q);
-  }
+  });
 
   document.getElementById('search').focus();
+})();
 </script>
+
 </body>
 </html>
