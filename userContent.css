@@ -1,0 +1,201 @@
+/* ============================================================
+   ZeroTrust Browser — userContent.css  v2.2
+   Injects theme into websites and Firefox internal pages
+   Place in: <profile>/chrome/userContent.css
+
+   Sections:
+     [ABOUT]        Firefox internal pages (about:newtab, about:config, etc.)
+     [SCROLLBARS]   Dark scrollbars on all websites
+     [GLOBAL]       Optional: force dark background on un-themed sites
+   ============================================================ */
+
+/* ── [ABOUT] — Firefox internal pages ────────────────────── */
+
+/* about:config */
+@-moz-document url("about:config") {
+  :root {
+    background-color: #080a0c !important;
+    color: #d4e8d4 !important;
+  }
+
+  #warningButton {
+    background: #141719 !important;
+    border: 1px solid #243028 !important;
+    color: #00c853 !important;
+    border-radius: 6px !important;
+    padding: 8px 16px !important;
+  }
+
+  #warningButton:hover {
+    background: #1a1e20 !important;
+    box-shadow: 0 0 0 2px rgba(0,200,83,0.15) !important;
+  }
+
+  #about-config-search {
+    background: #141719 !important;
+    border: 1px solid #1c2020 !important;
+    color: #d4e8d4 !important;
+    border-radius: 6px !important;
+    caret-color: #00c853 !important;
+  }
+
+  #about-config-search:focus {
+    border-color: #00c853 !important;
+    box-shadow: 0 0 0 2px rgba(0,200,83,0.15) !important;
+  }
+
+  tree,
+  treechildren,
+  .table-widget-body {
+    background: #0e1012 !important;
+    color: #d4e8d4 !important;
+  }
+
+  treechildren::-moz-tree-row(selected),
+  .table-widget-body .table-widget-row:hover {
+    background: #141719 !important;
+  }
+
+  treechildren::-moz-tree-cell-text {
+    color: #d4e8d4 !important;
+  }
+
+  treechildren::-moz-tree-cell-text(modified) {
+    color: #00c853 !important;
+    font-weight: 500 !important;
+  }
+}
+
+/* about:policies */
+@-moz-document url("about:policies") {
+  body {
+    background: #080a0c !important;
+    color: #d4e8d4 !important;
+    font-family: system-ui, sans-serif !important;
+  }
+
+  table {
+    background: #0e1012 !important;
+    border-collapse: collapse !important;
+    border-radius: 8px !important;
+    overflow: hidden !important;
+    width: 100% !important;
+  }
+
+  th {
+    background: #141719 !important;
+    color: #00c853 !important;
+    font-weight: 500 !important;
+    padding: 10px 14px !important;
+    text-align: left !important;
+    border-bottom: 1px solid #1c2020 !important;
+  }
+
+  td {
+    padding: 8px 14px !important;
+    border-bottom: 1px solid #1c2020 !important;
+    color: #d4e8d4 !important;
+  }
+
+  tr:hover td {
+    background: #141719 !important;
+  }
+
+  a {
+    color: #00c853 !important;
+  }
+}
+
+/* about:addons */
+@-moz-document url("about:addons") {
+  :root {
+    --card-background: #0e1012 !important;
+    --in-content-page-background: #080a0c !important;
+    --in-content-text-color: #d4e8d4 !important;
+    --in-content-border-color: #1c2020 !important;
+    --in-content-button-background: #141719 !important;
+    --in-content-button-background-hover: #1a1e20 !important;
+    --in-content-primary-button-background: #00c853 !important;
+    --in-content-primary-button-background-hover: #00a844 !important;
+    --in-content-link-color: #00c853 !important;
+  }
+}
+
+/* about:preferences */
+@-moz-document url("about:preferences"),
+               url-prefix("about:preferences#") {
+  :root {
+    --in-content-page-background: #080a0c !important;
+    --in-content-text-color: #d4e8d4 !important;
+    --in-content-border-color: #1c2020 !important;
+    --in-content-box-background: #0e1012 !important;
+    --in-content-box-background-hover: #141719 !important;
+    --in-content-box-background-active: #1a1e20 !important;
+    --in-content-button-background: #141719 !important;
+    --in-content-button-background-hover: #1a1e20 !important;
+    --in-content-primary-button-background: #00c853 !important;
+    --in-content-primary-button-background-hover: #00a844 !important;
+    --in-content-link-color: #00c853 !important;
+    --in-content-accent-color: #00c853 !important;
+  }
+}
+
+/* about:newtab / about:home */
+@-moz-document url("about:newtab"), url("about:home") {
+  body {
+    background: #080a0c !important;
+  }
+}
+
+/* about:downloads */
+@-moz-document url("about:downloads") {
+  body {
+    background: #080a0c !important;
+    color: #d4e8d4 !important;
+  }
+
+  richlistitem {
+    background: #0e1012 !important;
+    border: 1px solid #1c2020 !important;
+    border-radius: 6px !important;
+    margin: 4px 0 !important;
+  }
+
+  richlistitem:hover {
+    background: #141719 !important;
+    border-color: #243028 !important;
+  }
+}
+
+/* about:privatebrowsing */
+@-moz-document url("about:privatebrowsing") {
+  body {
+    background: #080a0c !important;
+  }
+
+  .wordmark svg,
+  .wordmark {
+    filter: hue-rotate(120deg) saturate(2) brightness(0.9) !important;
+  }
+}
+
+/* ── [SCROLLBARS] — Dark scrollbars on all websites ──────── */
+@-moz-document regexp(".*") {
+  * {
+    scrollbar-color: #243028 #0e1012 !important;
+    scrollbar-width: thin !important;
+  }
+}
+
+/* ── [GLOBAL] ─────────────────────────────────────────────── */
+/* Uncomment the block below to force dark backgrounds on ALL
+   websites that don't set their own background. This is optional
+   and will break some sites with light-only designs.
+
+@-moz-document regexp(".*") {
+  :root:not([style*="background"]) {
+    background-color: #080a0c !important;
+    color: #d4e8d4 !important;
+  }
+}
+*/

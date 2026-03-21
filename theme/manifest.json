@@ -1,0 +1,66 @@
+{
+  "manifest_version": 2,
+  "name": "ZeroTrust Dark Matrix",
+  "version": "2.2.0",
+  "description": "The official dark matrix theme for ZeroTrust Browser. Deep blacks, neon green accents, and a clean security-focused aesthetic.",
+  "author": "MRichard333 (https://mrichard333.com)",
+  "homepage_url": "https://mrichard333.com/browser",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "zerotrust-theme@mrichard333.com",
+      "strict_min_version": "109.0"
+    }
+  },
+  "icons": {
+    "48": "icon.png",
+    "96": "icon.png"
+  },
+  "theme": {
+    "colors": {
+      "frame":                        "#080a0c",
+      "frame_inactive":               "#060809",
+      "tab_background_text":          "#4a6050",
+      "tab_selected_text":            "#d4e8d4",
+      "tab_line":                     "#00c853",
+      "tab_loading":                  "#00c853",
+      "toolbar":                      "#080a0c",
+      "toolbar_text":                 "#d4e8d4",
+      "toolbar_field":                "#141719",
+      "toolbar_field_text":           "#d4e8d4",
+      "toolbar_field_border":         "#1c2020",
+      "toolbar_field_focus":          "#0e1012",
+      "toolbar_field_text_focus":     "#d4e8d4",
+      "toolbar_field_border_focus":   "#00c853",
+      "toolbar_field_highlight":      "#00c85330",
+      "toolbar_field_highlight_text": "#d4e8d4",
+      "toolbar_top_separator":        "#00000000",
+      "toolbar_bottom_separator":     "#1c2020",
+      "toolbar_vertical_separator":   "#1c2020",
+      "tab_background_separator":     "#1c2020",
+      "icons":                        "#4a6050",
+      "icons_attention":              "#00c853",
+      "button_background_hover":      "#141719",
+      "button_background_active":     "#1a1e20",
+      "popup":                        "#141719",
+      "popup_text":                   "#d4e8d4",
+      "popup_border":                 "#243028",
+      "popup_highlight":              "#1a1e20",
+      "popup_highlight_text":         "#00c853",
+      "sidebar":                      "#0e1012",
+      "sidebar_text":                 "#d4e8d4",
+      "sidebar_highlight":            "#141719",
+      "sidebar_highlight_text":       "#00c853",
+      "sidebar_border":               "#1c2020",
+      "ntp_background":               "#080a0c",
+      "ntp_card_background":          "#0e1012",
+      "ntp_text":                     "#d4e8d4"
+    },
+    "images": {
+      "theme_frame": "images/frame.png"
+    },
+    "properties": {
+      "color_scheme": "dark",
+      "content_color_scheme": "dark"
+    }
+  }
+}
