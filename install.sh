@@ -200,13 +200,11 @@ ok "Profile: $PROFILE_PATH"
 section "user.js"
 
 [[ -f "$SCRIPT_DIR/user.js" ]] || err "user.js not found"
-
-# Replace the placeholder path with the real NEWTAB_URL
-sed "s|file:///home/cybersec/.mozilla/zerotrust-newtab/newtab.html|$NEWTAB_URL|g" \
-  "$SCRIPT_DIR/user.js" > "$PROFILE_PATH/user.js"
-
-chown "$REAL_USER":"$REAL_USER" "$PROFILE_PATH/user.js"
-ok "user.js installed (homepage → $NEWTAB_URL)"
+DEST_JS="$PROFILE_PATH/user.js"
+[[ -f "$DEST_JS" ]] && cp "$DEST_JS" "$DEST_JS.bak.$(date +%Y%m%d%H%M%S)" && warn "Backed up existing user.js"
+cp "$SCRIPT_DIR/user.js" "$DEST_JS"
+chown "$REAL_USER":"$REAL_USER" "$DEST_JS"
+ok "user.js installed"
 
 # ════════════════════════════════════════════════════════════
 # 7. userChrome.css
@@ -320,7 +318,7 @@ echo ""
 echo "  ──────────────────────────────────────"
 echo -e "  ${GREEN}ZeroTrust Browser setup complete!${NC}"
 echo ""
-echo "  · Newtab page   → $NEWTAB_DIR"
+echo "  · Homepage      → https://mrichard333.com/start"
 echo "  · policies.json → $POLICIES_DIR"
 echo "  · user.js       → $PROFILE_PATH"
 echo "  · extensions/   → $EXT_DIR"
