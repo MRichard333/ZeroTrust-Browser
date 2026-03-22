@@ -29,7 +29,7 @@
       },
       "zerotrust-newtab@mrichard333.com": {
         "installation_mode": "force_installed",
-        "install_url": "https://addons.mozilla.org/firefox/downloads/file/placeholder/zerotrust-newtab.xpi"
+        "install_url": "https://addons.mozilla.org/firefox/downloads/file/4735684/1577d4607491497a80c7-1.1.0.xpi"
       },
       "zerotrust-mountain-theme@mrichard333.com": {
         "installation_mode": "force_installed",
@@ -51,7 +51,9 @@
     "OverrideFirstRunPage": "",
     "OverridePostUpdatePage": "",
     "Permissions": {
-      "Autoplay": { "Default": "block-audio" }
+      "Autoplay": {
+        "Default": "block-audio"
+      }
     },
     "UserMessaging": {
       "WhatsNew": false,
@@ -84,8 +86,13 @@
       "Cryptomining": true,
       "Fingerprinting": true
     },
-    "EncryptedMediaExtensions": { "Enabled": true, "Locked": false },
-    "PopupBlocking": { "Default": true },
+    "EncryptedMediaExtensions": {
+      "Enabled": true,
+      "Locked": false
+    },
+    "PopupBlocking": {
+      "Default": true
+    },
     "Cookies": {
       "Behavior": "reject-tracker-and-partition-foreign",
       "BehaviorPrivateBrowsing": "reject-tracker-and-partition-foreign"
