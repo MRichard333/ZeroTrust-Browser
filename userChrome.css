@@ -1,8 +1,11 @@
 /* ============================================================
-   ZeroTrust Browser — userChrome.css  v3.0  "Obsidian"
+   ZeroTrust Browser — userChrome.css  v3.1  "Obsidian"
    Premium browser chrome — deep blacks, refined hierarchy
    GPU-safe: transitions on opacity + background-color only
    ============================================================ */
+
+/* MUST be first rule — enables XUL scrollbar selectors */
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
 
 :root {
   /* ── Accent ── */
@@ -422,7 +425,6 @@ menuitem[checked="true"]::before { color: var(--zt-a) !important; }
 /* ══════════════════════════════
    SCROLLBARS
 ══════════════════════════════ */
-@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
 
 scrollbar                      { background: transparent !important; -moz-appearance: none !important; }
 scrollbar[orient="vertical"]   { width: 5px !important; min-width: 5px !important; }

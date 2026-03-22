@@ -26,10 +26,6 @@
       "{b86e4813-687a-43e6-ab65-0bde4ab75758}": {
         "installation_mode": "force_installed",
         "install_url": "https://addons.mozilla.org/firefox/downloads/latest/localcdn-fork-of-decentraleyes/latest.xpi"
-      },
-      "zerotrust-theme@mrichard333.com": {
-        "installation_mode": "force_installed",
-        "install_url": "https://raw.githubusercontent.com/MRichard333/ZeroTrust-Browser/main/zerotrust-theme.xpi"
       }
     },
     "SearchEngines": {
@@ -37,7 +33,7 @@
       "PreventInstalls": false
     },
     "SearchBar": "unified",
-    "DisplayBookmarksToolbar": "always",
+    "DisplayBookmarksToolbar": "never",
     "DisablePocket": true,
     "DisableTelemetry": true,
     "DisableFirefoxStudies": true,
@@ -65,11 +61,11 @@
       "Pocket": false,
       "SponsoredPocket": false,
       "Snippets": false,
-      "Locked": true
+      "Locked": false
     },
     "DNSOverHTTPS": {
       "Enabled": true,
-      "ProviderURL": "https://dns.quad9.net/dns-query",
+      "ProviderURL": "https://cloudflare-dns.com/dns-query",
       "Locked": false
     },
     "HttpsOnlyMode": "force_enabled",
@@ -99,25 +95,6 @@
       "StartPage": "homepage"
     },
     "OverrideFirstRunPage": "",
-    "OverridePostUpdatePage": "",
-    "ManagedBookmarks": [
-      {
-        "name": "\ud83d\udee1\ufe0f ZeroTrust",
-        "url": "https://mrichard333.com/start"
-      },
-      {
-        "name": "\ud83e\udd86 Duck.ai",
-        "url": "https://duck.ai"
-      },
-      {
-        "name": "\ud83d\udcca Dashboard",
-        "url": "https://mrichard333.com/dashboard"
-      }
-    ],
-    "NoDefaultBookmarks": true,
-    "NewTabPage": "https://mrichard333.com/start",
-    "WeatherWidget": {
-      "Enabled": false
-    }
+    "OverridePostUpdatePage": ""
   }
 }

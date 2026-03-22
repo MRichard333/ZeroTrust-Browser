@@ -2,572 +2,764 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>ZeroTrust Browser</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZeroTrust — New Tab</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap');
+
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 
 :root{
-  --a:    #3ecf8e;
-  --a2:   #28a06e;
-  --ag:   rgba(62,207,142,0.10);
-  --al:   rgba(62,207,142,0.22);
-  --bg:   #050807;
-  --s1:   rgba(11,15,13,0.82);
-  --s2:   rgba(17,24,19,0.95);
-  --b1:   rgba(35,48,40,0.9);
-  --b2:   rgba(46,64,50,0.9);
-  --t0:   #d6eed8;
-  --t1:   rgba(214,238,216,0.45);
-  --t2:   rgba(214,238,216,0.18);
-  --mono: ui-monospace,'SF Mono','Cascadia Code',monospace;
-  --sans: -apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',system-ui,sans-serif;
+  --ink:#0a0d0b;
+  --paper:#0d1410;
+  --acid:#00ff6a;
+  --acid-dim:#00cc55;
+  --acid-ghost:rgba(0,255,106,0.07);
+  --acid-glow:rgba(0,255,106,0.18);
+  --wire:rgba(0,255,106,0.12);
+  --wire-hi:rgba(0,255,106,0.25);
+  --text:#d4ead9;
+  --dim:#4a7055;
+  --muted:#1e3028;
+  --card:rgba(13,20,16,0.9);
 }
 
-html,body{
-  height:100%;background:var(--bg);overflow:hidden;
-  font-family:var(--sans);-webkit-font-smoothing:antialiased;
-  color:var(--t0);
-}
+html,body{height:100%;overflow:hidden;background:var(--ink)}
+
 body{
-  display:flex;flex-direction:column;align-items:center;
-  min-height:100vh;overflow-y:auto;overflow-x:hidden;position:relative;
+  font-family:'Space Mono',monospace;
+  color:var(--text);
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  min-height:100vh;position:relative;
+  overflow-y:auto;overflow-x:hidden;
 }
 
-/* ── Canvas ── */
-#c{position:fixed;inset:0;z-index:0;pointer-events:none}
+/* ── SVG BACKGROUND LAYER ── */
+.bg-svg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
 
-/* ── Mountains ── */
-.mts{position:fixed;inset:0;z-index:1;pointer-events:none}
+/* ── NOISE TEXTURE ── */
+.noise{
+  position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.03;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
 
-/* ── Aurora ── */
-.aurora{
+/* ── SCAN LINES ── */
+.scanlines{
   position:fixed;inset:0;z-index:2;pointer-events:none;
-  background:
-    radial-gradient(ellipse 130% 65% at 10% -20%, rgba(20,140,80,0.16) 0%,transparent 60%),
-    radial-gradient(ellipse 90%  55% at 75% -15%, rgba(40,160,90,0.10) 0%,transparent 55%),
-    radial-gradient(ellipse 70%  40% at 50%   2%, rgba(62,207,142,0.06) 0%,transparent 50%);
-  animation:aurora 18s ease-in-out infinite alternate;
+  background:repeating-linear-gradient(
+    0deg,
+    transparent,transparent 2px,
+    rgba(0,0,0,0.04) 2px,rgba(0,0,0,0.04) 4px
+  );
 }
-@keyframes aurora{0%{opacity:.6}100%{opacity:1}}
 
-/* ── Layout ── */
+/* ── CORNER CUTS ── */
+.corner{position:fixed;z-index:3;pointer-events:none}
+.corner svg{display:block}
+.corner-tl{top:0;left:0}
+.corner-tr{top:0;right:0;transform:scaleX(-1)}
+.corner-bl{bottom:0;left:0;transform:scaleY(-1)}
+.corner-br{bottom:0;right:0;transform:scale(-1)}
+
+/* ── PAGE WRAPPER ── */
 .page{
   position:relative;z-index:10;
   width:100%;max-width:720px;
-  padding:32px 24px 180px;
-  display:flex;flex-direction:column;align-items:center;
-  gap:18px;
-}
-
-/* ── Logo ── */
-.logo{display:flex;align-items:center;gap:12px}
-.shield{width:38px;height:38px;flex-shrink:0;filter:drop-shadow(0 0 16px rgba(62,207,142,0.5))}
-.brand{font-size:22px;font-weight:700;letter-spacing:-0.8px;line-height:1}
-.brand b{color:var(--a)}
-.sub{font-family:var(--mono);font-size:9px;color:var(--t2);letter-spacing:3px;text-transform:uppercase;margin-top:3px}
-
-/* ── Clock ── */
-.clock{
-  font-family:var(--mono);font-size:72px;font-weight:400;
-  letter-spacing:-6px;line-height:1;text-align:center;
-  color:var(--t0);
-}
-.date{
-  font-family:var(--mono);font-size:10px;color:var(--t1);
-  letter-spacing:2.5px;text-transform:uppercase;
-  text-align:center;margin-top:5px;
-}
-
-/* ── Search ── */
-.search{
-  width:100%;display:flex;align-items:center;gap:10px;
-  background:var(--s1);border:1px solid var(--b1);
-  border-radius:16px;padding:13px 18px;
-  transition:border-color .15s,background-color .12s;
-  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-}
-.search:focus-within{
-  border-color:var(--al);
-  background:var(--s2);
-}
-.search svg{color:var(--t2);flex-shrink:0}
-.search input{
-  flex:1;background:transparent;border:none;outline:none;
-  font-family:var(--sans);font-size:15px;color:var(--t0);
-  caret-color:var(--a);
-}
-.search input::placeholder{color:var(--t2)}
-.ddg{
-  font-family:var(--mono);font-size:8px;letter-spacing:.6px;
-  text-transform:uppercase;color:var(--t1);
-  background:var(--ag);border:1px solid var(--al);
-  border-radius:5px;padding:3px 8px;
-  display:flex;align-items:center;gap:4px;flex-shrink:0;
-}
-
-/* ── Section label ── */
-.sec{
-  width:100%;display:flex;align-items:center;gap:10px;
-  margin-top:2px;
-}
-.sec-lbl{
-  font-family:var(--mono);font-size:8px;letter-spacing:2.5px;
-  text-transform:uppercase;color:var(--t2);white-space:nowrap;
-}
-.sec-rule{flex:1;height:1px;background:linear-gradient(90deg,var(--b1),transparent)}
-
-/* ── Grid ── */
-.grid{width:100%;display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-
-/* ── Card ── */
-.card{
-  position:relative;overflow:hidden;
-  border-radius:14px;text-decoration:none;color:var(--t0);
-  background:var(--s1);border:1px solid var(--b1);
-  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
-  transition:border-color .15s,background-color .12s,transform .15s;
   display:flex;flex-direction:column;
+  align-items:center;gap:20px;
+  padding:30px 20px 36px;
 }
-.card:hover{
-  border-color:var(--b2);
-  background:var(--s2);
-  transform:translateY(-3px);
+
+/* ── HEADER ── */
+.header{
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  position:relative;width:100%;
 }
-/* Colored bar */
-.bar{height:2px;width:100%;flex-shrink:0}
-/* Icon glow on hover */
-.card::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:48px;
-  opacity:0;transition:opacity .15s;pointer-events:none;
-  background:var(--card-glow,transparent);
+
+.logo-row{display:flex;align-items:center;gap:14px}
+
+.shield-wrap{
+  position:relative;
+  filter:drop-shadow(0 0 18px rgba(0,255,106,0.5));
+  animation:shieldpulse 4s ease-in-out infinite;
 }
-.card:hover::before{opacity:1}
-
-.body{padding:13px 12px 12px;display:flex;flex-direction:column;gap:8px;flex:1}
-.ico{
-  width:36px;height:36px;border-radius:9px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:17px;flex-shrink:0;
-  transition:transform .15s;
+@keyframes shieldpulse{
+  0%,100%{filter:drop-shadow(0 0 16px rgba(0,255,106,0.45))}
+  50%{filter:drop-shadow(0 0 30px rgba(0,255,106,0.7))}
 }
-.card:hover .ico{transform:scale(1.1) rotate(-3deg)}
 
-.name{font-size:11px;font-weight:600;line-height:1.3}
-.desc{font-family:var(--mono);font-size:8.5px;color:var(--t2);line-height:1.5;margin-top:1px}
-
-/* Card colors */
-.c-green{--card-glow:linear-gradient(180deg,rgba(62,207,142,.10),transparent)}
-.c-green .bar{background:linear-gradient(90deg,#28a06e,#3ecf8e)}
-.c-green .ico{background:rgba(62,207,142,.10);border:1px solid rgba(62,207,142,.20)}
-.c-green:hover{border-color:rgba(62,207,142,.35)!important}
-.c-green .name{color:#7de8b4}
-
-.c-blue{--card-glow:linear-gradient(180deg,rgba(88,170,255,.10),transparent)}
-.c-blue .bar{background:linear-gradient(90deg,#2060c8,#4898ff)}
-.c-blue .ico{background:rgba(88,170,255,.10);border:1px solid rgba(88,170,255,.20)}
-.c-blue:hover{border-color:rgba(88,170,255,.35)!important}
-.c-blue .name{color:#88c4ff}
-
-.c-amber{--card-glow:linear-gradient(180deg,rgba(240,180,40,.10),transparent)}
-.c-amber .bar{background:linear-gradient(90deg,#c07800,#f0b428)}
-.c-amber .ico{background:rgba(240,180,40,.10);border:1px solid rgba(240,180,40,.20)}
-.c-amber:hover{border-color:rgba(240,180,40,.35)!important}
-.c-amber .name{color:#ffd060}
-
-.c-violet{--card-glow:linear-gradient(180deg,rgba(160,110,255,.10),transparent)}
-.c-violet .bar{background:linear-gradient(90deg,#6030c0,#a060ff)}
-.c-violet .ico{background:rgba(160,110,255,.10);border:1px solid rgba(160,110,255,.20)}
-.c-violet:hover{border-color:rgba(160,110,255,.35)!important}
-.c-violet .name{color:#c090ff}
-
-.c-teal{--card-glow:linear-gradient(180deg,rgba(20,200,220,.10),transparent)}
-.c-teal .bar{background:linear-gradient(90deg,#0888a0,#14c8dc)}
-.c-teal .ico{background:rgba(20,200,220,.10);border:1px solid rgba(20,200,220,.20)}
-.c-teal:hover{border-color:rgba(20,200,220,.35)!important}
-.c-teal .name{color:#60e0f4}
-
-.c-coral{--card-glow:linear-gradient(180deg,rgba(255,100,80,.10),transparent)}
-.c-coral .bar{background:linear-gradient(90deg,#b83828,#ff5840)}
-.c-coral .ico{background:rgba(255,100,80,.10);border:1px solid rgba(255,100,80,.20)}
-.c-coral:hover{border-color:rgba(255,100,80,.35)!important}
-.c-coral .name{color:#ff9080}
-
-.c-dim .bar{background:linear-gradient(90deg,#1d2b20,#2e4032)}
-.c-dim .ico{background:rgba(46,64,50,.5);border:1px solid var(--b1)}
-
-/* ── Dashboard banner ── */
-.dash{
-  width:100%;display:flex;align-items:center;justify-content:space-between;gap:16px;
-  padding:18px 22px;background:var(--s1);border:1px solid var(--b1);
-  border-radius:16px;text-decoration:none;color:var(--t0);
-  position:relative;overflow:hidden;
-  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-  transition:border-color .15s,transform .15s;
+.brand{
+  font-family:'Syne',sans-serif;
+  font-size:28px;font-weight:800;
+  color:var(--text);letter-spacing:-1.5px;
+  line-height:1;
 }
-.dash::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,transparent 5%,var(--al) 50%,transparent 95%);
-}
-.dash:hover{border-color:var(--al);transform:translateY(-2px)}
-.dash-l{display:flex;align-items:center;gap:16px}
-.dash-ico{
-  width:48px;height:48px;border-radius:12px;flex-shrink:0;
-  background:var(--ag);border:1px solid var(--al);
-  display:flex;align-items:center;justify-content:center;font-size:22px;
-}
-.dash-name{font-size:15px;font-weight:700;letter-spacing:-.3px}
-.dash-sub{font-family:var(--mono);font-size:9.5px;color:var(--t1);margin-top:3px}
-.pills{display:flex;gap:4px;margin-top:7px;flex-wrap:wrap}
-.pill{
-  font-family:var(--mono);font-size:7.5px;letter-spacing:.4px;text-transform:uppercase;
-  color:rgba(62,207,142,.85);background:var(--ag);
-  border:1px solid var(--al);border-radius:3px;padding:2px 6px;
-}
-.dash-btn{
-  font-family:var(--mono);font-size:10.5px;font-weight:500;
-  color:#050807;background:var(--a);border-radius:9px;
-  padding:12px 20px;white-space:nowrap;flex-shrink:0;
-  transition:background-color .15s,transform .12s;
-}
-.dash:hover .dash-btn{background:#5adaa0;transform:scale(1.03)}
+.brand em{font-style:normal;color:var(--acid)}
 
-/* ── Status ── */
-.status{
+.tagline{
+  font-size:9px;color:var(--dim);
+  letter-spacing:3px;text-transform:uppercase;
+  font-family:'Space Mono',monospace;
+}
+
+/* horizontal rule with glitch mark */
+.divider{
+  width:100%;height:1px;
+  background:linear-gradient(90deg, transparent 0%, var(--wire-hi) 20%, var(--acid) 50%, var(--wire-hi) 80%, transparent 100%);
+  position:relative;overflow:visible;
+}
+.divider::after{
+  content:'';position:absolute;
+  top:-3px;left:50%;transform:translateX(-50%);
+  width:6px;height:6px;
+  background:var(--acid);
+  clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%);
+  box-shadow:0 0 12px var(--acid);
+}
+
+/* ── CLOCK ── */
+.clock-block{text-align:center;position:relative}
+
+.clk{
+  font-family:'Syne',sans-serif;
+  font-size:72px;font-weight:700;
+  color:var(--text);letter-spacing:-5px;line-height:1;
+  font-variant-numeric:tabular-nums;
+  text-shadow:0 0 80px rgba(0,255,106,0.12),0 2px 40px rgba(0,0,0,.7);
+  position:relative;
+}
+.clk::before{
+  content:attr(data-t);
+  position:absolute;inset:0;
+  color:var(--acid);
+  clip-path:inset(0 0 70% 0);
+  opacity:.15;
+  transform:translateY(-3px) skewX(-1deg);
+  pointer-events:none;
+}
+
+.dt{
+  font-size:10px;color:var(--dim);
+  letter-spacing:2.5px;text-transform:uppercase;
+  margin-top:5px;
+}
+
+/* ── SEARCH ── */
+.search-wrap{
+  width:100%;position:relative;
+}
+
+.sb{
   display:flex;align-items:center;
-  font-family:var(--mono);font-size:9px;color:var(--t2);
-  letter-spacing:.5px;
+  width:100%;
+  background:var(--card);
+  border:1px solid var(--wire-hi);
+  border-radius:2px;
+  padding:14px 18px;gap:12px;
+  transition:border-color .2s,box-shadow .2s;
+  clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,16px 100%,0 calc(100% - 16px));
 }
-.seg{display:flex;align-items:center;gap:6px;padding:0 14px}
-.seg+.seg{border-left:1px solid var(--b1)}
+.sb:focus-within{
+  border-color:var(--acid-dim);
+  box-shadow:0 0 0 1px rgba(0,204,85,.15),0 0 40px rgba(0,255,106,.06);
+}
+
+.sico{color:var(--dim);flex-shrink:0;transition:color .2s}
+.sb:focus-within .sico{color:var(--acid)}
+
+.inp{
+  flex:1;border:none;outline:none;
+  font-size:14px;color:var(--text);
+  background:transparent;
+  caret-color:var(--acid);
+  font-family:'Space Mono',monospace;
+}
+.inp::placeholder{color:var(--dim)}
+
+.ddg-badge{
+  display:flex;align-items:center;gap:5px;
+  font-size:8px;font-weight:700;color:var(--dim);
+  background:var(--acid-ghost);
+  border:1px solid var(--wire);
+  border-radius:1px;padding:3px 8px;
+  white-space:nowrap;text-transform:uppercase;letter-spacing:1px;
+  flex-shrink:0;
+  font-family:'Space Mono',monospace;
+}
+
+/* corner cut indicator */
+.cut-indicator{
+  position:absolute;right:0;top:0;
+  width:16px;height:16px;
+  background:var(--acid);
+  clip-path:polygon(100% 0,100% 100%,0 0);
+  opacity:.5;
+}
+
+/* ── SECTION HEADER ── */
+.sec-hdr{
+  display:flex;align-items:center;gap:10px;width:100%;
+}
+.sec-t{
+  font-size:8px;font-weight:700;color:var(--dim);
+  text-transform:uppercase;letter-spacing:2px;
+  white-space:nowrap;
+  font-family:'Space Mono',monospace;
+}
+.sec-l{flex:1;height:1px;background:var(--wire)}
+.sec-num{
+  font-size:8px;color:var(--muted);
+  font-family:'Space Mono',monospace;
+  letter-spacing:1px;
+}
+
+/* ── TOOL GRID ── */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:6px;width:100%;
+}
+
+.card{
+  display:flex;flex-direction:column;gap:10px;
+  padding:12px 11px;
+  background:var(--card);
+  border:1px solid var(--wire);
+  border-radius:1px;
+  text-decoration:none;color:var(--text);
+  transition:border-color .15s,background .15s,transform .12s;
+  position:relative;overflow:hidden;
+  clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%);
+}
+
+.card::before{
+  content:'';position:absolute;
+  top:0;right:0;
+  width:10px;height:10px;
+  background:var(--wire-hi);
+  clip-path:polygon(100% 0,100% 100%,0 0);
+  transition:background .15s;
+}
+.card:hover::before{background:var(--acid);opacity:.7}
+
+.card:hover{
+  border-color:var(--wire-hi);
+  background:rgba(0,255,106,0.04);
+  transform:translateY(-2px);
+}
+
+/* scan line on hover */
+.card::after{
+  content:'';position:absolute;
+  top:-100%;left:0;right:0;height:50%;
+  background:linear-gradient(0deg,transparent,rgba(0,255,106,0.04),transparent);
+  transition:top .4s ease;pointer-events:none;
+}
+.card:hover::after{top:150%}
+
+.iw{
+  width:28px;height:28px;
+  background:var(--acid-ghost);
+  border:1px solid var(--wire);
+  border-radius:1px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;flex-shrink:0;
+  transition:border-color .15s;
+}
+.card:hover .iw{border-color:var(--wire-hi)}
+
+.cn{font-size:9px;font-weight:700;color:var(--text);line-height:1.3;font-family:'Syne',sans-serif}
+.cd{font-size:8px;color:var(--dim);line-height:1.4;margin-top:1px;font-family:'Space Mono',monospace}
+
+/* ── DASHBOARD BANNER ── */
+.db{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  width:100%;
+  padding:14px 18px;
+  background:var(--card);
+  border:1px solid var(--wire-hi);
+  border-radius:1px;
+  text-decoration:none;color:var(--text);
+  transition:border-color .2s,background .2s;
+  position:relative;overflow:hidden;
+  clip-path:polygon(0 0,calc(100% - 20px) 0,100% 20px,100% 100%,20px 100%,0 calc(100% - 20px));
+}
+
+.db::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent 5%,var(--acid) 50%,transparent 95%);
+  opacity:.4;
+}
+.db::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent 5%,var(--acid) 50%,transparent 95%);
+  opacity:.2;
+}
+
+.db:hover{
+  border-color:rgba(0,255,106,.35);
+  background:rgba(0,255,106,0.03);
+}
+
+.db-corner-tr{
+  position:absolute;top:0;right:0;
+  width:20px;height:20px;
+  background:var(--acid-dim);
+  clip-path:polygon(100% 0,100% 100%,0 0);
+  opacity:.6;
+}
+.db-corner-bl{
+  position:absolute;bottom:0;left:0;
+  width:20px;height:20px;
+  background:var(--wire-hi);
+  clip-path:polygon(0 0,100% 100%,0 100%);
+}
+
+.db-left{display:flex;align-items:center;gap:13px}
+.db-icon{
+  width:42px;height:42px;
+  background:var(--acid-ghost);
+  border:1px solid var(--wire-hi);
+  border-radius:1px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;flex-shrink:0;
+}
+.db-name{font-size:14px;font-weight:800;color:var(--text);letter-spacing:-.3px;font-family:'Syne',sans-serif}
+.db-sub{font-size:9px;color:var(--dim);margin-top:2px;font-family:'Space Mono',monospace}
+
+.pills{display:flex;gap:3px;margin-top:6px;flex-wrap:wrap}
+.pill{
+  font-size:7px;font-weight:700;color:var(--acid-dim);
+  background:var(--acid-ghost);
+  border:1px solid rgba(0,204,85,.12);
+  border-radius:1px;padding:2px 5px;
+  letter-spacing:.5px;text-transform:uppercase;
+  font-family:'Space Mono',monospace;
+}
+
+.cta{
+  font-size:10px;font-weight:700;color:var(--ink);
+  background:var(--acid);
+  border-radius:1px;
+  padding:9px 14px;
+  white-space:nowrap;flex-shrink:0;
+  letter-spacing:1px;text-transform:uppercase;
+  transition:background .15s,box-shadow .15s;
+  box-shadow:0 0 20px rgba(0,255,106,.2);
+  font-family:'Space Mono',monospace;
+  clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));
+}
+.db:hover .cta{background:#10ff70;box-shadow:0 0 32px rgba(0,255,106,.4)}
+
+/* ── STATUS BAR ── */
+.statusbar{
+  display:flex;align-items:center;gap:0;
+  width:100%;
+  background:var(--card);
+  border:1px solid var(--wire);
+  border-radius:1px;
+  overflow:hidden;
+  font-size:9px;
+  font-family:'Space Mono',monospace;
+}
+
+.sbitem{
+  display:flex;align-items:center;gap:6px;
+  padding:7px 14px;color:var(--dim);
+  border-right:1px solid var(--wire);
+  flex:1;white-space:nowrap;
+}
+.sbitem:last-child{border-right:none}
+
 .dot{
-  width:5px;height:5px;border-radius:50%;
-  background:var(--a);box-shadow:0 0 6px var(--a);
-  animation:pulse 3s ease-in-out infinite;
+  width:5px;height:5px;
+  background:var(--acid);
+  clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%);
+  box-shadow:0 0 8px var(--acid);
+  flex-shrink:0;
+  animation:dotblink 2.5s ease-in-out infinite;
 }
-.stime{color:var(--t1)}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+@keyframes dotblink{0%,100%{opacity:1;box-shadow:0 0 6px var(--acid)}50%{opacity:.5;box-shadow:0 0 14px var(--acid)}}
 
-/* ── Entrance ── */
-@keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-.page>*{animation:up .5s ease both}
-.page>*:nth-child(1){animation-delay:.05s}
-.page>*:nth-child(2){animation-delay:.12s}
-.page>*:nth-child(3){animation-delay:.18s}
-.page>*:nth-child(4){animation-delay:.24s}
-.page>*:nth-child(5){animation-delay:.28s}
-.page>*:nth-child(6){animation-delay:.32s}
-.page>*:nth-child(7){animation-delay:.36s}
-.card:nth-child(1){animation-delay:.28s}.card:nth-child(2){animation-delay:.32s}
-.card:nth-child(3){animation-delay:.36s}.card:nth-child(4){animation-delay:.40s}
-.card:nth-child(5){animation-delay:.44s}.card:nth-child(6){animation-delay:.48s}
-.card:nth-child(7){animation-delay:.52s}.card:nth-child(8){animation-delay:.56s}
+.st{font-variant-numeric:tabular-nums;color:var(--dim)}
 
-@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/* ── PRIVACY PANEL ── */
+.privacy-row{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:6px;width:100%;
+}
+
+.priv-card{
+  background:var(--card);
+  border:1px solid var(--wire);
+  border-radius:1px;
+  padding:10px 12px;
+  display:flex;align-items:center;gap:10px;
+  position:relative;overflow:hidden;
+}
+.priv-card::before{
+  content:'';position:absolute;top:0;left:0;
+  width:3px;height:100%;
+  background:var(--acid);opacity:.5;
+}
+
+.priv-ico{font-size:16px;flex-shrink:0}
+.priv-label{font-size:8px;font-weight:700;color:var(--text);font-family:'Syne',sans-serif;line-height:1.2}
+.priv-val{font-size:8px;color:var(--acid);font-family:'Space Mono',monospace;margin-top:1px}
+
+/* ── FLOATING GRID DOTS ── */
+.grid-dots{
+  position:fixed;inset:0;z-index:1;pointer-events:none;
+  background-image:
+    radial-gradient(circle,rgba(0,255,106,0.08) 1px,transparent 1px);
+  background-size:40px 40px;
+  mask-image:radial-gradient(ellipse 70% 60% at 50% 50%,black 30%,transparent 80%);
+}
 </style>
 </head>
 <body>
-<canvas id="c"></canvas>
-<div class="aurora"></div>
 
-<!-- Mountain SVG -->
-<svg class="mts" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMax slice"
-     xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+<!-- BACKGROUND SVG -->
+<svg class="bg-svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="ga" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#0a160c"/><stop offset="100%" stop-color="#050907"/>
+    <radialGradient id="glow1" cx="30%" cy="20%" r="50%">
+      <stop offset="0%" stop-color="rgba(0,255,106,0.07)"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="80%" cy="70%" r="40%">
+      <stop offset="0%" stop-color="rgba(0,200,80,0.05)"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </radialGradient>
+    <linearGradient id="horizon" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0a1f12"/>
+      <stop offset="100%" stop-color="#040906"/>
     </linearGradient>
-    <linearGradient id="gb" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#0d1e10"/><stop offset="100%" stop-color="#060c08"/>
+    <linearGradient id="ridgeline" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#071508"/>
+      <stop offset="100%" stop-color="#020602"/>
     </linearGradient>
-    <linearGradient id="gc" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#091408"/><stop offset="100%" stop-color="#040a06"/>
-    </linearGradient>
-    <linearGradient id="gd" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#060e07"/><stop offset="100%" stop-color="#030605"/>
-    </linearGradient>
-    <linearGradient id="snow" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="rgba(200,240,210,0.90)"/>
-      <stop offset="55%" stop-color="rgba(140,210,160,0.45)"/>
-      <stop offset="100%" stop-color="rgba(62,207,142,0)"/>
-    </linearGradient>
-    <linearGradient id="snowB" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="rgba(175,230,190,0.60)"/>
-      <stop offset="100%" stop-color="rgba(62,207,142,0)"/>
-    </linearGradient>
-    <filter id="f2"><feGaussianBlur stdDeviation="2.5"/></filter>
+    <filter id="blur1"><feGaussianBlur stdDeviation="2"/></filter>
   </defs>
 
-  <!-- Range 1: far -->
-  <path d="M0 695 L72 548 L162 618 L260 482 L368 576 L458 510
-    L562 442 L666 534 L740 454 L822 524 L906 444 L1002 500
-    L1108 422 L1212 496 L1308 456 L1388 530 L1440 490 L1440 900 L0 900Z"
-    fill="url(#ga)" opacity=".93"/>
-  <path d="M562 442 L502 490 L562 442 L622 486Z" fill="url(#snow)"/>
-  <path d="M740 454 L686 500 L740 454 L794 496Z" fill="url(#snow)"/>
-  <path d="M1108 422 L1048 470 L1108 422 L1168 466Z" fill="url(#snow)"/>
-  <path d="M562 442 L528 464 L562 442 L596 462Z" fill="url(#snowB)"/>
-  <path d="M740 454 L704 476 L740 454 L776 474Z" fill="url(#snowB)"/>
+  <!-- ambient glow orbs -->
+  <ellipse cx="250" cy="200" rx="350" ry="250" fill="url(#glow1)"/>
+  <ellipse cx="1100" cy="650" rx="300" ry="220" fill="url(#glow2)"/>
 
-  <!-- Range 2: mid -->
-  <path d="M0 730 L60 628 L146 684 L232 598 L336 652 L436 556 L520 620
-    L600 538 L700 614 L780 548 L880 602 L980 516 L1080 590
-    L1180 528 L1282 604 L1382 548 L1440 584 L1440 900 L0 900Z"
-    fill="url(#gb)" opacity=".97"/>
-  <path d="M436 556 L392 594 L436 556 L482 590Z" fill="url(#snow)" opacity=".85"/>
-  <path d="M600 538 L560 574 L600 538 L640 570Z" fill="url(#snow)" opacity=".85"/>
-  <path d="M980 516 L938 556 L980 516 L1024 552Z" fill="url(#snow)" opacity=".88"/>
-  <path d="M0 730 L60 628 L146 684 L232 598 L336 652 L436 556 L520 620
-           L600 538 L700 614 L780 548 L880 602 L980 516 L1080 590
-           L1180 528 L1282 604 L1382 548 L1440 584"
-    fill="none" stroke="rgba(62,207,142,0.12)" stroke-width="1.2"/>
+  <!-- geometric accent shapes — top right -->
+  <polygon points="1380,0 1440,0 1440,60" fill="rgba(0,255,106,0.06)"/>
+  <polygon points="1300,0 1440,0 1440,140" fill="rgba(0,255,106,0.03)"/>
+  <line x1="1440" y1="0" x2="1300" y2="0" stroke="rgba(0,255,106,0.15)" stroke-width="1"/>
+  <line x1="1440" y1="0" x2="1440" y2="140" stroke="rgba(0,255,106,0.1)" stroke-width="1"/>
 
-  <!-- Range 3: near -->
-  <path d="M0 810 L100 710 L206 762 L312 688 L436 744 L536 656 L640 722
-    L740 646 L840 714 L940 640 L1040 704 L1140 652 L1242 714 L1344 658 L1440 720
-    L1440 900 L0 900Z"
-    fill="url(#gc)"/>
-  <path d="M0 810 L100 710 L206 762 L312 688 L436 744 L536 656 L640 722
-    L740 646 L840 714 L940 640 L1040 704 L1140 652 L1242 714 L1344 658 L1440 720"
-    fill="none" stroke="rgba(62,207,142,0.07)" stroke-width="1"/>
+  <!-- geometric accent shapes — bottom left -->
+  <polygon points="0,900 140,900 0,760" fill="rgba(0,255,106,0.05)"/>
+  <polygon points="0,900 60,900 0,840" fill="rgba(0,255,106,0.07)"/>
 
-  <!-- Valley -->
-  <path d="M0 868 Q250 842 500 856 Q740 870 984 847 Q1218 834 1440 852
-    L1440 900 L0 900Z" fill="url(#gd)" opacity=".98"/>
-  <ellipse cx="720" cy="858" rx="260" ry="18" fill="rgba(62,207,142,0.025)" filter="url(#f2)"/>
+  <!-- cross-hatch accent lines -->
+  <line x1="0" y1="0" x2="120" y2="120" stroke="rgba(0,255,106,0.04)" stroke-width="1"/>
+  <line x1="0" y1="30" x2="90" y2="120" stroke="rgba(0,255,106,0.03)" stroke-width="1"/>
+  <line x1="1440" y1="900" x2="1320" y2="780" stroke="rgba(0,255,106,0.04)" stroke-width="1"/>
+
+  <!-- mountain silhouettes — back range -->
+  <path d="M0 700 L80 590 L160 640 L260 510 L360 590 L440 530 L540 475
+           L640 555 L720 480 L800 545 L880 475 L980 520 L1080 450
+           L1180 520 L1280 478 L1360 545 L1440 505 L1440 900 L0 900Z"
+        fill="url(#horizon)" opacity=".9"/>
+
+  <!-- snow caps back -->
+  <path d="M540 475 L510 500 L540 475 L572 498Z" fill="rgba(200,240,210,0.35)"/>
+  <path d="M720 480 L695 507 L720 480 L748 505Z" fill="rgba(200,240,210,0.35)"/>
+  <path d="M1080 450 L1048 480 L1080 450 L1113 477Z" fill="rgba(200,240,210,0.35)"/>
+
+  <!-- ridge line -->
+  <path d="M540 475 L510 500 L540 475 L572 498Z" fill="none" stroke="rgba(0,255,106,0.1)" stroke-width="1" filter="url(#blur1)"/>
+
+  <!-- mountain silhouettes — mid range -->
+  <path d="M0 740 L60 650 L140 695 L220 615 L320 665 L420 575
+           L500 630 L580 555 L680 625 L760 568 L860 615
+           L960 535 L1060 605 L1160 545 L1260 615 L1360 565 L1440 595
+           L1440 900 L0 900Z"
+        fill="url(#ridgeline)" opacity=".97"/>
+  <!-- snow caps mid -->
+  <path d="M420 575 L393 600 L420 575 L449 598Z" fill="rgba(190,230,200,0.28)" />
+  <path d="M580 555 L556 580 L580 555 L606 578Z" fill="rgba(190,230,200,0.28)"/>
+  <path d="M960 535 L933 563 L960 535 L988 561Z" fill="rgba(190,230,200,0.28)"/>
+
+  <!-- ridge glow mid -->
+  <path d="M0 740 L60 650 L140 695 L220 615 L320 665 L420 575
+           L500 630 L580 555 L680 625 L760 568 L860 615
+           L960 535 L1060 605 L1160 545 L1260 615 L1360 565 L1440 595"
+        fill="none" stroke="rgba(0,255,106,0.09)" stroke-width="1.5"/>
+
+  <!-- foreground mountains -->
+  <path d="M0 810 L100 720 L200 775 L300 700 L420 755 L520 670
+           L620 730 L720 655 L820 720 L920 648 L1020 710 L1120 658
+           L1220 718 L1320 668 L1440 725 L1440 900 L0 900Z"
+        fill="#030907"/>
+  <!-- foreground ridge -->
+  <path d="M0 810 L100 720 L200 775 L300 700 L420 755 L520 670
+           L620 730 L720 655 L820 720 L920 648 L1020 710 L1120 658
+           L1220 718 L1320 668 L1440 725"
+        fill="none" stroke="rgba(0,255,106,0.06)" stroke-width="1"/>
+
+  <!-- base fog -->
+  <path d="M0 870 Q360 840 720 858 Q1080 876 1440 848 L1440 900 L0 900Z" fill="#010503" opacity=".85"/>
+
+  <!-- hexagonal accent — upper left -->
+  <polygon points="60,80 90,63 120,80 120,112 90,129 60,112"
+    fill="none" stroke="rgba(0,255,106,0.08)" stroke-width="1"/>
+  <polygon points="68,84 90,71 112,84 112,108 90,121 68,108"
+    fill="rgba(0,255,106,0.03)"/>
+
+  <!-- hexagonal accent — lower right -->
+  <polygon points="1340,790 1370,773 1400,790 1400,822 1370,839 1340,822"
+    fill="none" stroke="rgba(0,255,106,0.06)" stroke-width="1"/>
+
+  <!-- circuit-line accent — upper right -->
+  <g stroke="rgba(0,255,106,0.07)" stroke-width="1" fill="none">
+    <path d="M1200 40 L1240 40 L1240 80 L1280 80"/>
+    <circle cx="1200" cy="40" r="3" fill="rgba(0,255,106,0.15)"/>
+    <circle cx="1280" cy="80" r="3" fill="rgba(0,255,106,0.15)"/>
+    <path d="M1260 20 L1300 20 L1300 55"/>
+    <circle cx="1260" cy="20" r="2" fill="rgba(0,255,106,0.1)"/>
+    <circle cx="1300" cy="55" r="2" fill="rgba(0,255,106,0.1)"/>
+  </g>
+
+  <!-- circuit-line accent — lower left -->
+  <g stroke="rgba(0,255,106,0.06)" stroke-width="1" fill="none">
+    <path d="M140 860 L140 820 L180 820 L180 800"/>
+    <circle cx="140" cy="860" r="2.5" fill="rgba(0,255,106,0.12)"/>
+    <circle cx="180" cy="800" r="2.5" fill="rgba(0,255,106,0.12)"/>
+  </g>
 </svg>
 
+<!-- OVERLAYS -->
+<div class="grid-dots"></div>
+<div class="noise"></div>
+<div class="scanlines"></div>
+
+<!-- CORNER CUTS -->
+<div class="corner corner-tl">
+  <svg width="80" height="80" viewBox="0 0 80 80">
+    <polygon points="0,0 80,0 0,80" fill="rgba(0,255,106,0.04)"/>
+    <line x1="0" y1="0" x2="80" y2="0" stroke="rgba(0,255,106,0.15)" stroke-width="1"/>
+    <line x1="0" y1="0" x2="0" y2="80" stroke="rgba(0,255,106,0.15)" stroke-width="1"/>
+    <line x1="80" y1="0" x2="0" y2="80" stroke="rgba(0,255,106,0.08)" stroke-width="1"/>
+  </svg>
+</div>
+<div class="corner corner-tr">
+  <svg width="80" height="80" viewBox="0 0 80 80">
+    <polygon points="0,0 80,0 0,80" fill="rgba(0,255,106,0.04)"/>
+    <line x1="0" y1="0" x2="80" y2="0" stroke="rgba(0,255,106,0.15)" stroke-width="1"/>
+    <line x1="0" y1="0" x2="0" y2="80" stroke="rgba(0,255,106,0.15)" stroke-width="1"/>
+    <line x1="80" y1="0" x2="0" y2="80" stroke="rgba(0,255,106,0.08)" stroke-width="1"/>
+  </svg>
+</div>
+<div class="corner corner-bl">
+  <svg width="80" height="80" viewBox="0 0 80 80">
+    <polygon points="0,0 80,0 0,80" fill="rgba(0,255,106,0.04)"/>
+    <line x1="0" y1="0" x2="80" y2="0" stroke="rgba(0,255,106,0.15)" stroke-width="1"/>
+    <line x1="0" y1="0" x2="0" y2="80" stroke="rgba(0,255,106,0.15)" stroke-width="1"/>
+    <line x1="80" y1="0" x2="0" y2="80" stroke="rgba(0,255,106,0.08)" stroke-width="1"/>
+  </svg>
+</div>
+<div class="corner corner-br">
+  <svg width="80" height="80" viewBox="0 0 80 80">
+    <polygon points="0,0 80,0 0,80" fill="rgba(0,255,106,0.04)"/>
+    <line x1="0" y1="0" x2="80" y2="0" stroke="rgba(0,255,106,0.15)" stroke-width="1"/>
+    <line x1="0" y1="0" x2="0" y2="80" stroke="rgba(0,255,106,0.15)" stroke-width="1"/>
+    <line x1="80" y1="0" x2="0" y2="80" stroke="rgba(0,255,106,0.08)" stroke-width="1"/>
+  </svg>
+</div>
+
+<!-- PAGE -->
 <div class="page">
 
-  <!-- Logo -->
-  <div style="text-align:center">
-    <div class="logo">
-      <svg class="shield" viewBox="0 0 40 40" fill="none" aria-hidden="true">
-        <rect width="40" height="40" rx="10" fill="#1d2b20"/>
-        <rect width="40" height="40" rx="10" fill="#3ecf8e" fill-opacity=".15"/>
-        <path d="M20 6L8 12V21C8 28 13.5 34.2 20 36C26.5 34.2 32 28 32 21V12L20 6Z"
-              fill="#050807" fill-opacity=".95"/>
-        <path d="M15.5 20.5L18.8 23.8L25.5 17"
-              stroke="#3ecf8e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo-row">
+      <div class="shield-wrap">
+        <svg width="36" height="36" viewBox="0 0 40 40" fill="none">
+          <!-- outer hex frame -->
+          <polygon points="20,2 36,11 36,29 20,38 4,29 4,11" fill="none" stroke="rgba(0,255,106,0.35)" stroke-width="1.5"/>
+          <!-- filled shield -->
+          <path d="M20 7L10 12V22C10 28 14.5 33.5 20 35C25.5 33.5 30 28 30 22V12L20 7Z" fill="rgba(0,255,106,0.12)"/>
+          <path d="M20 7L10 12V22C10 28 14.5 33.5 20 35C25.5 33.5 30 28 30 22V12L20 7Z" fill="none" stroke="rgba(0,255,106,0.6)" stroke-width="1.2"/>
+          <!-- checkmark -->
+          <path d="M15.5 21L18.5 24L25 17" stroke="#00ff6a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- corner dots -->
+          <circle cx="20" cy="2" r="1.5" fill="#00ff6a" opacity=".7"/>
+          <circle cx="36" cy="11" r="1.5" fill="#00ff6a" opacity=".5"/>
+          <circle cx="36" cy="29" r="1.5" fill="#00ff6a" opacity=".5"/>
+          <circle cx="20" cy="38" r="1.5" fill="#00ff6a" opacity=".7"/>
+          <circle cx="4" cy="29" r="1.5" fill="#00ff6a" opacity=".5"/>
+          <circle cx="4" cy="11" r="1.5" fill="#00ff6a" opacity=".5"/>
+        </svg>
+      </div>
+      <div class="brand">Zero<em>Trust</em></div>
+    </div>
+    <div class="tagline">Mountain OS · Privacy-First Browser</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- CLOCK -->
+  <div class="clock-block">
+    <div class="clk" id="clk" data-t="00:00">00:00</div>
+    <div class="dt" id="dt"></div>
+  </div>
+
+  <!-- PRIVACY STATUS ROW -->
+  <div class="privacy-row">
+    <div class="priv-card">
+      <div class="priv-ico">🛡️</div>
       <div>
-        <div class="brand">Zero<b>Trust</b> Browser</div>
-        <div class="sub">Mountain OS · Zero Trust Security</div>
+        <div class="priv-label">Tracker Blocking</div>
+        <div class="priv-val">ACTIVE</div>
+      </div>
+    </div>
+    <div class="priv-card">
+      <div class="priv-ico">🔒</div>
+      <div>
+        <div class="priv-label">HTTPS Enforced</div>
+        <div class="priv-val">ACTIVE</div>
+      </div>
+    </div>
+    <div class="priv-card">
+      <div class="priv-ico">🌐</div>
+      <div>
+        <div class="priv-label">DNS over HTTPS</div>
+        <div class="priv-val">CLOUDFLARE</div>
       </div>
     </div>
   </div>
 
-  <!-- Clock -->
-  <div style="text-align:center">
-    <div class="clock" id="clk" aria-live="off">00:00</div>
-    <div class="date" id="dt"></div>
-  </div>
-
-  <!-- Search -->
-  <div class="search" role="search">
-    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-      <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
-    </svg>
-    <input id="q" type="search" placeholder="Search or enter address…"
-           autofocus autocomplete="off" spellcheck="false">
-    <span class="ddg">
-      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+  <!-- SEARCH -->
+  <div class="search-wrap">
+    <div class="sb">
+      <svg class="sico" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
       </svg>
-      DuckDuckGo
-    </span>
+      <input class="inp" type="text" id="search" placeholder="Search DuckDuckGo or enter URL...">
+      <span class="ddg-badge">
+        <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        DDG
+      </span>
+    </div>
+    <div class="cut-indicator"></div>
   </div>
 
-  <!-- Tools label -->
-  <div class="sec">
-    <span class="sec-lbl">Security &amp; Utility Tools</span>
-    <span class="sec-rule"></span>
+  <!-- TOOLS SECTION -->
+  <div style="width:100%">
+    <div class="sec-hdr">
+      <span class="sec-t">Security &amp; Utility Tools</span>
+      <span class="sec-l"></span>
+      <span class="sec-num">08 TOOLS</span>
+    </div>
+  </div>
+  <div class="grid">
+    <a class="card" href="https://mrichard333.com/extension">
+      <div class="iw">🛡️</div>
+      <div><div class="cn">ZeroTrust Ext.</div><div class="cd">Real-time protection</div></div>
+    </a>
+    <a class="card" href="https://mrichard333.com/Cyberhealth">
+      <div class="iw">🩺</div>
+      <div><div class="cn">Cyberhealth</div><div class="cd">Hygiene audit</div></div>
+    </a>
+    <a class="card" href="https://mrichard333.com/password-check">
+      <div class="iw">⚡</div>
+      <div><div class="cn">Pwd Entropy</div><div class="cd">Brute-force sim</div></div>
+    </a>
+    <a class="card" href="https://mrichard333.com/link-scanner">
+      <div class="iw">🔗</div>
+      <div><div class="cn">URL Forensics</div><div class="cd">Deep link scan</div></div>
+    </a>
+    <a class="card" href="https://mrichard333.com/files-compressor">
+      <div class="iw">🗜️</div>
+      <div><div class="cn">Compressor</div><div class="cd">Local, no upload</div></div>
+    </a>
+    <a class="card" href="https://mrichard333.com/seo-analyser">
+      <div class="iw">📈</div>
+      <div><div class="cn">SEO Analyser</div><div class="cd">20+ checks</div></div>
+    </a>
+    <a class="card" href="https://mrichard333.com/webtools">
+      <div class="iw">🔍</div>
+      <div><div class="cn">All Tools</div><div class="cd">Full tool suite</div></div>
+    </a>
+    <a class="card" href="https://mrichard333.com">
+      <div class="iw">🏠</div>
+      <div><div class="cn">Home</div><div class="cd">Fraud defense</div></div>
+    </a>
   </div>
 
-  <!-- Tool grid -->
-  <nav class="grid" aria-label="Tools">
-
-    <a class="card c-green" href="https://mrichard333.com/extension">
-      <div class="bar"></div>
-      <div class="body">
-        <div class="ico">🛡️</div>
-        <div>
-          <div class="name">ZeroTrust Extension</div>
-          <div class="desc">Real-time threat scoring</div>
-        </div>
-      </div>
-    </a>
-
-    <a class="card c-blue" href="https://mrichard333.com/Cyberhealth">
-      <div class="bar"></div>
-      <div class="body">
-        <div class="ico">🩺</div>
-        <div>
-          <div class="name">Cyberhealth Audit</div>
-          <div class="desc">Digital hygiene score</div>
-        </div>
-      </div>
-    </a>
-
-    <a class="card c-amber" href="https://mrichard333.com/password-check">
-      <div class="bar"></div>
-      <div class="body">
-        <div class="ico">⚡</div>
-        <div>
-          <div class="name">Password Entropy</div>
-          <div class="desc">Brute-force simulation</div>
-        </div>
-      </div>
-    </a>
-
-    <a class="card c-violet" href="https://mrichard333.com/link-scanner">
-      <div class="bar"></div>
-      <div class="body">
-        <div class="ico">🔗</div>
-        <div>
-          <div class="name">URL Forensics</div>
-          <div class="desc">Inspect redirects &amp; trackers</div>
-        </div>
-      </div>
-    </a>
-
-    <a class="card c-teal" href="https://mrichard333.com/files-compressor">
-      <div class="bar"></div>
-      <div class="body">
-        <div class="ico">🗜️</div>
-        <div>
-          <div class="name">Files Compressor</div>
-          <div class="desc">100% local — nothing uploaded</div>
-        </div>
-      </div>
-    </a>
-
-    <a class="card c-coral" href="https://mrichard333.com/seo-analyser">
-      <div class="bar"></div>
-      <div class="body">
-        <div class="ico">📈</div>
-        <div>
-          <div class="name">SEO Analyser</div>
-          <div class="desc">20+ automated checks</div>
-        </div>
-      </div>
-    </a>
-
-    <a class="card c-green" href="https://mrichard333.com/webtools">
-      <div class="bar"></div>
-      <div class="body">
-        <div class="ico">🔍</div>
-        <div>
-          <div class="name">All Free Tools</div>
-          <div class="desc">Full tool directory</div>
-        </div>
-      </div>
-    </a>
-
-    <a class="card c-dim" href="https://mrichard333.com">
-      <div class="bar"></div>
-      <div class="body">
-        <div class="ico">🏠</div>
-        <div>
-          <div class="name">Home</div>
-          <div class="desc">mrichard333.com</div>
-        </div>
-      </div>
-    </a>
-
-  </nav>
-
-  <!-- Dashboard banner -->
-  <a class="dash" href="https://mrichard333.com/dashboard">
-    <div class="dash-l">
-      <div class="dash-ico" aria-hidden="true">📊</div>
+  <!-- DASHBOARD BANNER -->
+  <a class="db" href="https://mrichard333.com/dashboard">
+    <div class="db-corner-tr"></div>
+    <div class="db-corner-bl"></div>
+    <div class="db-left">
+      <div class="db-icon">📊</div>
       <div>
-        <div class="dash-name">Security Dashboard</div>
-        <div class="dash-sub">Full suite · login required</div>
+        <div class="db-name">Security Dashboard</div>
+        <div class="db-sub">Full suite · login required</div>
         <div class="pills">
           <span class="pill">Dark Web</span>
           <span class="pill">CVE Tracker</span>
           <span class="pill">Identity Breach</span>
           <span class="pill">Vendor Risk</span>
-          <span class="pill">Shadow IT</span>
-          <span class="pill">+5 more</span>
+          <span class="pill">+6 more</span>
         </div>
       </div>
     </div>
-    <span class="dash-btn">Open Dashboard →</span>
+    <span class="cta">Open →</span>
   </a>
 
-  <!-- Status bar -->
-  <div class="status" role="status" aria-live="off">
-    <div class="seg"><span class="dot" aria-hidden="true"></span><span>ZeroTrust Active</span></div>
-    <div class="seg"><time class="stime" id="st">00:00:00</time></div>
-    <div class="seg"><span>Mountain OS</span></div>
+  <!-- STATUS BAR -->
+  <div class="statusbar">
+    <div class="sbitem"><span class="dot"></span>ZeroTrust Active</div>
+    <div class="sbitem" id="st-time"></div>
+    <div class="sbitem">Mountain OS</div>
+    <div class="sbitem">No Telemetry</div>
   </div>
 
 </div>
 
 <script>
 (function(){
-  'use strict';
+  var DD=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var MM=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var clkEl=document.getElementById('clk');
+  var dtEl=document.getElementById('dt');
+  var stEl=document.getElementById('st-time');
 
-  /* Stars */
-  var cv=document.getElementById('c'),cx=cv.getContext('2d'),rt;
-  function stars(){
-    var w=cv.width=innerWidth,h=cv.height=innerHeight;
-    cx.clearRect(0,0,w,h);
-    var n=Math.floor(w*h/1800);
-    for(var i=0;i<n;i++){
-      var x=Math.random()*w,y=Math.random()*h*.52;
-      var r=Math.random()*.9+.08,a=Math.random()*.6+.06;
-      var t=Math.random();
-      cx.beginPath();cx.arc(x,y,r,0,Math.PI*2);
-      cx.fillStyle=t>.65
-        ?'rgba(180,240,200,'+a+')'
-        :t>.35?'rgba(210,235,215,'+a+')'
-        :'rgba(240,248,242,'+a+')';
-      cx.fill();
-    }
-    /* Bright star cross-flares */
-    [[.12,.06],[.36,.10],[.55,.04],[.70,.13],[.86,.07],[.44,.16],[.63,.03],[.79,.09]].forEach(function(b){
-      var bx=b[0]*w,by=b[1]*h;
-      cx.beginPath();cx.arc(bx,by,1.3,0,Math.PI*2);
-      cx.fillStyle='rgba(200,240,210,0.95)';cx.fill();
-      cx.strokeStyle='rgba(120,220,160,0.28)';cx.lineWidth=.4;
-      cx.beginPath();cx.moveTo(bx-7,by);cx.lineTo(bx+7,by);
-      cx.moveTo(bx,by-7);cx.lineTo(bx,by+7);cx.stroke();
-    });
-  }
-  stars();
-  window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(stars,150)});
-
-  /* Clock */
-  var D=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-  var M=['January','February','March','April','May','June','July','August','September','October','November','December'];
-  var ce=document.getElementById('clk'),de=document.getElementById('dt'),te=document.getElementById('st');
-  var lm=-1,ls=-1;
   function tick(){
-    var n=new Date(),h=n.getHours(),m=n.getMinutes(),s=n.getSeconds();
-    if(m!==lm){
-      lm=m;
-      ce.textContent=(h<10?'0':'')+h+':'+(m<10?'0':'')+m;
-      de.textContent=D[n.getDay()]+', '+M[n.getMonth()]+' '+n.getDate()+', '+n.getFullYear();
-    }
-    if(s!==ls){
-      ls=s;
-      te.textContent=(h<10?'0':'')+h+':'+(m<10?'0':'')+m+':'+(s<10?'0':'')+s;
-    }
-    requestAnimationFrame(tick);
+    var n=new Date();
+    var h=String(n.getHours()).padStart(2,'0');
+    var m=String(n.getMinutes()).padStart(2,'0');
+    var s=String(n.getSeconds()).padStart(2,'0');
+    var time=h+':'+m;
+    clkEl.textContent=time;
+    clkEl.setAttribute('data-t',time);
+    dtEl.textContent=DD[n.getDay()]+' · '+MM[n.getMonth()]+' '+n.getDate()+' · '+n.getFullYear();
+    if(stEl) stEl.textContent=h+':'+m+':'+s;
   }
-  requestAnimationFrame(tick);
+  tick();
+  setInterval(tick,1000);
 
-  /* Search */
-  document.getElementById('q').addEventListener('keydown',function(e){
-    if(e.key!=='Enter')return;
-    var q=e.target.value.trim();if(!q)return;
+  // Search
+  document.getElementById('search').addEventListener('keydown',function(e){
+    if(e.key!=='Enter') return;
+    var q=e.target.value.trim();
+    if(!q) return;
     var isUrl=/^https?:\/\//.test(q)||/^[\w-]+\.[\w]{2,}(\/|$)/.test(q);
-    window.location.href=isUrl?(q.startsWith('http')?q:'https://'+q)
-                               :'https://duckduckgo.com/?q='+encodeURIComponent(q);
+    window.location.href=isUrl
+      ?(q.startsWith('http')?q:'https://'+q)
+      :'https://duckduckgo.com/?q='+encodeURIComponent(q);
   });
-}());
+  document.getElementById('search').focus();
+})();
 </script>
 </body>
 </html>
