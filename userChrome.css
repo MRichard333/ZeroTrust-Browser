@@ -284,28 +284,72 @@ toolbar .toolbarbutton-1[checked="true"] {
 #unified-extensions-button:hover  { fill: var(--zt-a) !important; }
 
 /* ══════════════════════════════
-   BOOKMARKS TOOLBAR
+   BOOKMARKS TOOLBAR — pill style
 ══════════════════════════════ */
 #PersonalToolbar {
   background: var(--zt-1) !important;
   border-bottom: 1px solid var(--zt-b0) !important;
-  padding: 3px 10px !important;
-  min-height: 28px !important;
+  padding: 4px 10px !important;
+  min-height: 30px !important;
+  gap: 2px !important;
 }
 
+/* Each bookmark item is a pill */
 .bookmark-item {
   color: var(--zt-t1) !important;
-  border-radius: var(--zt-rx) !important;
-  font-size: 12px !important;
-  padding: 2px 7px !important;
+  border-radius: 20px !important;
+  font-size: 11.5px !important;
+  font-weight: 400 !important;
+  padding: 3px 10px !important;
   transition: background-color 0.1s !important;
+  border: 1px solid transparent !important;
 }
+
 .bookmark-item:hover {
   background: var(--zt-3) !important;
+  border-color: var(--zt-b1) !important;
   color: var(--zt-t0) !important;
 }
-.bookmark-item > .toolbarbutton-icon        { opacity: 0.55; }
-.bookmark-item:hover > .toolbarbutton-icon  { opacity: 1; }
+
+/* Active/open bookmark */
+.bookmark-item[open="true"],
+.bookmark-item:active {
+  background: var(--zt-4) !important;
+  border-color: var(--zt-b2) !important;
+  color: var(--zt-a) !important;
+}
+
+/* Favicon — hide by default for managed bookmarks with emoji in name */
+.bookmark-item > .toolbarbutton-icon {
+  opacity: 0 !important;
+  width: 0 !important;
+  margin: 0 !important;
+}
+
+/* Show favicon only when it's NOT a default/blank favicon */
+.bookmark-item:not([image=""])  > .toolbarbutton-icon {
+  opacity: 0.55 !important;
+  width: 14px !important;
+  height: 14px !important;
+  margin-inline-end: 4px !important;
+}
+.bookmark-item:hover > .toolbarbutton-icon { opacity: 0.9 !important; }
+
+/* Folder arrow — minimal */
+.bookmark-item > .toolbarbutton-menu-dropmarker {
+  fill: var(--zt-t2) !important;
+  width: 8px !important;
+  margin-inline-start: 2px !important;
+}
+
+/* Separator on bookmarks bar */
+toolbarseparator {
+  border: none !important;
+  width: 1px !important;
+  background: var(--zt-b1) !important;
+  margin: 4px 3px !important;
+  min-height: 14px !important;
+}
 
 /* ══════════════════════════════
    SIDEBAR

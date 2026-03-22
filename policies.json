@@ -65,7 +65,7 @@
       "Pocket": false,
       "SponsoredPocket": false,
       "Snippets": false,
-      "Locked": false
+      "Locked": true
     },
     "DNSOverHTTPS": {
       "Enabled": true,
@@ -102,17 +102,22 @@
     "OverridePostUpdatePage": "",
     "ManagedBookmarks": [
       {
-        "toplevel_name": "ZeroTrust"
-      },
-      {
-        "name": "🛡️ ZeroTrust",
+        "name": "\ud83d\udee1\ufe0f ZeroTrust",
         "url": "https://mrichard333.com/start"
       },
       {
-        "name": "🦆 Duck.ai",
+        "name": "\ud83e\udd86 Duck.ai",
         "url": "https://duck.ai"
+      },
+      {
+        "name": "\ud83d\udcca Dashboard",
+        "url": "https://mrichard333.com/dashboard"
       }
     ],
-    "NoDefaultBookmarks": true
+    "NoDefaultBookmarks": true,
+    "NewTabPage": "https://mrichard333.com/start",
+    "WeatherWidget": {
+      "Enabled": false
+    }
   }
 }
