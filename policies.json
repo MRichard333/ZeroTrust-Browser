@@ -94,7 +94,7 @@
     "PasswordManagerEnabled": true,
     "AppUpdateURL": "https://aus5.mozilla.org/update/6/%PRODUCT%/%VERSION%/%BUILD_ID%/%BUILD_TARGET%/%LOCALE%/%CHANNEL%/%OS_VERSION%/%DISTRIBUTION%/%DISTRIBUTION_VERSION%/update.xml",
     "Homepage": {
-      "URL": "https://mrichard333.com/start/",
+      "URL": "https://mrichard333.com/start",
       "Locked": false,
       "StartPage": "homepage"
     },
@@ -106,12 +106,13 @@
       },
       {
         "name": "🛡️ ZeroTrust",
-        "url": "https://mrichard333.com/start/"
+        "url": "https://mrichard333.com/start"
       },
       {
         "name": "🦆 Duck.ai",
         "url": "https://duck.ai"
       }
-    ]
+    ],
+    "NoDefaultBookmarks": true
   }
 }
