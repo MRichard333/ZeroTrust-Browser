@@ -3,726 +3,684 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ZeroTrust — New Tab</title>
+<title>ZeroTrust Browser · Mountain OS</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@700;800&display=swap');
 
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 
 :root{
-  --ink:#0a0d0b;
-  --paper:#0d1410;
-  --acid:#00ff6a;
-  --acid-dim:#00cc55;
-  --acid-ghost:rgba(0,255,106,0.07);
-  --acid-glow:rgba(0,255,106,0.18);
-  --wire:rgba(0,255,106,0.12);
-  --wire-hi:rgba(0,255,106,0.25);
-  --text:#d4ead9;
-  --dim:#4a7055;
-  --muted:#1e3028;
-  --card:rgba(13,20,16,0.9);
+  --bg:#060c08;
+  --surface:#0b1410;
+  --card:#0e1a14;
+  --card2:#111f18;
+  --border:rgba(0,220,90,0.10);
+  --border-hi:rgba(0,220,90,0.20);
+  --acid:#00e664;
+  --acid-dim:#00b84e;
+  --acid-faint:rgba(0,230,100,0.06);
+  --text:#cde8d4;
+  --text-dim:#4d7a5a;
+  --text-muted:#233329;
+  --radius:4px;
 }
 
-html,body{height:100%;overflow:hidden;background:var(--ink)}
-
+html{scroll-behavior:smooth}
 body{
-  font-family:'Space Mono',monospace;
+  background:var(--bg);
   color:var(--text);
-  display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  min-height:100vh;position:relative;
-  overflow-y:auto;overflow-x:hidden;
-}
-
-/* ── SVG BACKGROUND LAYER ── */
-.bg-svg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
-
-/* ── NOISE TEXTURE ── */
-.noise{
-  position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.03;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-
-/* ── SCAN LINES ── */
-.scanlines{
-  position:fixed;inset:0;z-index:2;pointer-events:none;
-  background:repeating-linear-gradient(
-    0deg,
-    transparent,transparent 2px,
-    rgba(0,0,0,0.04) 2px,rgba(0,0,0,0.04) 4px
-  );
-}
-
-/* ── CORNER CUTS ── */
-.corner{position:fixed;z-index:3;pointer-events:none}
-.corner svg{display:block}
-.corner-tl{top:0;left:0}
-.corner-tr{top:0;right:0;transform:scaleX(-1)}
-.corner-bl{bottom:0;left:0;transform:scaleY(-1)}
-.corner-br{bottom:0;right:0;transform:scale(-1)}
-
-/* ── PAGE WRAPPER ── */
-.page{
-  position:relative;z-index:10;
-  width:100%;max-width:720px;
-  display:flex;flex-direction:column;
-  align-items:center;gap:20px;
-  padding:30px 20px 36px;
-}
-
-/* ── HEADER ── */
-.header{
-  display:flex;flex-direction:column;align-items:center;gap:6px;
-  position:relative;width:100%;
-}
-
-.logo-row{display:flex;align-items:center;gap:14px}
-
-.shield-wrap{
-  position:relative;
-  filter:drop-shadow(0 0 18px rgba(0,255,106,0.5));
-  animation:shieldpulse 4s ease-in-out infinite;
-}
-@keyframes shieldpulse{
-  0%,100%{filter:drop-shadow(0 0 16px rgba(0,255,106,0.45))}
-  50%{filter:drop-shadow(0 0 30px rgba(0,255,106,0.7))}
-}
-
-.brand{
-  font-family:'Syne',sans-serif;
-  font-size:28px;font-weight:800;
-  color:var(--text);letter-spacing:-1.5px;
-  line-height:1;
-}
-.brand em{font-style:normal;color:var(--acid)}
-
-.tagline{
-  font-size:9px;color:var(--dim);
-  letter-spacing:3px;text-transform:uppercase;
   font-family:'Space Mono',monospace;
+  font-size:13px;
+  line-height:1.5;
+  min-height:100vh;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border-hi);border-radius:2px}
+
+/* ── BACKGROUND ── */
+.bg-layer{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 60% 40% at 20% 0%,rgba(0,200,80,0.06) 0%,transparent 70%),
+    radial-gradient(ellipse 40% 30% at 80% 80%,rgba(0,180,70,0.04) 0%,transparent 70%),
+    var(--bg);
+}
+.bg-dots{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:radial-gradient(circle,rgba(0,220,90,0.07) 1px,transparent 1px);
+  background-size:32px 32px;
+  mask-image:radial-gradient(ellipse 80% 70% at 50% 40%,black 20%,transparent 75%);
+}
+.bg-mtn{position:fixed;inset:0;z-index:0;pointer-events:none;width:100%;height:100%}
+
+/* ── LAYOUT ── */
+.wrap{
+  position:relative;z-index:10;
+  max-width:900px;
+  margin:0 auto;
+  padding:0 20px 60px;
 }
 
-/* horizontal rule with glitch mark */
-.divider{
-  width:100%;height:1px;
-  background:linear-gradient(90deg, transparent 0%, var(--wire-hi) 20%, var(--acid) 50%, var(--wire-hi) 80%, transparent 100%);
-  position:relative;overflow:visible;
+/* ── NAV ── */
+nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 0 10px;
+  border-bottom:1px solid var(--border);
 }
-.divider::after{
-  content:'';position:absolute;
-  top:-3px;left:50%;transform:translateX(-50%);
-  width:6px;height:6px;
-  background:var(--acid);
-  clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%);
-  box-shadow:0 0 12px var(--acid);
+.nav-brand{
+  display:flex;align-items:center;gap:9px;
+  font-family:'Syne',sans-serif;font-size:14px;font-weight:800;
+  color:var(--text);letter-spacing:-.5px;text-decoration:none;
 }
+.nav-brand em{font-style:normal;color:var(--acid)}
+.nav-links{display:flex;gap:22px}
+.nav-links a{
+  font-size:10px;color:var(--text-dim);text-decoration:none;
+  letter-spacing:1px;text-transform:uppercase;transition:color .15s;
+}
+.nav-links a:hover{color:var(--acid)}
+.nav-links a.hl{
+  color:var(--acid);border:1px solid var(--border-hi);
+  padding:4px 10px;border-radius:var(--radius);
+}
+.nav-links a.hl:hover{background:var(--acid-faint)}
 
-/* ── CLOCK ── */
-.clock-block{text-align:center;position:relative}
-
-.clk{
+/* ── HERO ── */
+.hero{
+  display:grid;grid-template-columns:1fr auto;
+  gap:32px;align-items:center;
+  padding:40px 0 28px;
+  border-bottom:1px solid var(--border);
+}
+.hero-eyebrow{
+  font-size:9px;color:var(--text-dim);
+  letter-spacing:3px;text-transform:uppercase;
+  margin-bottom:12px;
+  display:flex;align-items:center;gap:8px;
+}
+.hero-eyebrow::before{
+  content:'';display:inline-block;
+  width:20px;height:1px;background:var(--acid);
+}
+.clock{
   font-family:'Syne',sans-serif;
-  font-size:72px;font-weight:700;
-  color:var(--text);letter-spacing:-5px;line-height:1;
+  font-size:clamp(52px,8vw,80px);font-weight:800;
+  color:var(--text);letter-spacing:-4px;line-height:1;
   font-variant-numeric:tabular-nums;
-  text-shadow:0 0 80px rgba(0,255,106,0.12),0 2px 40px rgba(0,0,0,.7);
-  position:relative;
+  text-shadow:0 0 60px rgba(0,230,100,0.12);
 }
-.clk::before{
-  content:attr(data-t);
-  position:absolute;inset:0;
-  color:var(--acid);
-  clip-path:inset(0 0 70% 0);
-  opacity:.15;
-  transform:translateY(-3px) skewX(-1deg);
-  pointer-events:none;
+.clock-date{
+  font-size:10px;color:var(--text-dim);
+  letter-spacing:2px;text-transform:uppercase;margin-top:6px;
 }
+.uptime{
+  display:inline-flex;align-items:center;gap:6px;
+  margin-top:12px;font-size:9px;color:var(--acid-dim);
+  background:var(--acid-faint);
+  border:1px solid rgba(0,200,80,0.15);
+  border-radius:2px;padding:4px 10px;
+}
+.uptime-dot{
+  width:5px;height:5px;background:var(--acid);
+  clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%);
+  animation:blink 2s infinite;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
 
-.dt{
-  font-size:10px;color:var(--dim);
-  letter-spacing:2.5px;text-transform:uppercase;
-  margin-top:5px;
+.hero-stats{display:flex;flex-direction:column;gap:7px;align-items:flex-end}
+.stat-chip{
+  display:flex;align-items:center;gap:8px;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:8px 12px;min-width:170px;
 }
+.stat-check{font-size:10px;color:var(--acid)}
+.stat-label{font-size:9px;color:var(--text-dim);letter-spacing:.3px}
 
 /* ── SEARCH ── */
-.search-wrap{
-  width:100%;position:relative;
-}
-
-.sb{
-  display:flex;align-items:center;
-  width:100%;
-  background:var(--card);
-  border:1px solid var(--wire-hi);
-  border-radius:2px;
-  padding:14px 18px;gap:12px;
+.search-wrap{padding:22px 0 0}
+.search-row{
+  display:flex;
+  background:var(--card);border:1px solid var(--border-hi);
+  border-radius:var(--radius);overflow:hidden;
   transition:border-color .2s,box-shadow .2s;
-  clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,16px 100%,0 calc(100% - 16px));
 }
-.sb:focus-within{
+.search-row:focus-within{
   border-color:var(--acid-dim);
-  box-shadow:0 0 0 1px rgba(0,204,85,.15),0 0 40px rgba(0,255,106,.06);
+  box-shadow:0 0 0 3px rgba(0,200,80,0.08);
 }
-
-.sico{color:var(--dim);flex-shrink:0;transition:color .2s}
-.sb:focus-within .sico{color:var(--acid)}
-
-.inp{
+.s-ico{
+  display:flex;align-items:center;padding:0 14px;
+  color:var(--text-dim);flex-shrink:0;
+}
+.search-row:focus-within .s-ico{color:var(--acid)}
+.s-inp{
   flex:1;border:none;outline:none;
-  font-size:14px;color:var(--text);
   background:transparent;
-  caret-color:var(--acid);
-  font-family:'Space Mono',monospace;
+  font-family:'Space Mono',monospace;font-size:14px;color:var(--text);
+  caret-color:var(--acid);padding:14px 0;
 }
-.inp::placeholder{color:var(--dim)}
-
-.ddg-badge{
-  display:flex;align-items:center;gap:5px;
-  font-size:8px;font-weight:700;color:var(--dim);
-  background:var(--acid-ghost);
-  border:1px solid var(--wire);
-  border-radius:1px;padding:3px 8px;
-  white-space:nowrap;text-transform:uppercase;letter-spacing:1px;
-  flex-shrink:0;
-  font-family:'Space Mono',monospace;
+.s-inp::placeholder{color:var(--text-dim)}
+.s-go{
+  display:flex;align-items:center;padding:0 16px;
+  background:var(--acid-faint);border-left:1px solid var(--border);
+  font-size:9px;font-weight:700;color:var(--text-dim);
+  letter-spacing:1px;text-transform:uppercase;
+  cursor:pointer;transition:background .15s,color .15s;white-space:nowrap;
 }
-
-/* corner cut indicator */
-.cut-indicator{
-  position:absolute;right:0;top:0;
-  width:16px;height:16px;
-  background:var(--acid);
-  clip-path:polygon(100% 0,100% 100%,0 0);
-  opacity:.5;
+.s-go:hover{background:rgba(0,200,80,0.12);color:var(--acid)}
+.s-eng{
+  display:flex;align-items:center;gap:5px;padding:0 14px;
+  border-left:1px solid var(--border);
+  font-size:9px;color:var(--text-muted);letter-spacing:.5px;
+  text-transform:uppercase;flex-shrink:0;
 }
 
-/* ── SECTION HEADER ── */
-.sec-hdr{
-  display:flex;align-items:center;gap:10px;width:100%;
+/* ── METRICS ── */
+.metrics{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:8px;margin:22px 0;
 }
-.sec-t{
-  font-size:8px;font-weight:700;color:var(--dim);
-  text-transform:uppercase;letter-spacing:2px;
-  white-space:nowrap;
-  font-family:'Space Mono',monospace;
+.metric{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:14px 16px;
+  position:relative;overflow:hidden;
 }
-.sec-l{flex:1;height:1px;background:var(--wire)}
-.sec-num{
-  font-size:8px;color:var(--muted);
-  font-family:'Space Mono',monospace;
-  letter-spacing:1px;
+.metric::before{
+  content:'';position:absolute;top:0;left:0;
+  width:3px;height:100%;background:var(--acid);opacity:.4;
 }
+.metric-val{
+  font-family:'Syne',sans-serif;font-size:22px;font-weight:800;
+  color:var(--text);letter-spacing:-1px;line-height:1;
+}
+.metric-unit{font-size:11px;color:var(--acid);margin-left:1px}
+.metric-lbl{font-size:8px;color:var(--text-dim);margin-top:4px;letter-spacing:.5px;text-transform:uppercase}
+
+/* ── SECTION HDR ── */
+.shdr{
+  display:flex;align-items:center;gap:10px;margin:26px 0 11px;
+}
+.shdr-t{
+  font-size:9px;font-weight:700;color:var(--text-dim);
+  text-transform:uppercase;letter-spacing:2px;white-space:nowrap;
+}
+.shdr-l{flex:1;height:1px;background:var(--border)}
+.shdr-c{font-size:8px;color:var(--text-muted);letter-spacing:1px}
 
 /* ── TOOL GRID ── */
-.grid{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:6px;width:100%;
-}
-
-.card{
-  display:flex;flex-direction:column;gap:10px;
-  padding:12px 11px;
-  background:var(--card);
-  border:1px solid var(--wire);
-  border-radius:1px;
+.tgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.tcrd{
+  display:flex;flex-direction:column;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:14px 14px 12px;
   text-decoration:none;color:var(--text);
-  transition:border-color .15s,background .15s,transform .12s;
+  transition:border-color .15s,background .15s,transform .1s;
   position:relative;overflow:hidden;
-  clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%);
+}
+.tcrd:hover{border-color:var(--border-hi);background:var(--card2);transform:translateY(-2px)}
+.tcrd-ico{font-size:20px;margin-bottom:10px;display:block;line-height:1}
+.tcrd-name{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--text);line-height:1.3;margin-bottom:3px}
+.tcrd-desc{font-size:8px;color:var(--text-dim);line-height:1.5;flex:1}
+.tcrd-tag{
+  margin-top:8px;font-size:7px;font-weight:700;
+  color:var(--acid-dim);background:var(--acid-faint);
+  border:1px solid rgba(0,200,80,0.12);
+  border-radius:2px;padding:2px 6px;display:inline-block;
+  text-transform:uppercase;letter-spacing:.5px;
+}
+.tcrd-tag.feat{
+  color:#f0c040;background:rgba(240,192,64,0.06);
+  border-color:rgba(240,192,64,0.15);
 }
 
-.card::before{
-  content:'';position:absolute;
-  top:0;right:0;
-  width:10px;height:10px;
-  background:var(--wire-hi);
-  clip-path:polygon(100% 0,100% 100%,0 0);
-  transition:background .15s;
+/* ── QUICK ACCESS ── */
+.qgrid{display:flex;flex-wrap:wrap;gap:6px}
+.qlink{
+  display:flex;align-items:center;gap:6px;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:6px 12px;
+  text-decoration:none;color:var(--text-dim);
+  font-size:9px;transition:border-color .15s,color .15s,background .15s;
+  white-space:nowrap;
 }
-.card:hover::before{background:var(--acid);opacity:.7}
+.qlink:hover{border-color:var(--border-hi);color:var(--text);background:var(--card2)}
 
-.card:hover{
-  border-color:var(--wire-hi);
-  background:rgba(0,255,106,0.04);
-  transform:translateY(-2px);
+/* ── TWO COL ── */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+/* extensions */
+.ext-list{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;
 }
-
-/* scan line on hover */
-.card::after{
-  content:'';position:absolute;
-  top:-100%;left:0;right:0;height:50%;
-  background:linear-gradient(0deg,transparent,rgba(0,255,106,0.04),transparent);
-  transition:top .4s ease;pointer-events:none;
+.ext-item{
+  display:flex;align-items:center;gap:10px;padding:10px 14px;
+  border-bottom:1px solid var(--border);
+  text-decoration:none;color:var(--text);transition:background .15s;
 }
-.card:hover::after{top:150%}
-
-.iw{
-  width:28px;height:28px;
-  background:var(--acid-ghost);
-  border:1px solid var(--wire);
-  border-radius:1px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:14px;flex-shrink:0;
-  transition:border-color .15s;
+.ext-item:last-child{border-bottom:none}
+.ext-item:hover{background:var(--card2)}
+.ext-ico{font-size:14px;flex-shrink:0}
+.ext-name{font-size:10px;font-weight:700;color:var(--text);flex:1}
+.ext-tag{
+  font-size:7px;font-weight:700;padding:2px 6px;
+  border-radius:2px;text-transform:uppercase;letter-spacing:.5px;
 }
-.card:hover .iw{border-color:var(--wire-hi)}
+.ext-tag.pin{color:var(--acid);background:var(--acid-faint);border:1px solid rgba(0,200,80,0.15)}
+.ext-tag.act{color:var(--text-dim);background:var(--text-muted);border:1px solid var(--border)}
 
-.cn{font-size:9px;font-weight:700;color:var(--text);line-height:1.3;font-family:'Syne',sans-serif}
-.cd{font-size:8px;color:var(--dim);line-height:1.4;margin-top:1px;font-family:'Space Mono',monospace}
+/* hardening */
+.hard-list{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;
+}
+.hard-item{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 14px;border-bottom:1px solid var(--border);
+}
+.hard-item:last-child{border-bottom:none}
+.hard-name{font-size:10px;color:var(--text-dim)}
+.hard-val{
+  font-size:9px;font-weight:700;padding:2px 8px;
+  border-radius:2px;font-family:'Space Mono',monospace;
+}
+.hard-val.on{color:var(--acid);background:var(--acid-faint);border:1px solid rgba(0,200,80,0.15)}
+.hard-val.off{color:#ff8090;background:rgba(255,68,85,0.06);border:1px solid rgba(255,68,85,0.15)}
 
 /* ── DASHBOARD BANNER ── */
-.db{
-  display:flex;align-items:center;justify-content:space-between;gap:14px;
-  width:100%;
-  padding:14px 18px;
-  background:var(--card);
-  border:1px solid var(--wire-hi);
-  border-radius:1px;
-  text-decoration:none;color:var(--text);
-  transition:border-color .2s,background .2s;
+.dash{
+  background:var(--card);border:1px solid var(--border-hi);
+  border-radius:var(--radius);padding:20px 22px;
   position:relative;overflow:hidden;
-  clip-path:polygon(0 0,calc(100% - 20px) 0,100% 20px,100% 100%,20px 100%,0 calc(100% - 20px));
 }
-
-.db::before{
+.dash::before{
   content:'';position:absolute;top:0;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,transparent 5%,var(--acid) 50%,transparent 95%);
-  opacity:.4;
+  background:linear-gradient(90deg,transparent 0%,var(--acid) 50%,transparent 100%);
+  opacity:.3;
 }
-.db::after{
-  content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,transparent 5%,var(--acid) 50%,transparent 95%);
-  opacity:.2;
+.dash-top{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  gap:20px;margin-bottom:16px;
 }
-
-.db:hover{
-  border-color:rgba(0,255,106,.35);
-  background:rgba(0,255,106,0.03);
+.dash-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--text);letter-spacing:-.3px}
+.dash-sub{font-size:9px;color:var(--text-dim);margin-top:3px;line-height:1.6;max-width:480px}
+.dash-badge{
+  font-size:9px;font-weight:700;color:var(--acid);
+  background:var(--acid-faint);border:1px solid rgba(0,200,80,0.2);
+  border-radius:2px;padding:4px 10px;white-space:nowrap;flex-shrink:0;
 }
-
-.db-corner-tr{
-  position:absolute;top:0;right:0;
-  width:20px;height:20px;
-  background:var(--acid-dim);
-  clip-path:polygon(100% 0,100% 100%,0 0);
-  opacity:.6;
+.mods{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:16px}
+.mod{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:10px;
+  display:flex;flex-direction:column;gap:4px;
+  text-decoration:none;color:var(--text);
+  transition:border-color .15s,background .15s;
 }
-.db-corner-bl{
-  position:absolute;bottom:0;left:0;
-  width:20px;height:20px;
-  background:var(--wire-hi);
-  clip-path:polygon(0 0,100% 100%,0 100%);
+.mod:hover{border-color:var(--border-hi);background:var(--card2)}
+.mod-ico{font-size:14px}
+.mod-name{font-size:8px;font-weight:700;color:var(--text);line-height:1.3}
+.mod-desc{font-size:7px;color:var(--text-dim);line-height:1.4}
+.mod-link{font-size:7px;color:var(--acid-dim);margin-top:2px;letter-spacing:.3px}
+.dash-foot{
+  display:flex;align-items:center;justify-content:space-between;
+  padding-top:14px;border-top:1px solid var(--border);gap:16px;flex-wrap:wrap;
 }
-
-.db-left{display:flex;align-items:center;gap:13px}
-.db-icon{
-  width:42px;height:42px;
-  background:var(--acid-ghost);
-  border:1px solid var(--wire-hi);
-  border-radius:1px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:20px;flex-shrink:0;
-}
-.db-name{font-size:14px;font-weight:800;color:var(--text);letter-spacing:-.3px;font-family:'Syne',sans-serif}
-.db-sub{font-size:9px;color:var(--dim);margin-top:2px;font-family:'Space Mono',monospace}
-
-.pills{display:flex;gap:3px;margin-top:6px;flex-wrap:wrap}
-.pill{
-  font-size:7px;font-weight:700;color:var(--acid-dim);
-  background:var(--acid-ghost);
-  border:1px solid rgba(0,204,85,.12);
-  border-radius:1px;padding:2px 5px;
+.dash-note{font-size:9px;color:var(--text-dim)}
+.dash-note strong{color:var(--text)}
+.dash-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--acid);color:#030a05;
+  font-size:10px;font-weight:700;font-family:'Space Mono',monospace;
+  padding:8px 16px;border-radius:var(--radius);text-decoration:none;
   letter-spacing:.5px;text-transform:uppercase;
-  font-family:'Space Mono',monospace;
-}
-
-.cta{
-  font-size:10px;font-weight:700;color:var(--ink);
-  background:var(--acid);
-  border-radius:1px;
-  padding:9px 14px;
-  white-space:nowrap;flex-shrink:0;
-  letter-spacing:1px;text-transform:uppercase;
   transition:background .15s,box-shadow .15s;
-  box-shadow:0 0 20px rgba(0,255,106,.2);
-  font-family:'Space Mono',monospace;
-  clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));
+  box-shadow:0 0 16px rgba(0,220,90,0.2);
 }
-.db:hover .cta{background:#10ff70;box-shadow:0 0 32px rgba(0,255,106,.4)}
+.dash-btn:hover{background:#0dff6e;box-shadow:0 0 28px rgba(0,220,90,0.4)}
 
 /* ── STATUS BAR ── */
-.statusbar{
-  display:flex;align-items:center;gap:0;
-  width:100%;
-  background:var(--card);
-  border:1px solid var(--wire);
-  border-radius:1px;
-  overflow:hidden;
-  font-size:9px;
-  font-family:'Space Mono',monospace;
+.sbar{
+  display:flex;background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;margin-top:22px;
 }
-
-.sbitem{
-  display:flex;align-items:center;gap:6px;
-  padding:7px 14px;color:var(--dim);
-  border-right:1px solid var(--wire);
-  flex:1;white-space:nowrap;
+.sb-item{
+  display:flex;align-items:center;gap:6px;padding:8px 16px;
+  border-right:1px solid var(--border);
+  font-size:9px;color:var(--text-dim);flex:1;white-space:nowrap;
 }
-.sbitem:last-child{border-right:none}
-
-.dot{
-  width:5px;height:5px;
-  background:var(--acid);
+.sb-item:last-child{border-right:none}
+.sb-dot{
+  width:5px;height:5px;background:var(--acid);
   clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%);
-  box-shadow:0 0 8px var(--acid);
-  flex-shrink:0;
-  animation:dotblink 2.5s ease-in-out infinite;
-}
-@keyframes dotblink{0%,100%{opacity:1;box-shadow:0 0 6px var(--acid)}50%{opacity:.5;box-shadow:0 0 14px var(--acid)}}
-
-.st{font-variant-numeric:tabular-nums;color:var(--dim)}
-
-/* ── PRIVACY PANEL ── */
-.privacy-row{
-  display:grid;grid-template-columns:repeat(3,1fr);
-  gap:6px;width:100%;
+  box-shadow:0 0 6px var(--acid);flex-shrink:0;animation:blink 2.5s infinite;
 }
 
-.priv-card{
-  background:var(--card);
-  border:1px solid var(--wire);
-  border-radius:1px;
-  padding:10px 12px;
-  display:flex;align-items:center;gap:10px;
-  position:relative;overflow:hidden;
+/* ── FOOTER ── */
+footer{
+  margin-top:22px;padding:16px 0;
+  border-top:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:12px;
 }
-.priv-card::before{
-  content:'';position:absolute;top:0;left:0;
-  width:3px;height:100%;
-  background:var(--acid);opacity:.5;
-}
-
-.priv-ico{font-size:16px;flex-shrink:0}
-.priv-label{font-size:8px;font-weight:700;color:var(--text);font-family:'Syne',sans-serif;line-height:1.2}
-.priv-val{font-size:8px;color:var(--acid);font-family:'Space Mono',monospace;margin-top:1px}
-
-/* ── FLOATING GRID DOTS ── */
-.grid-dots{
-  position:fixed;inset:0;z-index:1;pointer-events:none;
-  background-image:
-    radial-gradient(circle,rgba(0,255,106,0.08) 1px,transparent 1px);
-  background-size:40px 40px;
-  mask-image:radial-gradient(ellipse 70% 60% at 50% 50%,black 30%,transparent 80%);
-}
+.foot-copy{font-size:9px;color:var(--text-muted)}
+.foot-links{display:flex;flex-wrap:wrap;gap:14px}
+.foot-links a{font-size:9px;color:var(--text-muted);text-decoration:none;transition:color .15s}
+.foot-links a:hover{color:var(--text-dim)}
 </style>
 </head>
 <body>
 
-<!-- BACKGROUND SVG -->
-<svg class="bg-svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+<!-- BG -->
+<div class="bg-layer"></div>
+<div class="bg-dots"></div>
+<svg class="bg-mtn" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <radialGradient id="glow1" cx="30%" cy="20%" r="50%">
-      <stop offset="0%" stop-color="rgba(0,255,106,0.07)"/>
-      <stop offset="100%" stop-color="transparent"/>
-    </radialGradient>
-    <radialGradient id="glow2" cx="80%" cy="70%" r="40%">
-      <stop offset="0%" stop-color="rgba(0,200,80,0.05)"/>
-      <stop offset="100%" stop-color="transparent"/>
-    </radialGradient>
-    <linearGradient id="horizon" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#0a1f12"/>
-      <stop offset="100%" stop-color="#040906"/>
+    <linearGradient id="mg1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0b1f10"/><stop offset="100%" stop-color="#040906"/>
     </linearGradient>
-    <linearGradient id="ridgeline" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#071508"/>
-      <stop offset="100%" stop-color="#020602"/>
+    <linearGradient id="mg2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#071508"/><stop offset="100%" stop-color="#020602"/>
     </linearGradient>
-    <filter id="blur1"><feGaussianBlur stdDeviation="2"/></filter>
   </defs>
-
-  <!-- ambient glow orbs -->
-  <ellipse cx="250" cy="200" rx="350" ry="250" fill="url(#glow1)"/>
-  <ellipse cx="1100" cy="650" rx="300" ry="220" fill="url(#glow2)"/>
-
-  <!-- geometric accent shapes — top right -->
-  <polygon points="1380,0 1440,0 1440,60" fill="rgba(0,255,106,0.06)"/>
-  <polygon points="1300,0 1440,0 1440,140" fill="rgba(0,255,106,0.03)"/>
-  <line x1="1440" y1="0" x2="1300" y2="0" stroke="rgba(0,255,106,0.15)" stroke-width="1"/>
-  <line x1="1440" y1="0" x2="1440" y2="140" stroke="rgba(0,255,106,0.1)" stroke-width="1"/>
-
-  <!-- geometric accent shapes — bottom left -->
-  <polygon points="0,900 140,900 0,760" fill="rgba(0,255,106,0.05)"/>
-  <polygon points="0,900 60,900 0,840" fill="rgba(0,255,106,0.07)"/>
-
-  <!-- cross-hatch accent lines -->
-  <line x1="0" y1="0" x2="120" y2="120" stroke="rgba(0,255,106,0.04)" stroke-width="1"/>
-  <line x1="0" y1="30" x2="90" y2="120" stroke="rgba(0,255,106,0.03)" stroke-width="1"/>
-  <line x1="1440" y1="900" x2="1320" y2="780" stroke="rgba(0,255,106,0.04)" stroke-width="1"/>
-
-  <!-- mountain silhouettes — back range -->
-  <path d="M0 700 L80 590 L160 640 L260 510 L360 590 L440 530 L540 475
-           L640 555 L720 480 L800 545 L880 475 L980 520 L1080 450
-           L1180 520 L1280 478 L1360 545 L1440 505 L1440 900 L0 900Z"
-        fill="url(#horizon)" opacity=".9"/>
-
-  <!-- snow caps back -->
-  <path d="M540 475 L510 500 L540 475 L572 498Z" fill="rgba(200,240,210,0.35)"/>
-  <path d="M720 480 L695 507 L720 480 L748 505Z" fill="rgba(200,240,210,0.35)"/>
-  <path d="M1080 450 L1048 480 L1080 450 L1113 477Z" fill="rgba(200,240,210,0.35)"/>
-
-  <!-- ridge line -->
-  <path d="M540 475 L510 500 L540 475 L572 498Z" fill="none" stroke="rgba(0,255,106,0.1)" stroke-width="1" filter="url(#blur1)"/>
-
-  <!-- mountain silhouettes — mid range -->
-  <path d="M0 740 L60 650 L140 695 L220 615 L320 665 L420 575
-           L500 630 L580 555 L680 625 L760 568 L860 615
-           L960 535 L1060 605 L1160 545 L1260 615 L1360 565 L1440 595
-           L1440 900 L0 900Z"
-        fill="url(#ridgeline)" opacity=".97"/>
-  <!-- snow caps mid -->
-  <path d="M420 575 L393 600 L420 575 L449 598Z" fill="rgba(190,230,200,0.28)" />
-  <path d="M580 555 L556 580 L580 555 L606 578Z" fill="rgba(190,230,200,0.28)"/>
-  <path d="M960 535 L933 563 L960 535 L988 561Z" fill="rgba(190,230,200,0.28)"/>
-
-  <!-- ridge glow mid -->
-  <path d="M0 740 L60 650 L140 695 L220 615 L320 665 L420 575
-           L500 630 L580 555 L680 625 L760 568 L860 615
-           L960 535 L1060 605 L1160 545 L1260 615 L1360 565 L1440 595"
-        fill="none" stroke="rgba(0,255,106,0.09)" stroke-width="1.5"/>
-
-  <!-- foreground mountains -->
-  <path d="M0 810 L100 720 L200 775 L300 700 L420 755 L520 670
-           L620 730 L720 655 L820 720 L920 648 L1020 710 L1120 658
-           L1220 718 L1320 668 L1440 725 L1440 900 L0 900Z"
+  <path d="M0 700 L80 590 L180 620 L280 510 L380 570 L460 510 L540 458
+           L640 540 L720 468 L800 535 L880 462 L980 508 L1080 438
+           L1180 505 L1280 462 L1360 528 L1440 490 L1440 900 L0 900Z"
+        fill="url(#mg1)" opacity=".85"/>
+  <path d="M540 458 L516 484 L540 458 L566 482Z" fill="rgba(195,238,208,0.30)"/>
+  <path d="M720 468 L698 494 L720 468 L745 492Z" fill="rgba(195,238,208,0.30)"/>
+  <path d="M1080 438 L1053 468 L1080 438 L1108 466Z" fill="rgba(195,238,208,0.30)"/>
+  <path d="M0 700 L80 590 L180 620 L280 510 L380 570 L460 510 L540 458
+           L640 540 L720 468 L800 535 L880 462 L980 508 L1080 438
+           L1180 505 L1280 462 L1360 528 L1440 490"
+        fill="none" stroke="rgba(0,220,90,0.09)" stroke-width="1.5"/>
+  <path d="M0 740 L60 645 L140 688 L220 608 L320 658 L420 568
+           L500 622 L580 542 L680 612 L760 558 L860 602 L960 522
+           L1060 592 L1160 538 L1260 605 L1360 558 L1440 585 L1440 900 L0 900Z"
+        fill="url(#mg2)" opacity=".95"/>
+  <path d="M420 568 L398 592 L420 568 L444 590Z" fill="rgba(185,228,198,0.22)"/>
+  <path d="M580 542 L560 566 L580 542 L603 564Z" fill="rgba(185,228,198,0.22)"/>
+  <path d="M960 522 L936 548 L960 522 L985 546Z" fill="rgba(185,228,198,0.22)"/>
+  <path d="M0 740 L60 645 L140 688 L220 608 L320 658 L420 568
+           L500 622 L580 542 L680 612 L760 558 L860 602 L960 522
+           L1060 592 L1160 538 L1260 605 L1360 558 L1440 585"
+        fill="none" stroke="rgba(0,200,75,0.06)" stroke-width="1"/>
+  <path d="M0 808 L100 718 L200 768 L300 695 L420 748 L520 662
+           L620 722 L720 648 L820 712 L920 642 L1020 702
+           L1120 650 L1220 710 L1320 660 L1440 715 L1440 900 L0 900Z"
         fill="#030907"/>
-  <!-- foreground ridge -->
-  <path d="M0 810 L100 720 L200 775 L300 700 L420 755 L520 670
-           L620 730 L720 655 L820 720 L920 648 L1020 710 L1120 658
-           L1220 718 L1320 668 L1440 725"
-        fill="none" stroke="rgba(0,255,106,0.06)" stroke-width="1"/>
-
-  <!-- base fog -->
-  <path d="M0 870 Q360 840 720 858 Q1080 876 1440 848 L1440 900 L0 900Z" fill="#010503" opacity=".85"/>
-
-  <!-- hexagonal accent — upper left -->
-  <polygon points="60,80 90,63 120,80 120,112 90,129 60,112"
-    fill="none" stroke="rgba(0,255,106,0.08)" stroke-width="1"/>
-  <polygon points="68,84 90,71 112,84 112,108 90,121 68,108"
-    fill="rgba(0,255,106,0.03)"/>
-
-  <!-- hexagonal accent — lower right -->
-  <polygon points="1340,790 1370,773 1400,790 1400,822 1370,839 1340,822"
-    fill="none" stroke="rgba(0,255,106,0.06)" stroke-width="1"/>
-
-  <!-- circuit-line accent — upper right -->
-  <g stroke="rgba(0,255,106,0.07)" stroke-width="1" fill="none">
-    <path d="M1200 40 L1240 40 L1240 80 L1280 80"/>
-    <circle cx="1200" cy="40" r="3" fill="rgba(0,255,106,0.15)"/>
-    <circle cx="1280" cy="80" r="3" fill="rgba(0,255,106,0.15)"/>
-    <path d="M1260 20 L1300 20 L1300 55"/>
-    <circle cx="1260" cy="20" r="2" fill="rgba(0,255,106,0.1)"/>
-    <circle cx="1300" cy="55" r="2" fill="rgba(0,255,106,0.1)"/>
-  </g>
-
-  <!-- circuit-line accent — lower left -->
-  <g stroke="rgba(0,255,106,0.06)" stroke-width="1" fill="none">
-    <path d="M140 860 L140 820 L180 820 L180 800"/>
-    <circle cx="140" cy="860" r="2.5" fill="rgba(0,255,106,0.12)"/>
-    <circle cx="180" cy="800" r="2.5" fill="rgba(0,255,106,0.12)"/>
+  <path d="M0 808 L100 718 L200 768 L300 695 L420 748 L520 662
+           L620 722 L720 648 L820 712 L920 642 L1020 702
+           L1120 650 L1220 710 L1320 660 L1440 715"
+        fill="none" stroke="rgba(0,200,75,0.04)" stroke-width="1"/>
+  <path d="M0 875 Q360 848 720 862 Q1080 876 1440 850 L1440 900 L0 900Z" fill="#010503" opacity=".8"/>
+  <!-- hex accents -->
+  <polygon points="55,75 82,60 110,75 110,105 82,120 55,105" fill="none" stroke="rgba(0,220,90,0.06)" stroke-width="1"/>
+  <polygon points="1332,785 1358,770 1385,785 1385,815 1358,830 1332,815" fill="none" stroke="rgba(0,220,90,0.05)" stroke-width="1"/>
+  <!-- circuit traces -->
+  <g stroke="rgba(0,220,90,0.055)" stroke-width="1" fill="none">
+    <path d="M1195 35 L1235 35 L1235 72 L1272 72"/>
+    <circle cx="1195" cy="35" r="2.5" fill="rgba(0,220,90,0.10)"/>
+    <circle cx="1272" cy="72" r="2.5" fill="rgba(0,220,90,0.10)"/>
+    <path d="M1252 18 L1290 18 L1290 50"/>
+    <circle cx="1252" cy="18" r="2" fill="rgba(0,220,90,0.07)"/>
+    <circle cx="1290" cy="50" r="2" fill="rgba(0,220,90,0.07)"/>
   </g>
 </svg>
 
-<!-- OVERLAYS -->
-<div class="grid-dots"></div>
-<div class="noise"></div>
-<div class="scanlines"></div>
+<!-- CONTENT -->
+<div class="wrap">
 
-<!-- CORNER CUTS -->
-<div class="corner corner-tl">
-  <svg width="80" height="80" viewBox="0 0 80 80">
-    <polygon points="0,0 80,0 0,80" fill="rgba(0,255,106,0.04)"/>
-    <line x1="0" y1="0" x2="80" y2="0" stroke="rgba(0,255,106,0.15)" stroke-width="1"/>
-    <line x1="0" y1="0" x2="0" y2="80" stroke="rgba(0,255,106,0.15)" stroke-width="1"/>
-    <line x1="80" y1="0" x2="0" y2="80" stroke="rgba(0,255,106,0.08)" stroke-width="1"/>
-  </svg>
-</div>
-<div class="corner corner-tr">
-  <svg width="80" height="80" viewBox="0 0 80 80">
-    <polygon points="0,0 80,0 0,80" fill="rgba(0,255,106,0.04)"/>
-    <line x1="0" y1="0" x2="80" y2="0" stroke="rgba(0,255,106,0.15)" stroke-width="1"/>
-    <line x1="0" y1="0" x2="0" y2="80" stroke="rgba(0,255,106,0.15)" stroke-width="1"/>
-    <line x1="80" y1="0" x2="0" y2="80" stroke="rgba(0,255,106,0.08)" stroke-width="1"/>
-  </svg>
-</div>
-<div class="corner corner-bl">
-  <svg width="80" height="80" viewBox="0 0 80 80">
-    <polygon points="0,0 80,0 0,80" fill="rgba(0,255,106,0.04)"/>
-    <line x1="0" y1="0" x2="80" y2="0" stroke="rgba(0,255,106,0.15)" stroke-width="1"/>
-    <line x1="0" y1="0" x2="0" y2="80" stroke="rgba(0,255,106,0.15)" stroke-width="1"/>
-    <line x1="80" y1="0" x2="0" y2="80" stroke="rgba(0,255,106,0.08)" stroke-width="1"/>
-  </svg>
-</div>
-<div class="corner corner-br">
-  <svg width="80" height="80" viewBox="0 0 80 80">
-    <polygon points="0,0 80,0 0,80" fill="rgba(0,255,106,0.04)"/>
-    <line x1="0" y1="0" x2="80" y2="0" stroke="rgba(0,255,106,0.15)" stroke-width="1"/>
-    <line x1="0" y1="0" x2="0" y2="80" stroke="rgba(0,255,106,0.15)" stroke-width="1"/>
-    <line x1="80" y1="0" x2="0" y2="80" stroke="rgba(0,255,106,0.08)" stroke-width="1"/>
-  </svg>
-</div>
-
-<!-- PAGE -->
-<div class="page">
-
-  <!-- HEADER -->
-  <div class="header">
-    <div class="logo-row">
-      <div class="shield-wrap">
-        <svg width="36" height="36" viewBox="0 0 40 40" fill="none">
-          <!-- outer hex frame -->
-          <polygon points="20,2 36,11 36,29 20,38 4,29 4,11" fill="none" stroke="rgba(0,255,106,0.35)" stroke-width="1.5"/>
-          <!-- filled shield -->
-          <path d="M20 7L10 12V22C10 28 14.5 33.5 20 35C25.5 33.5 30 28 30 22V12L20 7Z" fill="rgba(0,255,106,0.12)"/>
-          <path d="M20 7L10 12V22C10 28 14.5 33.5 20 35C25.5 33.5 30 28 30 22V12L20 7Z" fill="none" stroke="rgba(0,255,106,0.6)" stroke-width="1.2"/>
-          <!-- checkmark -->
-          <path d="M15.5 21L18.5 24L25 17" stroke="#00ff6a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          <!-- corner dots -->
-          <circle cx="20" cy="2" r="1.5" fill="#00ff6a" opacity=".7"/>
-          <circle cx="36" cy="11" r="1.5" fill="#00ff6a" opacity=".5"/>
-          <circle cx="36" cy="29" r="1.5" fill="#00ff6a" opacity=".5"/>
-          <circle cx="20" cy="38" r="1.5" fill="#00ff6a" opacity=".7"/>
-          <circle cx="4" cy="29" r="1.5" fill="#00ff6a" opacity=".5"/>
-          <circle cx="4" cy="11" r="1.5" fill="#00ff6a" opacity=".5"/>
-        </svg>
-      </div>
-      <div class="brand">Zero<em>Trust</em></div>
+  <!-- NAV -->
+  <nav>
+    <a class="nav-brand" href="https://mrichard333.com">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path d="M12 2L4 6V12C4 17.5 7.5 22.5 12 24C16.5 22.5 20 17.5 20 12V6L12 2Z"
+          fill="rgba(0,220,90,0.12)" stroke="rgba(0,220,90,0.55)" stroke-width="1.2"/>
+        <path d="M9 12L11.2 14.2L15.5 9.5" stroke="#00e664" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Zero<em>Trust</em>
+    </a>
+    <div class="nav-links">
+      <a href="https://mrichard333.com/browser">Browser</a>
+      <a href="https://mrichard333.com/extension">Extension</a>
+      <a href="https://mrichard333.com/webtools">Tools</a>
+      <a href="https://mrichard333.com/dashboard" class="hl">Dashboard →</a>
     </div>
-    <div class="tagline">Mountain OS · Privacy-First Browser</div>
-  </div>
+  </nav>
 
-  <div class="divider"></div>
-
-  <!-- CLOCK -->
-  <div class="clock-block">
-    <div class="clk" id="clk" data-t="00:00">00:00</div>
-    <div class="dt" id="dt"></div>
-  </div>
-
-  <!-- PRIVACY STATUS ROW -->
-  <div class="privacy-row">
-    <div class="priv-card">
-      <div class="priv-ico">🛡️</div>
-      <div>
-        <div class="priv-label">Tracker Blocking</div>
-        <div class="priv-val">ACTIVE</div>
+  <!-- HERO -->
+  <div class="hero">
+    <div>
+      <div class="hero-eyebrow">ZeroTrust Browser · Mountain OS</div>
+      <div class="clock" id="clk">00:00</div>
+      <div class="clock-date" id="dt"></div>
+      <div class="uptime">
+        <span class="uptime-dot"></span>
+        <span id="up">0s</span>&nbsp;session
       </div>
     </div>
-    <div class="priv-card">
-      <div class="priv-ico">🔒</div>
-      <div>
-        <div class="priv-label">HTTPS Enforced</div>
-        <div class="priv-val">ACTIVE</div>
-      </div>
-    </div>
-    <div class="priv-card">
-      <div class="priv-ico">🌐</div>
-      <div>
-        <div class="priv-label">DNS over HTTPS</div>
-        <div class="priv-val">CLOUDFLARE</div>
-      </div>
+    <div class="hero-stats">
+      <div class="stat-chip"><span class="stat-check">✓</span><span class="stat-label">Zero Telemetry</span></div>
+      <div class="stat-chip"><span class="stat-check">✓</span><span class="stat-label">600K+ Threat Feeds</span></div>
+      <div class="stat-chip"><span class="stat-check">✓</span><span class="stat-label">200+ Hardened Settings</span></div>
+      <div class="stat-chip"><span class="stat-check">✓</span><span class="stat-label">Open Source Base</span></div>
     </div>
   </div>
 
   <!-- SEARCH -->
   <div class="search-wrap">
-    <div class="sb">
-      <svg class="sico" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
-      </svg>
-      <input class="inp" type="text" id="search" placeholder="Search DuckDuckGo or enter URL...">
-      <span class="ddg-badge">
+    <div class="search-row">
+      <div class="s-ico">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+        </svg>
+      </div>
+      <input class="s-inp" type="text" id="search" placeholder="Search or enter address..." autocomplete="off" spellcheck="false">
+      <div class="s-go" id="go-btn">↵ go</div>
+      <div class="s-eng">
         <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
         </svg>
-        DDG
-      </span>
-    </div>
-    <div class="cut-indicator"></div>
-  </div>
-
-  <!-- TOOLS SECTION -->
-  <div style="width:100%">
-    <div class="sec-hdr">
-      <span class="sec-t">Security &amp; Utility Tools</span>
-      <span class="sec-l"></span>
-      <span class="sec-num">08 TOOLS</span>
-    </div>
-  </div>
-  <div class="grid">
-    <a class="card" href="https://mrichard333.com/extension">
-      <div class="iw">🛡️</div>
-      <div><div class="cn">ZeroTrust Ext.</div><div class="cd">Real-time protection</div></div>
-    </a>
-    <a class="card" href="https://mrichard333.com/Cyberhealth">
-      <div class="iw">🩺</div>
-      <div><div class="cn">Cyberhealth</div><div class="cd">Hygiene audit</div></div>
-    </a>
-    <a class="card" href="https://mrichard333.com/password-check">
-      <div class="iw">⚡</div>
-      <div><div class="cn">Pwd Entropy</div><div class="cd">Brute-force sim</div></div>
-    </a>
-    <a class="card" href="https://mrichard333.com/link-scanner">
-      <div class="iw">🔗</div>
-      <div><div class="cn">URL Forensics</div><div class="cd">Deep link scan</div></div>
-    </a>
-    <a class="card" href="https://mrichard333.com/files-compressor">
-      <div class="iw">🗜️</div>
-      <div><div class="cn">Compressor</div><div class="cd">Local, no upload</div></div>
-    </a>
-    <a class="card" href="https://mrichard333.com/seo-analyser">
-      <div class="iw">📈</div>
-      <div><div class="cn">SEO Analyser</div><div class="cd">20+ checks</div></div>
-    </a>
-    <a class="card" href="https://mrichard333.com/webtools">
-      <div class="iw">🔍</div>
-      <div><div class="cn">All Tools</div><div class="cd">Full tool suite</div></div>
-    </a>
-    <a class="card" href="https://mrichard333.com">
-      <div class="iw">🏠</div>
-      <div><div class="cn">Home</div><div class="cd">Fraud defense</div></div>
-    </a>
-  </div>
-
-  <!-- DASHBOARD BANNER -->
-  <a class="db" href="https://mrichard333.com/dashboard">
-    <div class="db-corner-tr"></div>
-    <div class="db-corner-bl"></div>
-    <div class="db-left">
-      <div class="db-icon">📊</div>
-      <div>
-        <div class="db-name">Security Dashboard</div>
-        <div class="db-sub">Full suite · login required</div>
-        <div class="pills">
-          <span class="pill">Dark Web</span>
-          <span class="pill">CVE Tracker</span>
-          <span class="pill">Identity Breach</span>
-          <span class="pill">Vendor Risk</span>
-          <span class="pill">+6 more</span>
-        </div>
+        DuckDuckGo
       </div>
     </div>
-    <span class="cta">Open →</span>
-  </a>
+  </div>
+
+  <!-- METRICS -->
+  <div class="metrics">
+    <div class="metric">
+      <div class="metric-val">0<span class="metric-unit">ms</span></div>
+      <div class="metric-lbl">Telemetry sent</div>
+    </div>
+    <div class="metric">
+      <div class="metric-val">6<span class="metric-unit">+</span></div>
+      <div class="metric-lbl">Extensions pre-installed</div>
+    </div>
+    <div class="metric">
+      <div class="metric-val">600K<span class="metric-unit">+</span></div>
+      <div class="metric-lbl">Threat feeds</div>
+    </div>
+    <div class="metric">
+      <div class="metric-val">200<span class="metric-unit">+</span></div>
+      <div class="metric-lbl">Hardened settings</div>
+    </div>
+  </div>
+
+  <!-- UTILITY TOOLS -->
+  <div class="shdr">
+    <span class="shdr-t">Utility Tools</span>
+    <span class="shdr-l"></span>
+    <span class="shdr-c">04</span>
+  </div>
+  <div class="tgrid">
+    <a class="tcrd" href="https://mrichard333.com/files-compressor">
+      <span class="tcrd-ico">🗜️</span>
+      <div class="tcrd-name">Files Compressor</div>
+      <div class="tcrd-desc">Local video &amp; image — never uploaded</div>
+      <span class="tcrd-tag">Utility</span>
+    </a>
+    <a class="tcrd" href="https://mrichard333.com/seo-analyser">
+      <span class="tcrd-ico">📈</span>
+      <div class="tcrd-name">SEO Analyser</div>
+      <div class="tcrd-desc">20+ automated page checks</div>
+      <span class="tcrd-tag">SEO</span>
+    </a>
+    <a class="tcrd" href="https://mrichard333.com/webtools">
+      <span class="tcrd-ico">🔍</span>
+      <div class="tcrd-name">All Free Tools</div>
+      <div class="tcrd-desc">Full tool directory</div>
+      <span class="tcrd-tag">Directory</span>
+    </a>
+    <a class="tcrd" href="https://mrichard333.com">
+      <span class="tcrd-ico">🏠</span>
+      <div class="tcrd-name">Home</div>
+      <div class="tcrd-desc">mrichard333.com</div>
+      <span class="tcrd-tag">Site</span>
+    </a>
+  </div>
+
+  <!-- SECURITY TOOLS -->
+  <div class="shdr">
+    <span class="shdr-t">Security Tools</span>
+    <span class="shdr-l"></span>
+    <span class="shdr-c">04</span>
+  </div>
+  <div class="tgrid">
+    <a class="tcrd" href="https://mrichard333.com/extension">
+      <span class="tcrd-ico">🛡️</span>
+      <div class="tcrd-name">ZeroTrust Extension</div>
+      <div class="tcrd-desc">Real-time threat scoring · 600K+ feeds</div>
+      <span class="tcrd-tag feat">Featured</span>
+    </a>
+    <a class="tcrd" href="https://mrichard333.com/Cyberhealth">
+      <span class="tcrd-ico">🩺</span>
+      <div class="tcrd-name">Cyberhealth Audit</div>
+      <div class="tcrd-desc">Digital hygiene score checklist</div>
+      <span class="tcrd-tag">Security</span>
+    </a>
+    <a class="tcrd" href="https://mrichard333.com/password-check">
+      <span class="tcrd-ico">⚡</span>
+      <div class="tcrd-name">Password Entropy</div>
+      <div class="tcrd-desc">Brute-force simulation · client-side</div>
+      <span class="tcrd-tag">Popular</span>
+    </a>
+    <a class="tcrd" href="https://mrichard333.com/link-scanner">
+      <span class="tcrd-ico">🔗</span>
+      <div class="tcrd-name">URL Forensics</div>
+      <div class="tcrd-desc">Redirect chain · 0–100 safety score</div>
+      <span class="tcrd-tag">Forensics</span>
+    </a>
+  </div>
+
+  <!-- QUICK ACCESS -->
+  <div class="shdr">
+    <span class="shdr-t">Quick Access</span>
+    <span class="shdr-l"></span>
+  </div>
+  <div class="qgrid">
+    <a class="qlink" href="https://mrichard333.com/dashboard"><span>📊</span>Dashboard</a>
+    <a class="qlink" href="https://mrichard333.com/browser"><span>🌐</span>ZeroTrust Browser</a>
+    <a class="qlink" href="https://mrichard333.com/extension"><span>🛡️</span>Extension</a>
+    <a class="qlink" href="https://mrichard333.com/Cyberhealth"><span>🩺</span>Cyberhealth</a>
+    <a class="qlink" href="https://mrichard333.com/link-scanner"><span>🔗</span>URL Scanner</a>
+    <a class="qlink" href="https://mrichard333.com/password-check"><span>⚡</span>Password Check</a>
+    <a class="qlink" href="https://mrichard333.com/files-compressor"><span>🗜️</span>Compressor</a>
+    <a class="qlink" href="https://mrichard333.com/seo-analyser"><span>📈</span>SEO Analyser</a>
+    <a class="qlink" href="https://mrichard333.com/FAQ"><span>❓</span>FAQ</a>
+    <a class="qlink" href="https://mrichard333.com/affiliate"><span>🤝</span>Affiliate</a>
+    <a class="qlink" href="https://mrichard333.com/contact"><span>✉️</span>Contact</a>
+    <a class="qlink" href="https://github.com/MRichard333/ZeroTrust-Browser"><span>🐙</span>GitHub</a>
+  </div>
+
+  <!-- EXTENSIONS + HARDENING -->
+  <div class="shdr">
+    <span class="shdr-t">Pre-Installed Extensions</span>
+    <span class="shdr-l"></span>
+    <span class="shdr-t" style="margin-left:20px">Hardening Status</span>
+    <span class="shdr-l"></span>
+  </div>
+  <div class="two-col">
+    <div class="ext-list">
+      <a class="ext-item" href="https://mrichard333.com/extension"><span class="ext-ico">🛡️</span><span class="ext-name">ZeroTrust</span><span class="ext-tag pin">pinned</span></a>
+      <a class="ext-item" href="https://ublockorigin.com"><span class="ext-ico">🧱</span><span class="ext-name">uBlock Origin</span><span class="ext-tag pin">pinned</span></a>
+      <a class="ext-item" href="https://bitwarden.com"><span class="ext-ico">🔑</span><span class="ext-name">Bitwarden</span><span class="ext-tag act">active</span></a>
+      <a class="ext-item" href="https://addons.mozilla.org/firefox/addon/multi-account-containers/"><span class="ext-ico">📦</span><span class="ext-name">Containers</span><span class="ext-tag act">active</span></a>
+      <a class="ext-item" href="https://clearurls.xyz"><span class="ext-ico">🔗</span><span class="ext-name">ClearURLs</span><span class="ext-tag act">active</span></a>
+      <a class="ext-item" href="https://www.localcdn.org"><span class="ext-ico">📡</span><span class="ext-name">LocalCDN</span><span class="ext-tag act">active</span></a>
+    </div>
+    <div class="hard-list">
+      <div class="hard-item"><span class="hard-name">HTTPS-Only Mode</span><span class="hard-val on">ON</span></div>
+      <div class="hard-item"><span class="hard-name">DNS-over-HTTPS</span><span class="hard-val on">ON</span></div>
+      <div class="hard-item"><span class="hard-name">WebRTC Leak</span><span class="hard-val off">BLOCKED</span></div>
+      <div class="hard-item"><span class="hard-name">Fingerprinting</span><span class="hard-val off">BLOCKED</span></div>
+      <div class="hard-item"><span class="hard-name">Telemetry</span><span class="hard-val off">DISABLED</span></div>
+      <div class="hard-item"><span class="hard-name">3rd-Party Cookies</span><span class="hard-val off">PARTITIONED</span></div>
+    </div>
+  </div>
+
+  <!-- DASHBOARD MODULES -->
+  <div class="shdr">
+    <span class="shdr-t">Security Dashboard</span>
+    <span class="shdr-l"></span>
+    <span class="shdr-c">10 modules</span>
+  </div>
+  <div class="dash">
+    <div class="dash-top">
+      <div>
+        <div class="dash-title">🔐 Full Security Suite</div>
+        <div class="dash-sub">Create a free account to unlock all 10 security modules — dark web intelligence, CVE tracking, vendor risk scoring and more. One login, full access.</div>
+      </div>
+      <span class="dash-badge">10 Modules Available</span>
+    </div>
+    <div class="mods">
+      <a class="mod" href="https://mrichard333.com/dashboard"><span class="mod-ico">🔗</span><div class="mod-name">Link Scanner</div><div class="mod-desc">Malware &amp; phishing analysis</div><div class="mod-link">Launch ↗</div></a>
+      <a class="mod" href="https://mrichard333.com/dashboard"><span class="mod-ico">🏢</span><div class="mod-name">Vendor Risk</div><div class="mod-desc">Security scorecards</div><div class="mod-link">Launch ↗</div></a>
+      <a class="mod" href="https://mrichard333.com/dashboard"><span class="mod-ico">⚠️</span><div class="mod-name">CVE Tracker</div><div class="mod-desc">Global exploit database</div><div class="mod-link">Launch ↗</div></a>
+      <a class="mod" href="https://mrichard333.com/dashboard"><span class="mod-ico">🌐</span><div class="mod-name">Shadow IT</div><div class="mod-desc">Hidden subdomains</div><div class="mod-link">Launch ↗</div></a>
+      <a class="mod" href="https://mrichard333.com/dashboard"><span class="mod-ico">📋</span><div class="mod-name">Compliance</div><div class="mod-desc">SOC2 / ISO evidence</div><div class="mod-link">Launch ↗</div></a>
+      <a class="mod" href="https://mrichard333.com/dashboard"><span class="mod-ico">🕶️</span><div class="mod-name">Dark Web Intel</div><div class="mod-desc">Underground monitoring</div><div class="mod-link">Launch ↗</div></a>
+      <a class="mod" href="https://mrichard333.com/dashboard"><span class="mod-ico">🔍</span><div class="mod-name">Identity Breach</div><div class="mod-desc">Credential exposure</div><div class="mod-link">Launch ↗</div></a>
+      <a class="mod" href="https://mrichard333.com/dashboard"><span class="mod-ico">⚡</span><div class="mod-name">Password Audit</div><div class="mod-desc">Entropy scoring</div><div class="mod-link">Launch ↗</div></a>
+      <a class="mod" href="https://mrichard333.com/dashboard"><span class="mod-ico">📈</span><div class="mod-name">SEO Analyzer</div><div class="mod-desc">SEO health grade</div><div class="mod-link">Launch ↗</div></a>
+      <a class="mod" href="https://mrichard333.com/dashboard"><span class="mod-ico">🗺️</span><div class="mod-name">Site Architecture</div><div class="mod-desc">Website topology</div><div class="mod-link">Launch ↗</div></a>
+    </div>
+    <div class="dash-foot">
+      <div class="dash-note"><strong>Free account.</strong> No credit card. Full access to all 10 modules — scan history retained for 30 days. 🔒 Login required.</div>
+      <a class="dash-btn" href="https://mrichard333.com/dashboard">Create Free Account →</a>
+    </div>
+  </div>
 
   <!-- STATUS BAR -->
-  <div class="statusbar">
-    <div class="sbitem"><span class="dot"></span>ZeroTrust Active</div>
-    <div class="sbitem" id="st-time"></div>
-    <div class="sbitem">Mountain OS</div>
-    <div class="sbitem">No Telemetry</div>
+  <div class="sbar">
+    <div class="sb-item"><span class="sb-dot"></span>ZeroTrust Active</div>
+    <div class="sb-item" id="st">00:00:00</div>
+    <div class="sb-item">Mountain OS</div>
+    <div class="sb-item">DoH · Cloudflare</div>
+    <div class="sb-item">HTTPS-Only</div>
+    <div class="sb-item">No WebRTC</div>
   </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <span class="foot-copy">© 2026 MRichard333</span>
+    <div class="foot-links">
+      <a href="https://mrichard333.com">Home</a>
+      <a href="https://mrichard333.com/browser">Browser</a>
+      <a href="https://mrichard333.com/webtools">All Tools</a>
+      <a href="https://mrichard333.com/dashboard">Dashboard</a>
+      <a href="https://mrichard333.com/extension">Extension</a>
+      <a href="https://mrichard333.com/FAQ">FAQ</a>
+      <a href="https://mrichard333.com/Privacy-policy">Privacy</a>
+      <a href="https://mrichard333.com/ToS">Terms</a>
+      <a href="https://mrichard333.com/contact">Contact</a>
+      <a href="https://github.com/MRichard333/ZeroTrust-Browser">GitHub</a>
+    </div>
+  </footer>
 
 </div>
 
@@ -730,34 +688,30 @@ body{
 (function(){
   var DD=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   var MM=['January','February','March','April','May','June','July','August','September','October','November','December'];
-  var clkEl=document.getElementById('clk');
-  var dtEl=document.getElementById('dt');
-  var stEl=document.getElementById('st-time');
+  var clkEl=document.getElementById('clk'),dtEl=document.getElementById('dt'),
+      stEl=document.getElementById('st'),upEl=document.getElementById('up'),
+      start=Date.now();
+
+  function f2(n){return String(n).padStart(2,'0')}
 
   function tick(){
-    var n=new Date();
-    var h=String(n.getHours()).padStart(2,'0');
-    var m=String(n.getMinutes()).padStart(2,'0');
-    var s=String(n.getSeconds()).padStart(2,'0');
-    var time=h+':'+m;
-    clkEl.textContent=time;
-    clkEl.setAttribute('data-t',time);
+    var n=new Date(),h=f2(n.getHours()),m=f2(n.getMinutes()),s=f2(n.getSeconds());
+    clkEl.textContent=h+':'+m;
     dtEl.textContent=DD[n.getDay()]+' · '+MM[n.getMonth()]+' '+n.getDate()+' · '+n.getFullYear();
-    if(stEl) stEl.textContent=h+':'+m+':'+s;
+    stEl.textContent=h+':'+m+':'+s;
+    var sec=Math.floor((Date.now()-start)/1000);
+    upEl.textContent=sec<60?sec+'s':sec<3600?Math.floor(sec/60)+'m '+sec%60+'s':Math.floor(sec/3600)+'h '+Math.floor(sec%3600/60)+'m';
   }
-  tick();
-  setInterval(tick,1000);
+  tick(); setInterval(tick,1000);
 
-  // Search
-  document.getElementById('search').addEventListener('keydown',function(e){
-    if(e.key!=='Enter') return;
-    var q=e.target.value.trim();
-    if(!q) return;
+  function go(){
+    var q=document.getElementById('search').value.trim();
+    if(!q)return;
     var isUrl=/^https?:\/\//.test(q)||/^[\w-]+\.[\w]{2,}(\/|$)/.test(q);
-    window.location.href=isUrl
-      ?(q.startsWith('http')?q:'https://'+q)
-      :'https://duckduckgo.com/?q='+encodeURIComponent(q);
-  });
+    location.href=isUrl?(q.startsWith('http')?q:'https://'+q):'https://duckduckgo.com/?q='+encodeURIComponent(q);
+  }
+  document.getElementById('search').addEventListener('keydown',function(e){if(e.key==='Enter')go();});
+  document.getElementById('go-btn').addEventListener('click',go);
   document.getElementById('search').focus();
 })();
 </script>
