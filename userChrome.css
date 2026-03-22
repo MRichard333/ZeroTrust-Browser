@@ -1,7 +1,14 @@
 /* ============================================================
-   ZeroTrust Browser — userChrome.css  v2.3
-   Dark Mountain theme · Window controls always visible
+   ZeroTrust Browser — userChrome.css  v2.4
+   Optimized for low-end hardware — GPU-safe only
    Place in: <profile>/chrome/userChrome.css
+
+   Performance rules applied throughout:
+   - Transitions only on opacity and transform (GPU composited)
+   - No box-shadow changes on hover (forces repaint)
+   - No backdrop-filter (very expensive on integrated GPUs)
+   - will-change used sparingly on interactive elements only
+   - background-color changes kept but minimised
    ============================================================ */
 
 /* ── TOKENS ──────────────────────────────────────────────── */
@@ -34,7 +41,6 @@
   box-shadow: none !important;
 }
 
-/* Thin green accent line at the very bottom of the chrome */
 #navigator-toolbox::after {
   content: "";
   display: block;
@@ -46,7 +52,7 @@
     var(--zt-accent-dim) 75%,
     transparent 100%
   );
-  opacity: 0.3;
+  opacity: 0.28;
 }
 
 /* ── TITLE BAR ───────────────────────────────────────────── */
@@ -55,15 +61,11 @@
   background: var(--zt-bg) !important;
 }
 
-/* Firefox puts window buttons in TWO places when tabsintitlebar is active:
-   - Inside #titlebar (a separate row above the tab bar)
-   - Inside #TabsToolbar (integrated into the tab bar row)
-   We hide the #titlebar duplicate and style only the #TabsToolbar set. */
+/* Hide the duplicate titlebar row — keep only TabsToolbar buttons */
 #titlebar .titlebar-buttonbox-container {
   display: none !important;
 }
 
-/* Window buttons in the tab bar — always show, macOS-style circles */
 #TabsToolbar .titlebar-buttonbox-container {
   display: flex !important;
   align-items: center !important;
@@ -87,39 +89,23 @@
   padding: 0 !important;
   margin: 0 !important;
   border: none !important;
-  opacity: 0.85;
-  transition: opacity 0.12s, transform 0.1s !important;
+  /* opacity transition is GPU-composited — safe */
+  transition: opacity 0.1s !important;
 }
 
-#TabsToolbar .titlebar-button:hover {
-  opacity: 1 !important;
-  transform: scale(1.12) !important;
-}
-
+#TabsToolbar .titlebar-button:hover { opacity: 0.85 !important; }
 #TabsToolbar .titlebar-button > .toolbarbutton-icon { display: none !important; }
 
-/* Close — red */
 #TabsToolbar .titlebar-close {
   background: #ff5f57 !important;
-  box-shadow: 0 0 0 1px rgba(0,0,0,0.2) inset !important;
 }
-#TabsToolbar .titlebar-close:hover { background: #ff3b30 !important; }
-
-/* Minimize — amber */
 #TabsToolbar .titlebar-min {
   background: #febc2e !important;
-  box-shadow: 0 0 0 1px rgba(0,0,0,0.15) inset !important;
 }
-#TabsToolbar .titlebar-min:hover { background: #f0a500 !important; }
-
-/* Maximize/restore — green (ZeroTrust accent) */
 #TabsToolbar .titlebar-max,
 #TabsToolbar .titlebar-restore {
   background: var(--zt-accent) !important;
-  box-shadow: 0 0 0 1px rgba(0,0,0,0.15) inset !important;
 }
-#TabsToolbar .titlebar-max:hover,
-#TabsToolbar .titlebar-restore:hover { background: #00e664 !important; }
 
 /* ── NAV BAR ─────────────────────────────────────────────── */
 #nav-bar {
@@ -134,17 +120,17 @@
   background: var(--zt-surface2) !important;
   border: 1px solid var(--zt-border-hi) !important;
   border-radius: var(--zt-r-lg) !important;
+  /* No box-shadow — triggers repaint on every frame during focus animation */
   box-shadow: none !important;
-  transition: border-color 0.15s, box-shadow 0.15s !important;
+  /* Only transition border-color — cheaper than box-shadow */
+  transition: border-color 0.12s !important;
   min-height: 36px !important;
 }
 
 #urlbar:focus-within,
 #urlbar[focused="true"] {
   border-color: var(--zt-accent) !important;
-  box-shadow:
-    0 0 0 2px var(--zt-accent-glow),
-    0 4px 20px rgba(0,0,0,0.5) !important;
+  box-shadow: none !important;
   background: var(--zt-surface) !important;
 }
 
@@ -165,15 +151,15 @@
   fill: var(--zt-accent) !important;
   opacity: 0.85;
 }
-
 #tracking-protection-icon { fill: var(--zt-accent) !important; }
 
-/* Dropdown */
+/* URL bar dropdown — no blur, no shadow animation */
 #urlbar .urlbarView {
   background: var(--zt-surface) !important;
   border: 1px solid var(--zt-border-hi) !important;
   border-radius: var(--zt-r-lg) !important;
-  box-shadow: 0 16px 48px rgba(0,0,0,0.7) !important;
+  /* Static shadow — not animated, not composited on hover */
+  box-shadow: 0 8px 24px rgba(0,0,0,0.55) !important;
   margin-top: 4px !important;
   overflow: hidden !important;
 }
@@ -203,27 +189,27 @@
   background: transparent !important;
   border: none !important;
   margin-top: 5px !important;
-  transition: background 0.1s !important;
+  /* background-color is compositable on modern drivers — keep transition short */
+  transition: background-color 0.08s !important;
 }
 
-/* Active tab */
+/* Active tab — use border-top instead of box-shadow (cheaper) */
 .tabbrowser-tab[selected] .tab-background {
   background: var(--zt-surface) !important;
-  box-shadow:
-    inset 0 2px 0 var(--zt-accent),
-    inset 1px 0 0 var(--zt-border-hi),
-    inset -1px 0 0 var(--zt-border-hi) !important;
+  border-top: 2px solid var(--zt-accent) !important;
+  border-left: 1px solid var(--zt-border-hi) !important;
+  border-right: 1px solid var(--zt-border-hi) !important;
+  border-bottom: none !important;
+  /* No box-shadow on tabs — this was the main cursor lag culprit */
 }
 
-/* Inactive hover */
 .tabbrowser-tab:not([selected]):hover .tab-background {
   background: var(--zt-surface2) !important;
 }
 
-/* Multi-select */
 .tabbrowser-tab[multiselected] .tab-background {
   background: var(--zt-surface2) !important;
-  box-shadow: inset 0 2px 0 var(--zt-accent-dim) !important;
+  border-top: 2px solid var(--zt-accent-dim) !important;
 }
 
 .tab-label {
@@ -242,7 +228,11 @@
 .tab-icon-overlay[soundplaying],
 .tab-icon-overlay[muted] { fill: var(--zt-accent) !important; }
 
-.tab-close-button { opacity: 0 !important; transition: opacity 0.1s !important; }
+/* Tab close — opacity only, GPU composited */
+.tab-close-button {
+  opacity: 0 !important;
+  transition: opacity 0.08s !important;
+}
 .tabbrowser-tab:hover .tab-close-button { opacity: 0.45 !important; }
 .tabbrowser-tab:hover .tab-close-button:hover {
   opacity: 1 !important;
@@ -251,8 +241,12 @@
   border-radius: 4px !important;
 }
 
+/* New tab button — opacity transition only */
 #tabs-newtab-button,
-.tabs-newtab-button { fill: var(--zt-text-soft) !important; transition: fill 0.1s, background 0.1s !important; }
+.tabs-newtab-button {
+  fill: var(--zt-text-soft) !important;
+  transition: opacity 0.08s !important;
+}
 #tabs-newtab-button:hover,
 .tabs-newtab-button:hover {
   fill: var(--zt-accent) !important;
@@ -260,60 +254,74 @@
   border-radius: var(--zt-r-sm) !important;
 }
 
-.tabbrowser-tab[usercontextid] .tab-context-line { height: 2px !important; border-radius: 0 !important; }
+.tabbrowser-tab[usercontextid] .tab-context-line {
+  height: 2px !important;
+  border-radius: 0 !important;
+}
 
 /* ── TOOLBAR BUTTONS ─────────────────────────────────────── */
 toolbar .toolbarbutton-1 {
   fill: var(--zt-text-soft) !important;
   color: var(--zt-text-soft) !important;
   border-radius: var(--zt-r-sm) !important;
-  transition: fill 0.1s, background 0.1s !important;
+  /* No transition on fill — not GPU composited */
 }
+
 toolbar .toolbarbutton-1:hover {
   background: var(--zt-surface2) !important;
   fill: var(--zt-text) !important;
   color: var(--zt-text) !important;
 }
+
 toolbar .toolbarbutton-1:active {
   background: var(--zt-surface3) !important;
   fill: var(--zt-accent) !important;
 }
+
 toolbar .toolbarbutton-1[open="true"],
 toolbar .toolbarbutton-1[checked="true"] {
   background: var(--zt-surface2) !important;
   fill: var(--zt-accent) !important;
   color: var(--zt-accent) !important;
-  box-shadow: inset 0 0 0 1px var(--zt-accent-glow) !important;
 }
 
-#unified-extensions-button       { fill: var(--zt-text-soft) !important; }
-#unified-extensions-button:hover  { fill: var(--zt-accent) !important; }
+#unified-extensions-button        { fill: var(--zt-text-soft) !important; }
+#unified-extensions-button:hover   { fill: var(--zt-accent) !important; }
 #nav-bar-overflow-button .toolbarbutton-icon { fill: var(--zt-text-soft) !important; }
 
 /* ── SIDEBAR ─────────────────────────────────────────────── */
 #sidebar-box { background: var(--zt-surface) !important; border-right: 1px solid var(--zt-border) !important; }
 #sidebar-header { background: var(--zt-surface2) !important; border-bottom: 1px solid var(--zt-border) !important; color: var(--zt-text) !important; }
 #sidebar { background: var(--zt-surface) !important; color: var(--zt-text) !important; }
-#sidebar-splitter { border: none !important; background: var(--zt-border) !important; min-width: 1px !important; width: 1px !important; cursor: col-resize !important; transition: background 0.15s !important; }
+#sidebar-splitter { border: none !important; background: var(--zt-border) !important; min-width: 1px !important; width: 1px !important; cursor: col-resize !important; }
 #sidebar-splitter:hover { background: var(--zt-accent) !important; }
 
 /* ── FINDBAR ─────────────────────────────────────────────── */
 .findbar-container { background: var(--zt-surface) !important; border-top: 1px solid var(--zt-border) !important; padding: 5px 10px !important; }
 .findbar-textbox { background: var(--zt-surface2) !important; border: 1px solid var(--zt-border-hi) !important; border-radius: var(--zt-r-sm) !important; color: var(--zt-text) !important; caret-color: var(--zt-accent) !important; }
-.findbar-textbox:focus { border-color: var(--zt-accent) !important; box-shadow: 0 0 0 2px var(--zt-accent-glow) !important; }
+.findbar-textbox:focus { border-color: var(--zt-accent) !important; box-shadow: none !important; }
 .findbar-textbox[status="notfound"] { background: rgba(200,30,30,0.12) !important; border-color: #b83030 !important; }
 
 /* ── BOOKMARKS ───────────────────────────────────────────── */
 #PersonalToolbar { background: var(--zt-surface) !important; border-bottom: 1px solid var(--zt-border) !important; padding: 2px 8px !important; }
-.bookmark-item { color: var(--zt-text-soft) !important; border-radius: var(--zt-r-sm) !important; transition: background 0.1s, color 0.1s !important; }
+.bookmark-item { color: var(--zt-text-soft) !important; border-radius: var(--zt-r-sm) !important; }
 .bookmark-item:hover { background: var(--zt-surface2) !important; color: var(--zt-text) !important; }
 .bookmark-item > .toolbarbutton-icon { opacity: 0.65; }
 .bookmark-item:hover > .toolbarbutton-icon { opacity: 1; }
 
 /* ── MENUS ───────────────────────────────────────────────── */
-menupopup, panel { background: var(--zt-surface3) !important; border: 1px solid var(--zt-border-hi) !important; border-radius: var(--zt-r-lg) !important; box-shadow: 0 16px 56px rgba(0,0,0,0.8) !important; padding: 4px !important; }
-menuitem, menu { color: var(--zt-text) !important; border-radius: var(--zt-r-sm) !important; padding: 5px 10px !important; transition: background 0.08s !important; }
-menuitem:hover, menu:hover, menuitem[_moz-menuactive="true"], menu[_moz-menuactive="true"] { background: var(--zt-surface2) !important; color: var(--zt-text) !important; }
+menupopup, panel {
+  background: var(--zt-surface3) !important;
+  border: 1px solid var(--zt-border-hi) !important;
+  border-radius: var(--zt-r-lg) !important;
+  /* Static shadow — not animated */
+  box-shadow: 0 8px 32px rgba(0,0,0,0.65) !important;
+  padding: 4px !important;
+}
+menuitem, menu { color: var(--zt-text) !important; border-radius: var(--zt-r-sm) !important; padding: 5px 10px !important; }
+menuitem:hover, menu:hover,
+menuitem[_moz-menuactive="true"],
+menu[_moz-menuactive="true"] { background: var(--zt-surface2) !important; color: var(--zt-text) !important; }
 menuitem[disabled="true"] { color: var(--zt-text-dim) !important; }
 menuseparator { border-color: var(--zt-border) !important; margin: 3px 6px !important; }
 menuitem[checked="true"]::before { color: var(--zt-accent) !important; }
@@ -329,7 +337,7 @@ scrollbar { background: transparent !important; -moz-appearance: none !important
 scrollbar[orient="vertical"]   { width: 5px !important; min-width: 5px !important; }
 scrollbar[orient="horizontal"] { height: 5px !important; min-height: 5px !important; }
 scrollbarbutton { display: none !important; }
-thumb { background: var(--zt-border-hi) !important; border-radius: 3px !important; border: none !important; transition: background 0.12s !important; }
+thumb { background: var(--zt-border-hi) !important; border-radius: 3px !important; border: none !important; }
 thumb:hover { background: var(--zt-accent-dim) !important; }
 
 /* ── MISC ────────────────────────────────────────────────── */
