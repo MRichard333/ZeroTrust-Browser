@@ -2,737 +2,572 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ZeroTrust Browser</title>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
 :root{
-  --green:#00e664;--green-dim:#00c853;--green-deep:#009940;
-  --gm:rgba(0,230,100,0.08);--gm2:rgba(0,230,100,0.14);
-  --text:#e2f0e2;--dim:#7a9e82;--muted:#3a5040;--muted2:#2a3830;
-  --surface:rgba(6,12,8,0.78);--surface2:rgba(8,16,11,0.92);
-  --border:rgba(0,230,100,0.10);--border-hi:rgba(0,230,100,0.22);
-  --shadow:0 20px 60px rgba(0,0,0,0.7);
+  --a:    #3ecf8e;
+  --a2:   #28a06e;
+  --ag:   rgba(62,207,142,0.10);
+  --al:   rgba(62,207,142,0.22);
+  --bg:   #050807;
+  --s1:   rgba(11,15,13,0.82);
+  --s2:   rgba(17,24,19,0.95);
+  --b1:   rgba(35,48,40,0.9);
+  --b2:   rgba(46,64,50,0.9);
+  --t0:   #d6eed8;
+  --t1:   rgba(214,238,216,0.45);
+  --t2:   rgba(214,238,216,0.18);
+  --mono: ui-monospace,'SF Mono','Cascadia Code',monospace;
+  --sans: -apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',system-ui,sans-serif;
 }
 
-html,body{height:100%;background:#030806;overflow:hidden}
+html,body{
+  height:100%;background:var(--bg);overflow:hidden;
+  font-family:var(--sans);-webkit-font-smoothing:antialiased;
+  color:var(--t0);
+}
 body{
-  font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',system-ui,sans-serif;
-  -webkit-font-smoothing:antialiased;color:var(--text);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  min-height:100vh;overflow-y:auto;overflow-x:hidden;position:relative
+  display:flex;flex-direction:column;align-items:center;
+  min-height:100vh;overflow-y:auto;overflow-x:hidden;position:relative;
 }
 
-/* ── Sky canvas (stars) ── */
-#sky{position:fixed;inset:0;z-index:0;pointer-events:none}
+/* ── Canvas ── */
+#c{position:fixed;inset:0;z-index:0;pointer-events:none}
 
-/* ── Moon ── */
-#moon{
-  position:fixed;top:7vh;right:12vw;z-index:1;pointer-events:none;
-  width:72px;height:72px;border-radius:50%;
-  background:radial-gradient(circle at 38% 38%,#e8f4e0,#c8dfc0 55%,#8aad90 100%);
-  box-shadow:0 0 40px 12px rgba(180,240,200,0.18),0 0 90px 30px rgba(100,200,140,0.09);
-  animation:moonpulse 8s ease-in-out infinite
-}
-#moon::after{
-  content:'';position:absolute;inset:0;border-radius:50%;
-  background:radial-gradient(circle at 70% 30%,transparent 50%,rgba(0,20,8,0.25) 100%)
-}
-@keyframes moonpulse{0%,100%{box-shadow:0 0 40px 12px rgba(180,240,200,0.18),0 0 90px 30px rgba(100,200,140,0.09)}50%{box-shadow:0 0 55px 18px rgba(180,240,200,0.24),0 0 120px 40px rgba(100,200,140,0.13)}}
+/* ── Mountains ── */
+.mts{position:fixed;inset:0;z-index:1;pointer-events:none}
 
 /* ── Aurora ── */
-#aurora{
-  position:fixed;top:0;left:0;right:0;height:55vh;
-  pointer-events:none;z-index:1;
+.aurora{
+  position:fixed;inset:0;z-index:2;pointer-events:none;
   background:
-    radial-gradient(ellipse 110% 55% at 20% -8%,rgba(0,180,80,0.17) 0%,transparent 65%),
-    radial-gradient(ellipse 80% 45% at 60% -5%,rgba(0,140,70,0.12) 0%,transparent 60%),
-    radial-gradient(ellipse 60% 35% at 85% -3%,rgba(0,210,100,0.08) 0%,transparent 55%),
-    radial-gradient(ellipse 40% 25% at 40% 15%,rgba(0,160,90,0.06) 0%,transparent 50%);
-  animation:aurorashift 16s ease-in-out infinite alternate
+    radial-gradient(ellipse 130% 65% at 10% -20%, rgba(20,140,80,0.16) 0%,transparent 60%),
+    radial-gradient(ellipse 90%  55% at 75% -15%, rgba(40,160,90,0.10) 0%,transparent 55%),
+    radial-gradient(ellipse 70%  40% at 50%   2%, rgba(62,207,142,0.06) 0%,transparent 50%);
+  animation:aurora 18s ease-in-out infinite alternate;
 }
-#aurora2{
-  position:fixed;top:0;left:0;right:0;height:40vh;
-  pointer-events:none;z-index:1;
-  background:
-    radial-gradient(ellipse 70% 40% at 75% -12%,rgba(0,200,120,0.10) 0%,transparent 60%),
-    radial-gradient(ellipse 50% 30% at 25% -8%,rgba(0,150,80,0.08) 0%,transparent 55%);
-  animation:aurorashift2 20s ease-in-out infinite alternate
-}
-@keyframes aurorashift{
-  0%{opacity:.7;transform:scaleX(1) translateX(0)}
-  50%{opacity:1;transform:scaleX(1.08) translateX(-2%)}
-  100%{opacity:.8;transform:scaleX(0.95) translateX(3%)}
-}
-@keyframes aurorashift2{
-  0%{opacity:.5;transform:scaleX(1) translateX(0)}
-  100%{opacity:.9;transform:scaleX(1.12) translateX(-4%)}
-}
+@keyframes aurora{0%{opacity:.6}100%{opacity:1}}
 
-/* ── Mountain SVG layers ── */
-#mountains{
-  position:fixed;bottom:0;left:0;right:0;
-  width:100%;height:100vh;
-  pointer-events:none;z-index:2
-}
-
-/* ── Mist layers ── */
-.mist{
-  position:fixed;left:-10%;right:-10%;pointer-events:none;z-index:3;
-  background:radial-gradient(ellipse 80% 40% at 50% 100%,rgba(180,230,200,0.06) 0%,transparent 70%)
-}
-#mist1{bottom:28%;height:120px;animation:mistdrift 18s ease-in-out infinite alternate}
-#mist2{bottom:18%;height:90px;opacity:.7;animation:mistdrift 24s ease-in-out infinite alternate-reverse}
-#mist3{bottom:8%;height:70px;opacity:.5;animation:mistdrift 30s ease-in-out infinite alternate}
-@keyframes mistdrift{0%{transform:translateX(-3%)}100%{transform:translateX(3%)}}
-
-/* ── Snow canvas ── */
-#snow{position:fixed;inset:0;z-index:4;pointer-events:none}
-
-/* ── Page content ── */
+/* ── Layout ── */
 .page{
-  position:relative;z-index:10;width:100%;max-width:680px;
-  display:flex;flex-direction:column;align-items:center;gap:18px;
-  padding:24px 20px 28px
+  position:relative;z-index:10;
+  width:100%;max-width:720px;
+  padding:32px 24px 180px;
+  display:flex;flex-direction:column;align-items:center;
+  gap:18px;
 }
 
 /* ── Logo ── */
-.logo{display:flex;align-items:center;gap:11px}
-.logo svg{filter:drop-shadow(0 0 14px rgba(0,230,100,0.55))}
-.lt{font-size:24px;font-weight:800;color:var(--text);letter-spacing:-.8px}
-.lt em{font-style:normal;color:var(--green);text-shadow:0 0 24px rgba(0,230,100,0.55)}
-.tl{font-size:9px;color:var(--muted);letter-spacing:2.5px;text-transform:uppercase;font-weight:600;text-align:center;margin-top:4px}
+.logo{display:flex;align-items:center;gap:12px}
+.shield{width:38px;height:38px;flex-shrink:0;filter:drop-shadow(0 0 16px rgba(62,207,142,0.5))}
+.brand{font-size:22px;font-weight:700;letter-spacing:-0.8px;line-height:1}
+.brand b{color:var(--a)}
+.sub{font-family:var(--mono);font-size:9px;color:var(--t2);letter-spacing:3px;text-transform:uppercase;margin-top:3px}
 
 /* ── Clock ── */
-.clk{
-  font-size:68px;font-weight:100;color:var(--text);letter-spacing:-5px;
-  line-height:1;font-variant-numeric:tabular-nums;
-  text-shadow:0 0 80px rgba(0,230,100,0.12),0 2px 40px rgba(0,0,0,.8);
-  text-align:center
+.clock{
+  font-family:var(--mono);font-size:72px;font-weight:400;
+  letter-spacing:-6px;line-height:1;text-align:center;
+  color:var(--t0);
 }
-.dt{font-size:11px;color:var(--dim);letter-spacing:2.5px;text-transform:uppercase;text-align:center;margin-top:3px}
+.date{
+  font-family:var(--mono);font-size:10px;color:var(--t1);
+  letter-spacing:2.5px;text-transform:uppercase;
+  text-align:center;margin-top:5px;
+}
 
 /* ── Search ── */
-.sb{
-  display:flex;align-items:center;width:100%;
-  background:var(--surface);
-  border:1px solid var(--border-hi);border-radius:16px;
-  padding:13px 17px;gap:11px;
-  transition:border-color .2s,box-shadow .2s;
-  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)
+.search{
+  width:100%;display:flex;align-items:center;gap:10px;
+  background:var(--s1);border:1px solid var(--b1);
+  border-radius:16px;padding:13px 18px;
+  transition:border-color .15s,background-color .12s;
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
 }
-.sb:focus-within{
-  border-color:var(--green-dim);
-  box-shadow:0 0 0 3px rgba(0,200,83,.12),0 10px 40px rgba(0,0,0,.6)
+.search:focus-within{
+  border-color:var(--al);
+  background:var(--s2);
 }
-.sico{color:var(--muted);flex-shrink:0}
-.inp{flex:1;border:none;outline:none;font-size:15px;color:var(--text);background:transparent;caret-color:var(--green)}
-.inp::placeholder{color:var(--muted)}
+.search svg{color:var(--t2);flex-shrink:0}
+.search input{
+  flex:1;background:transparent;border:none;outline:none;
+  font-family:var(--sans);font-size:15px;color:var(--t0);
+  caret-color:var(--a);
+}
+.search input::placeholder{color:var(--t2)}
 .ddg{
-  display:flex;align-items:center;gap:5px;font-size:9px;font-weight:700;
-  color:var(--dim);background:var(--gm);border:1px solid var(--border);
-  border-radius:5px;padding:3px 8px;white-space:nowrap;
-  text-transform:uppercase;letter-spacing:.5px;flex-shrink:0
+  font-family:var(--mono);font-size:8px;letter-spacing:.6px;
+  text-transform:uppercase;color:var(--t1);
+  background:var(--ag);border:1px solid var(--al);
+  border-radius:5px;padding:3px 8px;
+  display:flex;align-items:center;gap:4px;flex-shrink:0;
 }
 
-/* ── Section header ── */
-.sec-hdr{display:flex;align-items:center;gap:10px;width:100%}
-.sec-t{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:2px;white-space:nowrap}
-.sec-l{flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent)}
+/* ── Section label ── */
+.sec{
+  width:100%;display:flex;align-items:center;gap:10px;
+  margin-top:2px;
+}
+.sec-lbl{
+  font-family:var(--mono);font-size:8px;letter-spacing:2.5px;
+  text-transform:uppercase;color:var(--t2);white-space:nowrap;
+}
+.sec-rule{flex:1;height:1px;background:linear-gradient(90deg,var(--b1),transparent)}
 
-/* ── Tool grid ── */
-.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;width:100%}
+/* ── Grid ── */
+.grid{width:100%;display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+
+/* ── Card ── */
 .card{
-  display:flex;flex-direction:column;gap:8px;padding:12px 10px;
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:12px;text-decoration:none;color:var(--text);
-  transition:border-color .2s,background .2s,transform .15s,box-shadow .2s;
   position:relative;overflow:hidden;
-  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)
-}
-.card::after{
-  content:'';position:absolute;top:0;left:-100%;width:55%;height:1px;
-  background:linear-gradient(90deg,transparent,var(--green),transparent);
-  transition:left .45s ease;opacity:0
+  border-radius:14px;text-decoration:none;color:var(--t0);
+  background:var(--s1);border:1px solid var(--b1);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  transition:border-color .15s,background-color .12s,transform .15s;
+  display:flex;flex-direction:column;
 }
 .card:hover{
-  border-color:rgba(0,230,100,.38);background:var(--surface2);
-  transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,0,0,.55)
+  border-color:var(--b2);
+  background:var(--s2);
+  transform:translateY(-3px);
 }
-.card:hover::after{left:120%;opacity:1}
-.iw{
-  width:28px;height:28px;background:var(--gm);
-  border:1px solid rgba(0,230,100,.14);border-radius:7px;
+/* Colored bar */
+.bar{height:2px;width:100%;flex-shrink:0}
+/* Icon glow on hover */
+.card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:48px;
+  opacity:0;transition:opacity .15s;pointer-events:none;
+  background:var(--card-glow,transparent);
+}
+.card:hover::before{opacity:1}
+
+.body{padding:13px 12px 12px;display:flex;flex-direction:column;gap:8px;flex:1}
+.ico{
+  width:36px;height:36px;border-radius:9px;
   display:flex;align-items:center;justify-content:center;
-  font-size:14px;flex-shrink:0;transition:background .2s,border-color .2s
+  font-size:17px;flex-shrink:0;
+  transition:transform .15s;
 }
-.card:hover .iw{background:var(--gm2);border-color:rgba(0,230,100,.3)}
-.cn{font-size:10px;font-weight:700;color:var(--text);line-height:1.3}
-.cd{font-size:9px;color:var(--muted);line-height:1.4;margin-top:1px}
+.card:hover .ico{transform:scale(1.1) rotate(-3deg)}
+
+.name{font-size:11px;font-weight:600;line-height:1.3}
+.desc{font-family:var(--mono);font-size:8.5px;color:var(--t2);line-height:1.5;margin-top:1px}
+
+/* Card colors */
+.c-green{--card-glow:linear-gradient(180deg,rgba(62,207,142,.10),transparent)}
+.c-green .bar{background:linear-gradient(90deg,#28a06e,#3ecf8e)}
+.c-green .ico{background:rgba(62,207,142,.10);border:1px solid rgba(62,207,142,.20)}
+.c-green:hover{border-color:rgba(62,207,142,.35)!important}
+.c-green .name{color:#7de8b4}
+
+.c-blue{--card-glow:linear-gradient(180deg,rgba(88,170,255,.10),transparent)}
+.c-blue .bar{background:linear-gradient(90deg,#2060c8,#4898ff)}
+.c-blue .ico{background:rgba(88,170,255,.10);border:1px solid rgba(88,170,255,.20)}
+.c-blue:hover{border-color:rgba(88,170,255,.35)!important}
+.c-blue .name{color:#88c4ff}
+
+.c-amber{--card-glow:linear-gradient(180deg,rgba(240,180,40,.10),transparent)}
+.c-amber .bar{background:linear-gradient(90deg,#c07800,#f0b428)}
+.c-amber .ico{background:rgba(240,180,40,.10);border:1px solid rgba(240,180,40,.20)}
+.c-amber:hover{border-color:rgba(240,180,40,.35)!important}
+.c-amber .name{color:#ffd060}
+
+.c-violet{--card-glow:linear-gradient(180deg,rgba(160,110,255,.10),transparent)}
+.c-violet .bar{background:linear-gradient(90deg,#6030c0,#a060ff)}
+.c-violet .ico{background:rgba(160,110,255,.10);border:1px solid rgba(160,110,255,.20)}
+.c-violet:hover{border-color:rgba(160,110,255,.35)!important}
+.c-violet .name{color:#c090ff}
+
+.c-teal{--card-glow:linear-gradient(180deg,rgba(20,200,220,.10),transparent)}
+.c-teal .bar{background:linear-gradient(90deg,#0888a0,#14c8dc)}
+.c-teal .ico{background:rgba(20,200,220,.10);border:1px solid rgba(20,200,220,.20)}
+.c-teal:hover{border-color:rgba(20,200,220,.35)!important}
+.c-teal .name{color:#60e0f4}
+
+.c-coral{--card-glow:linear-gradient(180deg,rgba(255,100,80,.10),transparent)}
+.c-coral .bar{background:linear-gradient(90deg,#b83828,#ff5840)}
+.c-coral .ico{background:rgba(255,100,80,.10);border:1px solid rgba(255,100,80,.20)}
+.c-coral:hover{border-color:rgba(255,100,80,.35)!important}
+.c-coral .name{color:#ff9080}
+
+.c-dim .bar{background:linear-gradient(90deg,#1d2b20,#2e4032)}
+.c-dim .ico{background:rgba(46,64,50,.5);border:1px solid var(--b1)}
 
 /* ── Dashboard banner ── */
-.db{
-  display:flex;align-items:center;justify-content:space-between;gap:14px;
-  width:100%;padding:14px 17px;
-  background:var(--surface);border:1px solid var(--border-hi);
-  border-radius:14px;text-decoration:none;color:var(--text);
-  transition:border-color .2s,background .2s,box-shadow .2s;
+.dash{
+  width:100%;display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:18px 22px;background:var(--s1);border:1px solid var(--b1);
+  border-radius:16px;text-decoration:none;color:var(--t0);
   position:relative;overflow:hidden;
-  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  transition:border-color .15s,transform .15s;
 }
-.db::before{
+.dash::before{
   content:'';position:absolute;top:0;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,transparent 5%,rgba(0,230,100,.5) 50%,transparent 95%)
+  background:linear-gradient(90deg,transparent 5%,var(--al) 50%,transparent 95%);
 }
-.db:hover{border-color:rgba(0,230,100,.42);background:var(--surface2);box-shadow:0 14px 48px rgba(0,0,0,.65)}
-.dl{display:flex;align-items:center;gap:13px}
-.di{
-  width:38px;height:38px;background:var(--gm);
-  border:1px solid rgba(0,230,100,.2);border-radius:9px;
-  display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0
+.dash:hover{border-color:var(--al);transform:translateY(-2px)}
+.dash-l{display:flex;align-items:center;gap:16px}
+.dash-ico{
+  width:48px;height:48px;border-radius:12px;flex-shrink:0;
+  background:var(--ag);border:1px solid var(--al);
+  display:flex;align-items:center;justify-content:center;font-size:22px;
 }
-.dn{font-size:13px;font-weight:800;color:var(--text);letter-spacing:-.3px}
-.ds{font-size:10px;color:var(--muted);margin-top:2px}
-.pills{display:flex;gap:4px;margin-top:5px;flex-wrap:wrap}
+.dash-name{font-size:15px;font-weight:700;letter-spacing:-.3px}
+.dash-sub{font-family:var(--mono);font-size:9.5px;color:var(--t1);margin-top:3px}
+.pills{display:flex;gap:4px;margin-top:7px;flex-wrap:wrap}
 .pill{
-  font-size:8px;font-weight:700;color:var(--green-dim);
-  background:var(--gm);border:1px solid rgba(0,200,83,.15);
-  border-radius:3px;padding:2px 5px;letter-spacing:.3px;text-transform:uppercase
+  font-family:var(--mono);font-size:7.5px;letter-spacing:.4px;text-transform:uppercase;
+  color:rgba(62,207,142,.85);background:var(--ag);
+  border:1px solid var(--al);border-radius:3px;padding:2px 6px;
 }
-.cta{
-  font-size:11px;font-weight:800;color:#030806;background:var(--green);
-  border-radius:8px;padding:9px 14px;white-space:nowrap;flex-shrink:0;
-  letter-spacing:-.2px;transition:background .15s,box-shadow .15s;
-  box-shadow:0 0 22px rgba(0,230,100,.3)
+.dash-btn{
+  font-family:var(--mono);font-size:10.5px;font-weight:500;
+  color:#050807;background:var(--a);border-radius:9px;
+  padding:12px 20px;white-space:nowrap;flex-shrink:0;
+  transition:background-color .15s,transform .12s;
 }
-.db:hover .cta{background:#10ff70;box-shadow:0 0 36px rgba(0,230,100,.5)}
+.dash:hover .dash-btn{background:#5adaa0;transform:scale(1.03)}
 
-/* ── Status bar ── */
-.status{display:flex;align-items:center;font-size:10px;color:var(--muted)}
-.si2{display:flex;align-items:center;gap:5px;padding:0 13px}
-.si2+.si2{border-left:1px solid var(--border)}
+/* ── Status ── */
+.status{
+  display:flex;align-items:center;
+  font-family:var(--mono);font-size:9px;color:var(--t2);
+  letter-spacing:.5px;
+}
+.seg{display:flex;align-items:center;gap:6px;padding:0 14px}
+.seg+.seg{border-left:1px solid var(--b1)}
 .dot{
-  width:5px;height:5px;border-radius:50%;background:var(--green);
-  box-shadow:0 0 7px var(--green);animation:beat 2.5s ease-in-out infinite
+  width:5px;height:5px;border-radius:50%;
+  background:var(--a);box-shadow:0 0 6px var(--a);
+  animation:pulse 3s ease-in-out infinite;
 }
-.stm{font-variant-numeric:tabular-nums;font-weight:600;color:var(--dim)}
-@keyframes beat{
-  0%,100%{opacity:1;box-shadow:0 0 6px var(--green)}
-  50%{opacity:.6;box-shadow:0 0 14px var(--green)}
-}
+.stime{color:var(--t1)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+
+/* ── Entrance ── */
+@keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.page>*{animation:up .5s ease both}
+.page>*:nth-child(1){animation-delay:.05s}
+.page>*:nth-child(2){animation-delay:.12s}
+.page>*:nth-child(3){animation-delay:.18s}
+.page>*:nth-child(4){animation-delay:.24s}
+.page>*:nth-child(5){animation-delay:.28s}
+.page>*:nth-child(6){animation-delay:.32s}
+.page>*:nth-child(7){animation-delay:.36s}
+.card:nth-child(1){animation-delay:.28s}.card:nth-child(2){animation-delay:.32s}
+.card:nth-child(3){animation-delay:.36s}.card:nth-child(4){animation-delay:.40s}
+.card:nth-child(5){animation-delay:.44s}.card:nth-child(6){animation-delay:.48s}
+.card:nth-child(7){animation-delay:.52s}.card:nth-child(8){animation-delay:.56s}
+
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
+<canvas id="c"></canvas>
+<div class="aurora"></div>
 
-<!-- Stars -->
-<canvas id="sky"></canvas>
-
-<!-- Moon -->
-<div id="moon"></div>
-
-<!-- Aurora layers -->
-<div id="aurora"></div>
-<div id="aurora2"></div>
-
-<!-- Mountain SVG — 5 depth layers + pine trees + snow caps + mist pockets -->
-<svg id="mountains" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+<!-- Mountain SVG -->
+<svg class="mts" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMax slice"
+     xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
   <defs>
-    <!-- Far range gradient (darkest, bluish-green) -->
-    <linearGradient id="gFar" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#0c2218"/>
-      <stop offset="100%" stop-color="#061208"/>
+    <linearGradient id="ga" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0a160c"/><stop offset="100%" stop-color="#050907"/>
     </linearGradient>
-    <!-- Mid-far range -->
-    <linearGradient id="gMidFar" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#0f2e1c"/>
-      <stop offset="100%" stop-color="#081708"/>
+    <linearGradient id="gb" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0d1e10"/><stop offset="100%" stop-color="#060c08"/>
     </linearGradient>
-    <!-- Mid range -->
-    <linearGradient id="gMid" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#0d2818"/>
-      <stop offset="100%" stop-color="#061208"/>
+    <linearGradient id="gc" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#091408"/><stop offset="100%" stop-color="#040a06"/>
     </linearGradient>
-    <!-- Near range (richest green-black) -->
-    <linearGradient id="gNear" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#0a1e12"/>
-      <stop offset="100%" stop-color="#030806"/>
+    <linearGradient id="gd" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#060e07"/><stop offset="100%" stop-color="#030605"/>
     </linearGradient>
-    <!-- Foreground -->
-    <linearGradient id="gFore" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#060e08"/>
-      <stop offset="100%" stop-color="#020504"/>
+    <linearGradient id="snow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="rgba(200,240,210,0.90)"/>
+      <stop offset="55%" stop-color="rgba(140,210,160,0.45)"/>
+      <stop offset="100%" stop-color="rgba(62,207,142,0)"/>
     </linearGradient>
-    <!-- Snow cap gradient -->
-    <linearGradient id="gSnow" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="rgba(220,245,225,0.72)"/>
-      <stop offset="100%" stop-color="rgba(140,200,160,0)"/>
+    <linearGradient id="snowB" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="rgba(175,230,190,0.60)"/>
+      <stop offset="100%" stop-color="rgba(62,207,142,0)"/>
     </linearGradient>
-    <!-- Snow cap bright -->
-    <linearGradient id="gSnowBright" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="rgba(235,252,238,0.85)"/>
-      <stop offset="100%" stop-color="rgba(160,220,175,0)"/>
-    </linearGradient>
-    <!-- Mist pocket -->
-    <radialGradient id="gMist" cx="50%" cy="100%" r="50%">
-      <stop offset="0%" stop-color="rgba(180,230,200,0.10)"/>
-      <stop offset="100%" stop-color="rgba(180,230,200,0)"/>
-    </radialGradient>
-    <!-- Pine tree gradient -->
-    <linearGradient id="gPine" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#0a1e10"/>
-      <stop offset="100%" stop-color="#040c06"/>
-    </linearGradient>
-    <!-- Aurora band on mountains -->
-    <linearGradient id="gAurMtn" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="rgba(0,200,83,0.07)"/>
-      <stop offset="100%" stop-color="rgba(0,200,83,0)"/>
-    </linearGradient>
-    <filter id="blur2">
-      <feGaussianBlur stdDeviation="2"/>
-    </filter>
-    <filter id="blur4">
-      <feGaussianBlur stdDeviation="4"/>
-    </filter>
-    <filter id="blur1">
-      <feGaussianBlur stdDeviation="1"/>
-    </filter>
+    <filter id="f2"><feGaussianBlur stdDeviation="2.5"/></filter>
   </defs>
 
-  <!-- ── LAYER 1: Farthest mountains (hazy, soft) ── -->
-  <g filter="url(#blur4)" opacity=".7">
-    <path d="M0 600
-      L50 540 L110 570 L180 500 L250 535 L320 475 L390 510
-      L450 455 L510 490 L570 440 L630 478 L690 428
-      L750 462 L810 418 L870 450 L930 408
-      L990 444 L1050 400 L1110 438 L1170 395
-      L1230 430 L1290 390 L1350 422 L1400 385 L1440 410
-      L1440 900 L0 900Z"
-      fill="url(#gFar)"/>
-  </g>
+  <!-- Range 1: far -->
+  <path d="M0 695 L72 548 L162 618 L260 482 L368 576 L458 510
+    L562 442 L666 534 L740 454 L822 524 L906 444 L1002 500
+    L1108 422 L1212 496 L1308 456 L1388 530 L1440 490 L1440 900 L0 900Z"
+    fill="url(#ga)" opacity=".93"/>
+  <path d="M562 442 L502 490 L562 442 L622 486Z" fill="url(#snow)"/>
+  <path d="M740 454 L686 500 L740 454 L794 496Z" fill="url(#snow)"/>
+  <path d="M1108 422 L1048 470 L1108 422 L1168 466Z" fill="url(#snow)"/>
+  <path d="M562 442 L528 464 L562 442 L596 462Z" fill="url(#snowB)"/>
+  <path d="M740 454 L704 476 L740 454 L776 474Z" fill="url(#snowB)"/>
 
-  <!-- ── LAYER 2: Far-mid mountains ── -->
-  <g filter="url(#blur2)" opacity=".85">
-    <path d="M0 650
-      L40 580 L90 610 L150 548 L210 582 L270 522
-      L330 558 L390 500 L450 538 L510 475
-      L565 512 L615 462 L665 498 L715 445
-      L765 485 L815 438 L870 472 L920 422
-      L975 460 L1030 412 L1085 450 L1140 405
-      L1195 442 L1250 398 L1305 435 L1360 395
-      L1400 425 L1440 400
-      L1440 900 L0 900Z"
-      fill="url(#gMidFar)"/>
-    <!-- Snow caps layer 2 -->
-    <path d="M510 475 L490 500 L510 475 L530 498Z" fill="url(#gSnow)"/>
-    <path d="M665 498 L645 520 L665 498 L686 518Z" fill="url(#gSnow)"/>
-    <path d="M815 438 L795 464 L815 438 L838 462Z" fill="url(#gSnow)"/>
-    <path d="M1030 412 L1008 440 L1030 412 L1054 438Z" fill="url(#gSnow)"/>
-    <path d="M1250 398 L1228 426 L1250 398 L1274 424Z" fill="url(#gSnow)"/>
-  </g>
+  <!-- Range 2: mid -->
+  <path d="M0 730 L60 628 L146 684 L232 598 L336 652 L436 556 L520 620
+    L600 538 L700 614 L780 548 L880 602 L980 516 L1080 590
+    L1180 528 L1282 604 L1382 548 L1440 584 L1440 900 L0 900Z"
+    fill="url(#gb)" opacity=".97"/>
+  <path d="M436 556 L392 594 L436 556 L482 590Z" fill="url(#snow)" opacity=".85"/>
+  <path d="M600 538 L560 574 L600 538 L640 570Z" fill="url(#snow)" opacity=".85"/>
+  <path d="M980 516 L938 556 L980 516 L1024 552Z" fill="url(#snow)" opacity=".88"/>
+  <path d="M0 730 L60 628 L146 684 L232 598 L336 652 L436 556 L520 620
+           L600 538 L700 614 L780 548 L880 602 L980 516 L1080 590
+           L1180 528 L1282 604 L1382 548 L1440 584"
+    fill="none" stroke="rgba(62,207,142,0.12)" stroke-width="1.2"/>
 
-  <!-- ── LAYER 3: Mid mountains (main hero range) ── -->
-  <path d="M-20 700
-    L30 618 L80 648 L140 588 L200 622 L258 558
-    L315 598 L370 535 L425 574 L475 512
-    L520 550 L562 488 L605 526 L645 468
-    L688 508 L728 450 L770 492 L810 435
-    L852 478 L892 420 L935 462 L978 405
-    L1022 448 L1065 390 L1110 432 L1155 374
-    L1200 418 L1245 362 L1290 405 L1335 350
-    L1380 390 L1420 355 L1460 378
-    L1460 900 L-20 900Z"
-    fill="url(#gMid)"/>
+  <!-- Range 3: near -->
+  <path d="M0 810 L100 710 L206 762 L312 688 L436 744 L536 656 L640 722
+    L740 646 L840 714 L940 640 L1040 704 L1140 652 L1242 714 L1344 658 L1440 720
+    L1440 900 L0 900Z"
+    fill="url(#gc)"/>
+  <path d="M0 810 L100 710 L206 762 L312 688 L436 744 L536 656 L640 722
+    L740 646 L840 714 L940 640 L1040 704 L1140 652 L1242 714 L1344 658 L1440 720"
+    fill="none" stroke="rgba(62,207,142,0.07)" stroke-width="1"/>
 
-  <!-- Main snow caps — tallest peaks -->
-  <path d="M728 450 L702 482 L718 475 L728 450 L738 474 L750 480Z" fill="url(#gSnowBright)" opacity=".9"/>
-  <path d="M978 405 L950 440 L965 433 L978 405 L991 432 L1005 438Z" fill="url(#gSnowBright)" opacity=".9"/>
-  <path d="M1245 362 L1215 400 L1230 393 L1245 362 L1260 392 L1276 398Z" fill="url(#gSnowBright)" opacity=".9"/>
-  <path d="M562 488 L540 518 L553 511 L562 488 L572 510 L584 516Z" fill="url(#gSnow)" opacity=".85"/>
-  <path d="M1110 432 L1088 462 L1100 456 L1110 432 L1122 455 L1133 460Z" fill="url(#gSnow)" opacity=".8"/>
-
-  <!-- Glaciers / ice patches on mid range -->
-  <path d="M718 475 L728 450 L738 474 L732 480 L722 478Z" fill="rgba(200,240,210,0.35)"/>
-  <path d="M965 433 L978 405 L991 432 L984 438 L972 436Z" fill="rgba(200,240,210,0.35)"/>
-  <path d="M1230 393 L1245 362 L1260 392 L1252 400 L1238 397Z" fill="rgba(200,240,210,0.35)"/>
-
-  <!-- Faint aurora tint on mountain tops -->
-  <path d="M-20 500 L1460 340 L1460 600 L-20 720Z" fill="url(#gAurMtn)" opacity=".4"/>
-
-  <!-- ── Ridge line glow (accent) on mid range ── -->
-  <path d="M-20 700
-    L30 618 L80 648 L140 588 L200 622 L258 558
-    L315 598 L370 535 L425 574 L475 512
-    L520 550 L562 488 L605 526 L645 468
-    L688 508 L728 450 L770 492 L810 435
-    L852 478 L892 420 L935 462 L978 405
-    L1022 448 L1065 390 L1110 432 L1155 374
-    L1200 418 L1245 362 L1290 405 L1335 350
-    L1380 390 L1420 355 L1460 378"
-    fill="none" stroke="rgba(0,200,83,0.18)" stroke-width="1.5"/>
-
-  <!-- ── Pine forest belt on mid range ── -->
-  <g opacity=".95">
-    <!-- Dense pine band across mid range, placed along the slope -->
-    <!-- Left forest cluster -->
-    <path d="M30 660 L38 638 L46 660Z M46 660 L54 636 L62 660Z M62 660 L70 633 L78 660Z
-             M78 660 L87 635 L96 660Z M96 660 L105 632 L114 660Z
-             M114 660 L123 634 L132 660Z M132 660 L141 630 L150 660Z
-             M150 660 L159 633 L168 660Z M168 660 L177 636 L186 660Z
-             M186 660 L195 638 L204 660Z M204 660 L213 635 L222 660Z" fill="url(#gPine)"/>
-    <!-- Left second tier (taller trees behind) -->
-    <path d="M40 655 L50 626 L60 655Z M70 652 L80 621 L90 652Z
-             M100 650 L110 618 L120 650Z M130 648 L140 616 L150 648Z
-             M160 650 L170 620 L180 650Z M190 653 L200 622 L210 653Z" fill="url(#gPine)" opacity=".7"/>
-
-    <!-- Central valley forest -->
-    <path d="M310 660 L318 638 L326 660Z M326 660 L334 634 L342 660Z
-             M342 660 L350 630 L358 660Z M358 660 L366 633 L374 660Z
-             M374 660 L382 636 L390 660Z M390 660 L398 632 L406 660Z
-             M406 660 L414 628 L422 660Z M422 660 L430 631 L438 660Z
-             M438 660 L446 635 L454 660Z M454 660 L462 638 L470 660Z" fill="url(#gPine)"/>
-    <path d="M320 655 L332 622 L344 655Z M348 652 L360 618 L372 652Z
-             M376 650 L388 615 L400 650Z M404 648 L416 614 L428 648Z
-             M432 651 L444 618 L456 651Z" fill="url(#gPine)" opacity=".65"/>
-
-    <!-- Right forest -->
-    <path d="M980 660 L988 636 L996 660Z M996 660 L1004 632 L1012 660Z
-             M1012 660 L1020 628 L1028 660Z M1028 660 L1036 631 L1044 660Z
-             M1044 660 L1052 634 L1060 660Z M1060 660 L1068 630 L1076 660Z
-             M1076 660 L1084 633 L1092 660Z M1092 660 L1100 636 L1108 660Z
-             M1108 660 L1116 632 L1124 660Z M1124 660 L1132 628 L1140 660Z
-             M1140 660 L1148 631 L1156 660Z M1156 660 L1164 634 L1172 660Z" fill="url(#gPine)"/>
-    <path d="M990 654 L1002 620 L1014 654Z M1020 651 L1032 617 L1044 651Z
-             M1050 649 L1062 614 L1074 649Z M1080 651 L1092 616 L1104 651Z
-             M1110 652 L1122 617 L1134 652Z M1148 650 L1160 615 L1172 650Z" fill="url(#gPine)" opacity=".65"/>
-
-    <!-- Far right forest -->
-    <path d="M1280 660 L1288 635 L1296 660Z M1296 660 L1304 631 L1312 660Z
-             M1312 660 L1320 628 L1328 660Z M1328 660 L1336 632 L1344 660Z
-             M1344 660 L1352 635 L1360 660Z M1360 660 L1368 631 L1376 660Z
-             M1376 660 L1384 628 L1392 660Z M1392 660 L1400 632 L1408 660Z
-             M1408 660 L1416 635 L1424 660Z M1424 660 L1432 631 L1440 660Z" fill="url(#gPine)"/>
-    <path d="M1288 655 L1300 621 L1312 655Z M1318 652 L1330 617 L1342 652Z
-             M1348 650 L1360 615 L1372 650Z M1378 652 L1390 617 L1402 652Z
-             M1410 653 L1422 618 L1434 653Z" fill="url(#gPine)" opacity=".65"/>
-  </g>
-
-  <!-- ── Mist pockets between peaks ── -->
-  <ellipse cx="250" cy="670" rx="180" ry="35" fill="url(#gMist)" filter="url(#blur4)"/>
-  <ellipse cx="600" cy="650" rx="160" ry="30" fill="url(#gMist)" filter="url(#blur4)"/>
-  <ellipse cx="860" cy="640" rx="200" ry="38" fill="url(#gMist)" filter="url(#blur4)"/>
-  <ellipse cx="1140" cy="655" rx="170" ry="32" fill="url(#gMist)" filter="url(#blur4)"/>
-  <ellipse cx="1400" cy="660" rx="140" ry="28" fill="url(#gMist)" filter="url(#blur4)"/>
-
-  <!-- ── LAYER 4: Near mountains ── -->
-  <path d="M-20 760
-    L0 700 L50 728 L100 668 L160 706 L210 645
-    L265 684 L320 618 L375 660 L425 595
-    L470 635 L515 572 L558 612 L598 552
-    L640 594 L682 535 L722 578 L762 518
-    L804 562 L845 500 L888 546 L930 482
-    L974 528 L1018 465 L1063 512 L1108 450
-    L1154 498 L1200 435 L1248 482 L1294 420
-    L1342 468 L1388 408 L1420 450 L1460 418
-    L1460 900 L-20 900Z"
-    fill="url(#gNear)"/>
-
-  <!-- Near range snow -->
-  <path d="M515 572 L492 600 L505 594 L515 572 L526 593 L538 598Z" fill="url(#gSnow)" opacity=".75"/>
-  <path d="M682 535 L658 566 L671 559 L682 535 L694 558 L706 563Z" fill="url(#gSnowBright)" opacity=".8"/>
-  <path d="M930 482 L905 515 L918 508 L930 482 L943 507 L956 512Z" fill="url(#gSnowBright)" opacity=".82"/>
-  <path d="M1200 435 L1174 470 L1188 463 L1200 435 L1213 462 L1226 467Z" fill="url(#gSnowBright)" opacity=".78"/>
-
-  <!-- Near ridge glow -->
-  <path d="M-20 760
-    L0 700 L50 728 L100 668 L160 706 L210 645
-    L265 684 L320 618 L375 660 L425 595
-    L470 635 L515 572 L558 612 L598 552
-    L640 594 L682 535 L722 578 L762 518
-    L804 562 L845 500 L888 546 L930 482
-    L974 528 L1018 465 L1063 512 L1108 450
-    L1154 498 L1200 435 L1248 482 L1294 420
-    L1342 468 L1388 408 L1420 450 L1460 418"
-    fill="none" stroke="rgba(0,200,83,0.12)" stroke-width="1.2"/>
-
-  <!-- Near pine belt -->
-  <g opacity=".98">
-    <path d="M0 770 L9 748 L18 770Z M18 770 L27 744 L36 770Z M36 770 L45 740 L54 770Z
-             M54 770 L63 744 L72 770Z M72 770 L81 740 L90 770Z M90 770 L99 743 L108 770Z
-             M108 770 L117 740 L126 770Z M126 770 L135 743 L144 770Z
-             M144 770 L153 740 L162 770Z M162 770 L171 743 L180 770Z" fill="url(#gPine)"/>
-    <path d="M420 770 L429 746 L438 770Z M438 770 L447 742 L456 770Z
-             M456 770 L465 738 L474 770Z M474 770 L483 742 L492 770Z
-             M492 770 L501 738 L510 770Z M510 770 L519 741 L528 770Z
-             M528 770 L537 738 L546 770Z M546 770 L555 741 L564 770Z" fill="url(#gPine)"/>
-    <path d="M700 770 L709 745 L718 770Z M718 770 L727 741 L736 770Z
-             M736 770 L745 737 L754 770Z M754 770 L763 741 L772 770Z
-             M772 770 L781 737 L790 770Z M790 770 L799 740 L808 770Z
-             M808 770 L817 737 L826 770Z M826 770 L835 740 L844 770Z
-             M844 770 L853 737 L862 770Z M862 770 L871 740 L880 770Z" fill="url(#gPine)"/>
-    <path d="M1020 770 L1029 745 L1038 770Z M1038 770 L1047 741 L1056 770Z
-             M1056 770 L1065 737 L1074 770Z M1074 770 L1083 741 L1092 770Z
-             M1092 770 L1101 737 L1110 770Z M1110 770 L1119 740 L1128 770Z
-             M1128 770 L1137 737 L1146 770Z M1146 770 L1155 740 L1164 770Z" fill="url(#gPine)"/>
-    <path d="M1310 770 L1319 745 L1328 770Z M1328 770 L1337 741 L1346 770Z
-             M1346 770 L1355 737 L1364 770Z M1364 770 L1373 741 L1382 770Z
-             M1382 770 L1391 737 L1400 770Z M1400 770 L1409 740 L1418 770Z
-             M1418 770 L1427 737 L1436 770Z" fill="url(#gPine)"/>
-  </g>
-
-  <!-- ── LAYER 5: Foreground silhouette ── -->
-  <path d="M-20 840
-    L0 800 L40 818 L80 790 L130 808 L180 775
-    L240 795 L300 762 L360 782 L420 750
-    L480 772 L540 740 L600 762 L660 730
-    L720 755 L780 722 L840 748 L900 715
-    L960 740 L1020 708 L1080 735 L1140 702
-    L1200 728 L1260 695 L1320 722 L1380 690
-    L1420 712 L1460 695
-    L1460 900 L-20 900Z"
-    fill="url(#gFore)"/>
-
-  <!-- Foreground dense pines -->
-  <g opacity="1">
-    <path d="M0 840 L10 815 L20 840Z M20 840 L30 812 L40 840Z M40 840 L50 808 L60 840Z
-             M60 840 L70 812 L80 840Z M80 840 L90 808 L100 840Z M100 840 L110 811 L120 840Z
-             M120 840 L130 807 L140 840Z M140 840 L150 810 L160 840Z M160 840 L170 807 L180 840Z
-             M180 840 L190 810 L200 840Z M200 840 L210 807 L220 840Z M220 840 L230 810 L240 840Z
-             M240 840 L250 807 L260 840Z M260 840 L270 810 L280 840Z" fill="url(#gFore)"/>
-    <path d="M380 840 L390 814 L400 840Z M400 840 L410 810 L420 840Z M420 840 L430 806 L440 840Z
-             M440 840 L450 810 L460 840Z M460 840 L470 806 L480 840Z M480 840 L490 809 L500 840Z
-             M500 840 L510 805 L520 840Z M520 840 L530 808 L540 840Z M540 840 L550 805 L560 840Z
-             M560 840 L570 808 L580 840Z" fill="url(#gFore)"/>
-    <path d="M780 840 L790 813 L800 840Z M800 840 L810 809 L820 840Z M820 840 L830 805 L840 840Z
-             M840 840 L850 808 L860 840Z M860 840 L870 804 L880 840Z M880 840 L890 807 L900 840Z
-             M900 840 L910 804 L920 840Z M920 840 L930 807 L940 840Z M940 840 L950 804 L960 840Z
-             M960 840 L970 807 L980 840Z M980 840 L990 804 L1000 840Z" fill="url(#gFore)"/>
-    <path d="M1180 840 L1190 813 L1200 840Z M1200 840 L1210 809 L1220 840Z M1220 840 L1230 805 L1240 840Z
-             M1240 840 L1250 808 L1260 840Z M1260 840 L1270 804 L1280 840Z M1280 840 L1290 807 L1300 840Z
-             M1300 840 L1310 804 L1320 840Z M1320 840 L1330 807 L1340 840Z M1340 840 L1350 804 L1360 840Z
-             M1360 840 L1370 807 L1380 840Z M1380 840 L1390 804 L1400 840Z M1400 840 L1410 807 L1420 840Z
-             M1420 840 L1430 804 L1440 840Z" fill="url(#gFore)"/>
-  </g>
-
-  <!-- ── Ground fog / valley mist ── -->
-  <ellipse cx="720" cy="870" rx="600" ry="45" fill="rgba(0,200,83,0.04)" filter="url(#blur4)"/>
-  <ellipse cx="720" cy="870" rx="400" ry="28" fill="rgba(0,200,83,0.06)" filter="url(#blur2)"/>
-  <ellipse cx="200" cy="850" rx="250" ry="30" fill="rgba(180,230,200,0.04)" filter="url(#blur4)"/>
-  <ellipse cx="1240" cy="845" rx="220" ry="28" fill="rgba(180,230,200,0.04)" filter="url(#blur4)"/>
-
-  <!-- Thin horizon glow -->
-  <path d="M0 640 Q360 620 720 610 Q1080 600 1440 615 L1440 625 Q1080 610 720 620 Q360 630 0 650Z"
-        fill="rgba(0,200,83,0.06)"/>
+  <!-- Valley -->
+  <path d="M0 868 Q250 842 500 856 Q740 870 984 847 Q1218 834 1440 852
+    L1440 900 L0 900Z" fill="url(#gd)" opacity=".98"/>
+  <ellipse cx="720" cy="858" rx="260" ry="18" fill="rgba(62,207,142,0.025)" filter="url(#f2)"/>
 </svg>
 
-<!-- Mist animation overlays -->
-<div class="mist" id="mist1"></div>
-<div class="mist" id="mist2"></div>
-<div class="mist" id="mist3"></div>
-
-<!-- Snow canvas -->
-<canvas id="snow"></canvas>
-
-<!-- ── Page content ── -->
 <div class="page">
+
   <!-- Logo -->
   <div style="text-align:center">
     <div class="logo">
-      <svg width="32" height="32" viewBox="0 0 36 36" fill="none">
-        <rect width="36" height="36" rx="9" fill="#00c853"/>
-        <path d="M18 6L8 11V19.5C8 25.3 12.5 30.6 18 32C23.5 30.6 28 25.3 28 19.5V11L18 6Z" fill="#030806" opacity=".95"/>
-        <path d="M14.5 18.5L17 21L22 15.5" stroke="#00e664" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      <svg class="shield" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+        <rect width="40" height="40" rx="10" fill="#1d2b20"/>
+        <rect width="40" height="40" rx="10" fill="#3ecf8e" fill-opacity=".15"/>
+        <path d="M20 6L8 12V21C8 28 13.5 34.2 20 36C26.5 34.2 32 28 32 21V12L20 6Z"
+              fill="#050807" fill-opacity=".95"/>
+        <path d="M15.5 20.5L18.8 23.8L25.5 17"
+              stroke="#3ecf8e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
-      <span class="lt">Zero<em>Trust</em> Browser</span>
+      <div>
+        <div class="brand">Zero<b>Trust</b> Browser</div>
+        <div class="sub">Mountain OS · Zero Trust Security</div>
+      </div>
     </div>
-    <div class="tl">Mountain OS &nbsp;·&nbsp; Secured by ZeroTrust</div>
   </div>
 
   <!-- Clock -->
   <div style="text-align:center">
-    <div class="clk" id="clk">00:00</div>
-    <div class="dt" id="dt"></div>
+    <div class="clock" id="clk" aria-live="off">00:00</div>
+    <div class="date" id="dt"></div>
   </div>
 
   <!-- Search -->
-  <div class="sb">
-    <svg class="sico" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+  <div class="search" role="search">
+    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
       <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
     </svg>
-    <input class="inp" type="text" id="search" placeholder="Search or enter address...">
+    <input id="q" type="search" placeholder="Search or enter address…"
+           autofocus autocomplete="off" spellcheck="false">
     <span class="ddg">
-      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
       </svg>
       DuckDuckGo
     </span>
   </div>
 
-  <!-- Tools -->
-  <div style="width:100%">
-    <div class="sec-hdr">
-      <span class="sec-t">Security &amp; Utility Tools</span>
-      <span class="sec-l"></span>
-    </div>
-    <div class="grid" style="margin-top:10px">
-      <a class="card" href="https://mrichard333.com/extension">
-        <div class="iw">🛡️</div><div><div class="cn">ZeroTrust Extension</div><div class="cd">Real-time protection</div></div>
-      </a>
-      <a class="card" href="https://mrichard333.com/Cyberhealth">
-        <div class="iw">🩺</div><div><div class="cn">Cyberhealth Audit</div><div class="cd">Digital hygiene check</div></div>
-      </a>
-      <a class="card" href="https://mrichard333.com/password-check">
-        <div class="iw">⚡</div><div><div class="cn">Password Entropy</div><div class="cd">Brute-force simulation</div></div>
-      </a>
-      <a class="card" href="https://mrichard333.com/link-scanner">
-        <div class="iw">🔗</div><div><div class="cn">URL Forensics</div><div class="cd">Deep link analysis</div></div>
-      </a>
-      <a class="card" href="https://mrichard333.com/files-compressor">
-        <div class="iw">🗜️</div><div><div class="cn">Files Compressor</div><div class="cd">Local, no uploads</div></div>
-      </a>
-      <a class="card" href="https://mrichard333.com/seo-analyser">
-        <div class="iw">📈</div><div><div class="cn">SEO Analyser</div><div class="cd">20+ automated checks</div></div>
-      </a>
-      <a class="card" href="https://mrichard333.com/webtools">
-        <div class="iw">🔍</div><div><div class="cn">View All Tools</div><div class="cd">Free tools hub</div></div>
-      </a>
-      <a class="card" href="https://mrichard333.com">
-        <div class="iw">🏠</div><div><div class="cn">Home</div><div class="cd">mrichard333.com</div></div>
-      </a>
-    </div>
+  <!-- Tools label -->
+  <div class="sec">
+    <span class="sec-lbl">Security &amp; Utility Tools</span>
+    <span class="sec-rule"></span>
   </div>
 
-  <!-- Dashboard -->
-  <a class="db" href="https://mrichard333.com/dashboard">
-    <div class="dl">
-      <div class="di">📊</div>
+  <!-- Tool grid -->
+  <nav class="grid" aria-label="Tools">
+
+    <a class="card c-green" href="https://mrichard333.com/extension">
+      <div class="bar"></div>
+      <div class="body">
+        <div class="ico">🛡️</div>
+        <div>
+          <div class="name">ZeroTrust Extension</div>
+          <div class="desc">Real-time threat scoring</div>
+        </div>
+      </div>
+    </a>
+
+    <a class="card c-blue" href="https://mrichard333.com/Cyberhealth">
+      <div class="bar"></div>
+      <div class="body">
+        <div class="ico">🩺</div>
+        <div>
+          <div class="name">Cyberhealth Audit</div>
+          <div class="desc">Digital hygiene score</div>
+        </div>
+      </div>
+    </a>
+
+    <a class="card c-amber" href="https://mrichard333.com/password-check">
+      <div class="bar"></div>
+      <div class="body">
+        <div class="ico">⚡</div>
+        <div>
+          <div class="name">Password Entropy</div>
+          <div class="desc">Brute-force simulation</div>
+        </div>
+      </div>
+    </a>
+
+    <a class="card c-violet" href="https://mrichard333.com/link-scanner">
+      <div class="bar"></div>
+      <div class="body">
+        <div class="ico">🔗</div>
+        <div>
+          <div class="name">URL Forensics</div>
+          <div class="desc">Inspect redirects &amp; trackers</div>
+        </div>
+      </div>
+    </a>
+
+    <a class="card c-teal" href="https://mrichard333.com/files-compressor">
+      <div class="bar"></div>
+      <div class="body">
+        <div class="ico">🗜️</div>
+        <div>
+          <div class="name">Files Compressor</div>
+          <div class="desc">100% local — nothing uploaded</div>
+        </div>
+      </div>
+    </a>
+
+    <a class="card c-coral" href="https://mrichard333.com/seo-analyser">
+      <div class="bar"></div>
+      <div class="body">
+        <div class="ico">📈</div>
+        <div>
+          <div class="name">SEO Analyser</div>
+          <div class="desc">20+ automated checks</div>
+        </div>
+      </div>
+    </a>
+
+    <a class="card c-green" href="https://mrichard333.com/webtools">
+      <div class="bar"></div>
+      <div class="body">
+        <div class="ico">🔍</div>
+        <div>
+          <div class="name">All Free Tools</div>
+          <div class="desc">Full tool directory</div>
+        </div>
+      </div>
+    </a>
+
+    <a class="card c-dim" href="https://mrichard333.com">
+      <div class="bar"></div>
+      <div class="body">
+        <div class="ico">🏠</div>
+        <div>
+          <div class="name">Home</div>
+          <div class="desc">mrichard333.com</div>
+        </div>
+      </div>
+    </a>
+
+  </nav>
+
+  <!-- Dashboard banner -->
+  <a class="dash" href="https://mrichard333.com/dashboard">
+    <div class="dash-l">
+      <div class="dash-ico" aria-hidden="true">📊</div>
       <div>
-        <div class="dn">Security Dashboard</div>
-        <div class="ds">Full suite · login required</div>
+        <div class="dash-name">Security Dashboard</div>
+        <div class="dash-sub">Full suite · login required</div>
         <div class="pills">
           <span class="pill">Dark Web</span>
           <span class="pill">CVE Tracker</span>
           <span class="pill">Identity Breach</span>
           <span class="pill">Vendor Risk</span>
-          <span class="pill">+6 more</span>
+          <span class="pill">Shadow IT</span>
+          <span class="pill">+5 more</span>
         </div>
       </div>
     </div>
-    <span class="cta">Open Dashboard</span>
+    <span class="dash-btn">Open Dashboard →</span>
   </a>
 
-  <!-- Status -->
-  <div class="status">
-    <div class="si2"><span class="dot"></span><span>ZeroTrust Active</span></div>
-    <div class="si2"><span class="stm" id="st"></span></div>
-    <div class="si2"><span>Mountain OS</span></div>
+  <!-- Status bar -->
+  <div class="status" role="status" aria-live="off">
+    <div class="seg"><span class="dot" aria-hidden="true"></span><span>ZeroTrust Active</span></div>
+    <div class="seg"><time class="stime" id="st">00:00:00</time></div>
+    <div class="seg"><span>Mountain OS</span></div>
   </div>
+
 </div>
 
 <script>
 (function(){
-  // ── Stars ──
-  var sky = document.getElementById('sky');
-  var sc = sky.getContext('2d');
-  function drawStars(){
-    sky.width = innerWidth; sky.height = innerHeight;
-    sc.clearRect(0,0,sky.width,sky.height);
-    var n = Math.floor(sky.width * sky.height / 2200);
+  'use strict';
+
+  /* Stars */
+  var cv=document.getElementById('c'),cx=cv.getContext('2d'),rt;
+  function stars(){
+    var w=cv.width=innerWidth,h=cv.height=innerHeight;
+    cx.clearRect(0,0,w,h);
+    var n=Math.floor(w*h/1800);
     for(var i=0;i<n;i++){
-      var x = Math.random()*sky.width;
-      var y = Math.random()*sky.height*0.6;
-      var r = Math.random()*1.1+0.1;
-      var a = Math.random()*0.7+0.1;
-      // Occasional brighter star
-      if(Math.random()<0.04){ r=1.5; a=0.9; }
-      sc.beginPath();
-      sc.arc(x,y,r,0,Math.PI*2);
-      sc.fillStyle='rgba(190,245,210,'+a+')';
-      sc.fill();
+      var x=Math.random()*w,y=Math.random()*h*.52;
+      var r=Math.random()*.9+.08,a=Math.random()*.6+.06;
+      var t=Math.random();
+      cx.beginPath();cx.arc(x,y,r,0,Math.PI*2);
+      cx.fillStyle=t>.65
+        ?'rgba(180,240,200,'+a+')'
+        :t>.35?'rgba(210,235,215,'+a+')'
+        :'rgba(240,248,242,'+a+')';
+      cx.fill();
     }
-    // A few twinkling bright stars
-    var bright=[[0.15,0.08],[0.35,0.12],[0.55,0.06],[0.72,0.15],[0.88,0.09],[0.42,0.18],[0.64,0.04]];
-    bright.forEach(function(b){
-      sc.beginPath();
-      sc.arc(b[0]*sky.width,b[1]*sky.height,1.4,0,Math.PI*2);
-      sc.fillStyle='rgba(220,255,230,0.95)';
-      sc.fill();
-      // cross flare
-      sc.strokeStyle='rgba(180,240,200,0.4)';
-      sc.lineWidth=0.5;
-      sc.beginPath();
-      sc.moveTo(b[0]*sky.width-6,b[1]*sky.height);
-      sc.lineTo(b[0]*sky.width+6,b[1]*sky.height);
-      sc.moveTo(b[0]*sky.width,b[1]*sky.height-6);
-      sc.lineTo(b[0]*sky.width,b[1]*sky.height+6);
-      sc.stroke();
+    /* Bright star cross-flares */
+    [[.12,.06],[.36,.10],[.55,.04],[.70,.13],[.86,.07],[.44,.16],[.63,.03],[.79,.09]].forEach(function(b){
+      var bx=b[0]*w,by=b[1]*h;
+      cx.beginPath();cx.arc(bx,by,1.3,0,Math.PI*2);
+      cx.fillStyle='rgba(200,240,210,0.95)';cx.fill();
+      cx.strokeStyle='rgba(120,220,160,0.28)';cx.lineWidth=.4;
+      cx.beginPath();cx.moveTo(bx-7,by);cx.lineTo(bx+7,by);
+      cx.moveTo(bx,by-7);cx.lineTo(bx,by+7);cx.stroke();
     });
   }
-  drawStars();
-  window.addEventListener('resize', drawStars);
+  stars();
+  window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(stars,150)});
 
-  // ── Snow ──
-  var sv = document.getElementById('snow');
-  var sx = sv.getContext('2d');
-  sv.width = innerWidth; sv.height = innerHeight;
-  window.addEventListener('resize',function(){sv.width=innerWidth;sv.height=innerHeight;});
-
-  var flakes = [];
-  var FLAKE_COUNT = 90;
-  for(var i=0;i<FLAKE_COUNT;i++){
-    flakes.push({
-      x: Math.random()*innerWidth,
-      y: Math.random()*innerHeight,
-      r: Math.random()*1.8+0.3,
-      speed: Math.random()*0.5+0.15,
-      drift: (Math.random()-0.5)*0.3,
-      opacity: Math.random()*0.5+0.15,
-      wobble: Math.random()*Math.PI*2,
-      wobbleSpeed: (Math.random()-0.5)*0.02
-    });
-  }
-
-  function animateSnow(){
-    sx.clearRect(0,0,sv.width,sv.height);
-    flakes.forEach(function(f){
-      f.wobble += f.wobbleSpeed;
-      f.x += f.drift + Math.sin(f.wobble)*0.4;
-      f.y += f.speed;
-      if(f.y > sv.height+10){ f.y=-10; f.x=Math.random()*sv.width; }
-      if(f.x > sv.width+10){ f.x=-10; }
-      if(f.x < -10){ f.x=sv.width+10; }
-      sx.beginPath();
-      sx.arc(f.x,f.y,f.r,0,Math.PI*2);
-      sx.fillStyle='rgba(210,245,220,'+f.opacity+')';
-      sx.fill();
-    });
-    requestAnimationFrame(animateSnow);
-  }
-  animateSnow();
-
-  // ── Clock ──
-  var DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-  var MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  /* Clock */
+  var D=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var M=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var ce=document.getElementById('clk'),de=document.getElementById('dt'),te=document.getElementById('st');
+  var lm=-1,ls=-1;
   function tick(){
-    var n=new Date();
-    var h=String(n.getHours()).padStart(2,'0');
-    var m=String(n.getMinutes()).padStart(2,'0');
-    var s=String(n.getSeconds()).padStart(2,'0');
-    document.getElementById('clk').textContent=h+':'+m;
-    document.getElementById('dt').textContent=DAYS[n.getDay()]+', '+MONTHS[n.getMonth()]+' '+n.getDate();
-    document.getElementById('st').textContent=h+':'+m+':'+s;
+    var n=new Date(),h=n.getHours(),m=n.getMinutes(),s=n.getSeconds();
+    if(m!==lm){
+      lm=m;
+      ce.textContent=(h<10?'0':'')+h+':'+(m<10?'0':'')+m;
+      de.textContent=D[n.getDay()]+', '+M[n.getMonth()]+' '+n.getDate()+', '+n.getFullYear();
+    }
+    if(s!==ls){
+      ls=s;
+      te.textContent=(h<10?'0':'')+h+':'+(m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+    }
+    requestAnimationFrame(tick);
   }
-  tick(); setInterval(tick,1000);
+  requestAnimationFrame(tick);
 
-  // ── Search ──
-  document.getElementById('search').addEventListener('keydown',function(e){
-    if(e.key!=='Enter') return;
-    var q=e.target.value.trim();
-    if(!q) return;
+  /* Search */
+  document.getElementById('q').addEventListener('keydown',function(e){
+    if(e.key!=='Enter')return;
+    var q=e.target.value.trim();if(!q)return;
     var isUrl=/^https?:\/\//.test(q)||/^[\w-]+\.[\w]{2,}(\/|$)/.test(q);
-    window.location.href=isUrl?(q.startsWith('http')?q:'https://'+q):'https://duckduckgo.com/?q='+encodeURIComponent(q);
+    window.location.href=isUrl?(q.startsWith('http')?q:'https://'+q)
+                               :'https://duckduckgo.com/?q='+encodeURIComponent(q);
   });
-  document.getElementById('search').focus();
-})();
+}());
 </script>
 </body>
 </html>
