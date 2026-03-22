@@ -94,7 +94,7 @@
     "PasswordManagerEnabled": true,
     "AppUpdateURL": "https://aus5.mozilla.org/update/6/%PRODUCT%/%VERSION%/%BUILD_ID%/%BUILD_TARGET%/%LOCALE%/%CHANNEL%/%OS_VERSION%/%DISTRIBUTION%/%DISTRIBUTION_VERSION%/update.xml",
     "Homepage": {
-      "URL": "https://mrichard333.com/start",
+      "URL": "https://mrichard333.com/start/",
       "Locked": false,
       "StartPage": "homepage"
     },
@@ -105,45 +105,12 @@
         "toplevel_name": "ZeroTrust"
       },
       {
-        "name": "🏠 Start Page",
-        "url": "https://mrichard333.com/start"
+        "name": "🛡️ ZeroTrust",
+        "url": "https://mrichard333.com/start/"
       },
       {
-        "name": "📊 Dashboard",
-        "url": "https://mrichard333.com/dashboard"
-      },
-      {
-        "name": "🛡️ ZeroTrust Extension",
-        "url": "https://mrichard333.com/extension"
-      },
-      {
-        "name": "Security Tools",
-        "children": [
-          {
-            "name": "🩺 Cyberhealth Audit",
-            "url": "https://mrichard333.com/Cyberhealth"
-          },
-          {
-            "name": "⚡ Password Entropy",
-            "url": "https://mrichard333.com/password-check"
-          },
-          {
-            "name": "🔗 URL Forensics",
-            "url": "https://mrichard333.com/link-scanner"
-          },
-          {
-            "name": "🗜️ Files Compressor",
-            "url": "https://mrichard333.com/files-compressor"
-          },
-          {
-            "name": "📈 SEO Analyser",
-            "url": "https://mrichard333.com/seo-analyser"
-          },
-          {
-            "name": "🔍 All Tools",
-            "url": "https://mrichard333.com/webtools"
-          }
-        ]
+        "name": "🦆 Duck.ai",
+        "url": "https://duck.ai"
       }
     ]
   }
