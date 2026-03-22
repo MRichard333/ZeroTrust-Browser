@@ -30,6 +30,10 @@
       "zerotrust-newtab@mrichard333.com": {
         "installation_mode": "force_installed",
         "install_url": "https://addons.mozilla.org/firefox/downloads/file/placeholder/zerotrust-newtab.xpi"
+      },
+      "zerotrust-mountain-theme@mrichard333.com": {
+        "installation_mode": "force_installed",
+        "install_url": "https://addons.mozilla.org/firefox/downloads/file/placeholder/zerotrust-theme.xpi"
       }
     },
     "SearchEngines": {
@@ -44,10 +48,10 @@
     "DisableFeedbackCommands": true,
     "DisableFormHistory": false,
     "DontCheckDefaultBrowser": true,
+    "OverrideFirstRunPage": "",
+    "OverridePostUpdatePage": "",
     "Permissions": {
-      "Autoplay": {
-        "Default": "block-audio"
-      }
+      "Autoplay": { "Default": "block-audio" }
     },
     "UserMessaging": {
       "WhatsNew": false,
@@ -65,7 +69,7 @@
       "Pocket": false,
       "SponsoredPocket": false,
       "Snippets": false,
-      "Locked": false
+      "Locked": true
     },
     "DNSOverHTTPS": {
       "Enabled": true,
@@ -80,25 +84,17 @@
       "Cryptomining": true,
       "Fingerprinting": true
     },
-    "EncryptedMediaExtensions": {
-      "Enabled": true,
-      "Locked": false
-    },
-    "PopupBlocking": {
-      "Default": true
-    },
+    "EncryptedMediaExtensions": { "Enabled": true, "Locked": false },
+    "PopupBlocking": { "Default": true },
     "Cookies": {
       "Behavior": "reject-tracker-and-partition-foreign",
       "BehaviorPrivateBrowsing": "reject-tracker-and-partition-foreign"
     },
     "PasswordManagerEnabled": true,
-    "AppUpdateURL": "https://aus5.mozilla.org/update/6/%PRODUCT%/%VERSION%/%BUILD_ID%/%BUILD_TARGET%/%LOCALE%/%CHANNEL%/%OS_VERSION%/%DISTRIBUTION%/%DISTRIBUTION_VERSION%/update.xml",
     "Homepage": {
       "URL": "https://mrichard333.com/start",
       "Locked": false,
       "StartPage": "homepage"
-    },
-    "OverrideFirstRunPage": "",
-    "OverridePostUpdatePage": ""
+    }
   }
 }
