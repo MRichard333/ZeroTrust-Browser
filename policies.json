@@ -37,7 +37,7 @@
       "PreventInstalls": false
     },
     "SearchBar": "unified",
-    "DisplayBookmarksToolbar": "never",
+    "DisplayBookmarksToolbar": "always",
     "DisablePocket": true,
     "DisableTelemetry": true,
     "DisableFirefoxStudies": true,
@@ -99,6 +99,52 @@
       "StartPage": "homepage"
     },
     "OverrideFirstRunPage": "",
-    "OverridePostUpdatePage": ""
+    "OverridePostUpdatePage": "",
+    "ManagedBookmarks": [
+      {
+        "toplevel_name": "ZeroTrust"
+      },
+      {
+        "name": "🏠 Start Page",
+        "url": "https://mrichard333.com/start"
+      },
+      {
+        "name": "📊 Dashboard",
+        "url": "https://mrichard333.com/dashboard"
+      },
+      {
+        "name": "🛡️ ZeroTrust Extension",
+        "url": "https://mrichard333.com/extension"
+      },
+      {
+        "name": "Security Tools",
+        "children": [
+          {
+            "name": "🩺 Cyberhealth Audit",
+            "url": "https://mrichard333.com/Cyberhealth"
+          },
+          {
+            "name": "⚡ Password Entropy",
+            "url": "https://mrichard333.com/password-check"
+          },
+          {
+            "name": "🔗 URL Forensics",
+            "url": "https://mrichard333.com/link-scanner"
+          },
+          {
+            "name": "🗜️ Files Compressor",
+            "url": "https://mrichard333.com/files-compressor"
+          },
+          {
+            "name": "📈 SEO Analyser",
+            "url": "https://mrichard333.com/seo-analyser"
+          },
+          {
+            "name": "🔍 All Tools",
+            "url": "https://mrichard333.com/webtools"
+          }
+        ]
+      }
+    ]
   }
 }
