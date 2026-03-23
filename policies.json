@@ -29,17 +29,19 @@
       },
       "zerotrust-newtab@mrichard333.com": {
         "installation_mode": "force_installed",
-        "install_url": "https://addons.mozilla.org/firefox/downloads/file/4735684/1577d4607491497a80c7-1.1.0.xpi"
+        "install_url": "https://raw.githubusercontent.com/MRichard333/ZeroTrust-Browser/main/zerotrust-newtab.xpi"
       },
       "zerotrust-mountain-theme@mrichard333.com": {
         "installation_mode": "force_installed",
-        "install_url": "https://addons.mozilla.org/firefox/downloads/file/placeholder/zerotrust-theme.xpi"
+        "install_url": "https://raw.githubusercontent.com/MRichard333/ZeroTrust-Browser/main/zerotrust-theme.xpi"
       }
     },
     "SearchEngines": {
       "Default": "DuckDuckGo",
-      "PreventInstalls": false
+      "Remove": ["Google", "Bing", "Amazon.com", "eBay", "Wikipedia (en)", "Twitter"],
+      "PreventInstalls": true
     },
+    "SearchSuggestEnabled": false,
     "SearchBar": "unified",
     "DisplayBookmarksToolbar": "never",
     "DisablePocket": true,
@@ -75,14 +77,14 @@
     },
     "DNSOverHTTPS": {
       "Enabled": true,
-      "ProviderURL": "https://cloudflare-dns.com/dns-query",
+      "ProviderURL": "https://dns.quad9.net/dns-query",
       "Locked": false
     },
     "HttpsOnlyMode": "force_enabled",
     "SSLVersionMin": "tls1.2",
     "EnableTrackingProtection": {
       "Value": true,
-      "Locked": false,
+      "Locked": true,
       "Cryptomining": true,
       "Fingerprinting": true
     },
@@ -100,7 +102,7 @@
     "PasswordManagerEnabled": true,
     "Homepage": {
       "URL": "https://mrichard333.com/start",
-      "Locked": false,
+      "Locked": true,
       "StartPage": "homepage"
     }
   }
