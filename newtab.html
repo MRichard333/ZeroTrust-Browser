@@ -10,19 +10,31 @@
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-  --bg: #060c08;
-  --surface: rgba(11, 20, 16, 0.75);
-  --card: rgba(14, 26, 20, 0.65);
-  --card-hover: rgba(17, 31, 24, 0.85);
-  --border: rgba(0, 220, 90, 0.15);
-  --border-hi: rgba(0, 220, 90, 0.35);
-  --acid: #00e664;
-  --acid-dim: #00b84e;
-  --acid-faint: rgba(0, 230, 100, 0.08);
-  --acid-glow: 0 0 20px rgba(0, 230, 100, 0.15);
-  --text: #e2f5e8;
-  --text-dim: #7da88d;
-  --text-muted: #3a5445;
+  /* ==========================================================
+     THEME CONTROLLER 
+     Change these TWO values to perfectly match your live website! 
+     ========================================================== */
+  --bg-color: #0b101e;        /* Your main dark background color */
+  --accent-rgb: 56, 189, 248; /* Your brand Accent Color in RGB (Currently: Sky Blue) */
+
+  /* Every glow, gradient, and graphic scales dynamically from the RGB above */
+  --bg: var(--bg-color);
+  --surface: rgba(15, 23, 42, 0.75);
+  --card: rgba(15, 23, 42, 0.65);
+  --card-hover: rgba(30, 41, 59, 0.85);
+  
+  --border: rgba(var(--accent-rgb), 0.15);
+  --border-hi: rgba(var(--accent-rgb), 0.35);
+  --acid: rgb(var(--accent-rgb));
+  --acid-dim: rgba(var(--accent-rgb), 0.8);
+  --acid-faint: rgba(var(--accent-rgb), 0.08);
+  --acid-glow: 0 0 20px rgba(var(--accent-rgb), 0.15);
+
+  /* Typography */
+  --text: #f8fafc;
+  --text-dim: #94a3b8;
+  --text-muted: #475569;
+  
   --radius: 8px;
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -47,13 +59,13 @@ body {
 .bg-layer {
   position: fixed; inset: 0; z-index: 0; pointer-events: none;
   background:
-    radial-gradient(ellipse 60% 40% at 20% 0%, rgba(0,200,80,0.06) 0%, transparent 70%),
-    radial-gradient(ellipse 40% 30% at 80% 80%, rgba(0,180,70,0.04) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 40% at 20% 0%, rgba(var(--accent-rgb), 0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 30% at 80% 80%, rgba(var(--accent-rgb), 0.04) 0%, transparent 70%),
     var(--bg);
 }
 .bg-dots {
   position: fixed; inset: 0; z-index: 0; pointer-events: none;
-  background-image: radial-gradient(circle, rgba(0,220,90,0.08) 1px, transparent 1px);
+  background-image: radial-gradient(circle, rgba(var(--accent-rgb), 0.08) 1px, transparent 1px);
   background-size: 32px 32px;
   mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, black 20%, transparent 75%);
 }
@@ -100,7 +112,7 @@ nav {
   padding: 6px 14px; border-radius: var(--radius);
   background: var(--acid-faint);
 }
-.nav-links a.hl:hover { background: rgba(0, 230, 100, 0.15); box-shadow: var(--acid-glow); }
+.nav-links a.hl:hover { background: rgba(var(--accent-rgb), 0.15); box-shadow: var(--acid-glow); }
 
 /* ── HERO ── */
 .hero {
@@ -122,7 +134,7 @@ nav {
   font-size: clamp(64px, 8vw, 96px); font-weight: 800;
   color: var(--text); letter-spacing: -4px; line-height: 1;
   font-variant-numeric: tabular-nums;
-  text-shadow: 0 0 60px rgba(0, 230, 100, 0.15);
+  text-shadow: 0 0 60px rgba(var(--accent-rgb), 0.15);
 }
 .clock-date {
   font-size: 12px; color: var(--text-dim);
@@ -164,7 +176,7 @@ nav {
 }
 .search-row:focus-within {
   border-color: var(--acid);
-  box-shadow: 0 0 0 4px rgba(0, 226, 100, 0.1), 0 8px 32px rgba(0, 226, 100, 0.05);
+  box-shadow: 0 0 0 4px rgba(var(--accent-rgb), 0.1), 0 8px 32px rgba(var(--accent-rgb), 0.05);
   transform: translateY(-2px);
 }
 .s-ico {
@@ -244,7 +256,7 @@ nav {
   border-radius: 4px; padding: 4px 8px; display: inline-block;
   text-transform: uppercase; letter-spacing: 0.5px;
 }
-.tcrd-tag.feat { color: #f0c040; background: rgba(240, 192, 64, 0.1); border-color: rgba(240, 192, 64, 0.3); }
+.tcrd-tag.feat { color: #facc15; background: rgba(250, 204, 21, 0.1); border-color: rgba(250, 204, 21, 0.3); }
 
 /* ── QUICK ACCESS ── */
 .qgrid { display: flex; flex-wrap: wrap; gap: 10px; }
@@ -257,7 +269,7 @@ nav {
   white-space: nowrap; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
 }
 .qlink span { font-size: 14px; }
-.qlink:hover { border-color: var(--acid); color: var(--acid); background: var(--card-hover); box-shadow: 0 4px 12px rgba(0,230,100,0.1); transform: translateY(-2px); }
+.qlink:hover { border-color: var(--acid); color: var(--acid); background: var(--card-hover); box-shadow: 0 4px 12px rgba(var(--accent-rgb),0.1); transform: translateY(-2px); }
 
 /* ── TWO COL ── */
 .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
@@ -280,16 +292,16 @@ a.status-row:hover { background: var(--card-hover); padding-left: 24px; border-l
 .ext-name { font-size: 12px; font-weight: 700; color: var(--text); }
 .ext-tag { font-size: 9px; font-weight: 700; padding: 4px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
 .ext-tag.pin { color: var(--acid); background: var(--acid-faint); border: 1px solid var(--border-hi); }
-.ext-tag.act { color: var(--text-dim); background: rgba(125, 168, 141, 0.1); border: 1px solid rgba(125, 168, 141, 0.2); }
+.ext-tag.act { color: var(--text-dim); background: rgba(148, 163, 184, 0.1); border: 1px solid rgba(148, 163, 184, 0.2); }
 
 .hard-name { font-size: 12px; color: var(--text-dim); }
 .hard-val { font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 4px; font-family: 'Space Mono', monospace; }
-.hard-val.on { color: var(--acid); background: var(--acid-faint); border: 1px solid var(--border-hi); box-shadow: 0 0 10px rgba(0,230,100,0.1); }
-.hard-val.off { color: #ff5566; background: rgba(255, 85, 102, 0.1); border: 1px solid rgba(255, 85, 102, 0.2); }
+.hard-val.on { color: var(--acid); background: var(--acid-faint); border: 1px solid var(--border-hi); box-shadow: 0 0 10px rgba(var(--accent-rgb),0.1); }
+.hard-val.off { color: #f43f5e; background: rgba(244, 63, 94, 0.1); border: 1px solid rgba(244, 63, 94, 0.2); }
 
 /* ── DASHBOARD BANNER ── */
 .dash {
-  background: linear-gradient(145deg, var(--card) 0%, rgba(10, 20, 15, 0.9) 100%);
+  background: linear-gradient(145deg, var(--card) 0%, rgba(10, 20, 30, 0.4) 100%);
   border: 1px solid var(--border-hi);
   border-radius: var(--radius); padding: 30px;
   position: relative; overflow: hidden;
@@ -317,7 +329,7 @@ a.status-row:hover { background: var(--card-hover); padding-left: 24px; border-l
   text-decoration: none; color: var(--text);
   transition: var(--transition);
 }
-.mod:hover { border-color: var(--acid); background: var(--card-hover); transform: translateY(-3px); box-shadow: 0 4px 15px rgba(0,230,100,0.08); }
+.mod:hover { border-color: var(--acid); background: var(--card-hover); transform: translateY(-3px); box-shadow: 0 4px 15px rgba(var(--accent-rgb),0.08); }
 .mod-ico { font-size: 18px; margin-bottom: 4px; }
 .mod-name { font-size: 10px; font-weight: 700; color: var(--text); line-height: 1.3; }
 .mod-desc { font-size: 9px; color: var(--text-dim); line-height: 1.5; }
@@ -336,9 +348,9 @@ a.status-row:hover { background: var(--card-hover); padding-left: 24px; border-l
   padding: 12px 24px; border-radius: var(--radius); text-decoration: none;
   letter-spacing: 1px; text-transform: uppercase;
   transition: var(--transition);
-  box-shadow: 0 0 20px rgba(0, 220, 90, 0.3);
+  box-shadow: 0 0 20px rgba(var(--accent-rgb), 0.3);
 }
-.dash-btn:hover { background: #1aff7d; transform: translateY(-2px); box-shadow: 0 0 30px rgba(0, 220, 90, 0.5); }
+.dash-btn:hover { background: var(--text); transform: translateY(-2px); box-shadow: 0 0 30px rgba(255, 255, 255, 0.5); }
 
 /* ── STATUS BAR ── */
 .sbar {
@@ -388,37 +400,38 @@ footer {
 
 <div class="bg-layer"></div>
 <div class="bg-dots"></div>
+
 <svg class="bg-mtn" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="mg1" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#0b1f10"/><stop offset="100%" stop-color="#040906"/>
+      <stop offset="0%" stop-color="var(--surface)"/><stop offset="100%" stop-color="var(--bg)"/>
     </linearGradient>
     <linearGradient id="mg2" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#071508"/><stop offset="100%" stop-color="#020602"/>
+      <stop offset="0%" stop-color="var(--card)"/><stop offset="100%" stop-color="var(--bg)"/>
     </linearGradient>
   </defs>
   <path d="M0 700 L80 590 L180 620 L280 510 L380 570 L460 510 L540 458 L640 540 L720 468 L800 535 L880 462 L980 508 L1080 438 L1180 505 L1280 462 L1360 528 L1440 490 L1440 900 L0 900Z" fill="url(#mg1)" opacity=".85"/>
-  <path d="M540 458 L516 484 L540 458 L566 482Z" fill="rgba(195,238,208,0.30)"/>
-  <path d="M720 468 L698 494 L720 468 L745 492Z" fill="rgba(195,238,208,0.30)"/>
-  <path d="M1080 438 L1053 468 L1080 438 L1108 466Z" fill="rgba(195,238,208,0.30)"/>
-  <path d="M0 700 L80 590 L180 620 L280 510 L380 570 L460 510 L540 458 L640 540 L720 468 L800 535 L880 462 L980 508 L1080 438 L1180 505 L1280 462 L1360 528 L1440 490" fill="none" stroke="rgba(0,220,90,0.09)" stroke-width="1.5"/>
+  <path d="M540 458 L516 484 L540 458 L566 482Z" fill="var(--border-hi)"/>
+  <path d="M720 468 L698 494 L720 468 L745 492Z" fill="var(--border-hi)"/>
+  <path d="M1080 438 L1053 468 L1080 438 L1108 466Z" fill="var(--border-hi)"/>
+  <path d="M0 700 L80 590 L180 620 L280 510 L380 570 L460 510 L540 458 L640 540 L720 468 L800 535 L880 462 L980 508 L1080 438 L1180 505 L1280 462 L1360 528 L1440 490" fill="none" stroke="var(--border)" stroke-width="1.5"/>
   <path d="M0 740 L60 645 L140 688 L220 608 L320 658 L420 568 L500 622 L580 542 L680 612 L760 558 L860 602 L960 522 L1060 592 L1160 538 L1260 605 L1360 558 L1440 585 L1440 900 L0 900Z" fill="url(#mg2)" opacity=".95"/>
-  <path d="M420 568 L398 592 L420 568 L444 590Z" fill="rgba(185,228,198,0.22)"/>
-  <path d="M580 542 L560 566 L580 542 L603 564Z" fill="rgba(185,228,198,0.22)"/>
-  <path d="M960 522 L936 548 L960 522 L985 546Z" fill="rgba(185,228,198,0.22)"/>
-  <path d="M0 740 L60 645 L140 688 L220 608 L320 658 L420 568 L500 622 L580 542 L680 612 L760 558 L860 602 L960 522 L1060 592 L1160 538 L1260 605 L1360 558 L1440 585" fill="none" stroke="rgba(0,200,75,0.06)" stroke-width="1"/>
-  <path d="M0 808 L100 718 L200 768 L300 695 L420 748 L520 662 L620 722 L720 648 L820 712 L920 642 L1020 702 L1120 650 L1220 710 L1320 660 L1440 715 L1440 900 L0 900Z" fill="#030907"/>
-  <path d="M0 808 L100 718 L200 768 L300 695 L420 748 L520 662 L620 722 L720 648 L820 712 L920 642 L1020 702 L1120 650 L1220 710 L1320 660 L1440 715" fill="none" stroke="rgba(0,200,75,0.04)" stroke-width="1"/>
-  <path d="M0 875 Q360 848 720 862 Q1080 876 1440 850 L1440 900 L0 900Z" fill="#010503" opacity=".8"/>
-  <polygon points="55,75 82,60 110,75 110,105 82,120 55,105" fill="none" stroke="rgba(0,220,90,0.06)" stroke-width="1"/>
-  <polygon points="1332,785 1358,770 1385,785 1385,815 1358,830 1332,815" fill="none" stroke="rgba(0,220,90,0.05)" stroke-width="1"/>
-  <g stroke="rgba(0,220,90,0.055)" stroke-width="1" fill="none">
+  <path d="M420 568 L398 592 L420 568 L444 590Z" fill="var(--border)"/>
+  <path d="M580 542 L560 566 L580 542 L603 564Z" fill="var(--border)"/>
+  <path d="M960 522 L936 548 L960 522 L985 546Z" fill="var(--border)"/>
+  <path d="M0 740 L60 645 L140 688 L220 608 L320 658 L420 568 L500 622 L580 542 L680 612 L760 558 L860 602 L960 522 L1060 592 L1160 538 L1260 605 L1360 558 L1440 585" fill="none" stroke="var(--acid-faint)" stroke-width="1"/>
+  <path d="M0 808 L100 718 L200 768 L300 695 L420 748 L520 662 L620 722 L720 648 L820 712 L920 642 L1020 702 L1120 650 L1220 710 L1320 660 L1440 715 L1440 900 L0 900Z" fill="var(--bg)"/>
+  <path d="M0 808 L100 718 L200 768 L300 695 L420 748 L520 662 L620 722 L720 648 L820 712 L920 642 L1020 702 L1120 650 L1220 710 L1320 660 L1440 715" fill="none" stroke="var(--acid-faint)" stroke-width="1"/>
+  <path d="M0 875 Q360 848 720 862 Q1080 876 1440 850 L1440 900 L0 900Z" fill="black" opacity=".4"/>
+  <polygon points="55,75 82,60 110,75 110,105 82,120 55,105" fill="none" stroke="var(--border)" stroke-width="1"/>
+  <polygon points="1332,785 1358,770 1385,785 1385,815 1358,830 1332,815" fill="none" stroke="var(--border)" stroke-width="1"/>
+  <g stroke="var(--border)" stroke-width="1" fill="none">
     <path d="M1195 35 L1235 35 L1235 72 L1272 72"/>
-    <circle cx="1195" cy="35" r="2.5" fill="rgba(0,220,90,0.10)"/>
-    <circle cx="1272" cy="72" r="2.5" fill="rgba(0,220,90,0.10)"/>
+    <circle cx="1195" cy="35" r="2.5" fill="var(--acid-faint)"/>
+    <circle cx="1272" cy="72" r="2.5" fill="var(--acid-faint)"/>
     <path d="M1252 18 L1290 18 L1290 50"/>
-    <circle cx="1252" cy="18" r="2" fill="rgba(0,220,90,0.07)"/>
-    <circle cx="1290" cy="50" r="2" fill="rgba(0,220,90,0.07)"/>
+    <circle cx="1252" cy="18" r="2" fill="var(--acid-faint)"/>
+    <circle cx="1290" cy="50" r="2" fill="var(--acid-faint)"/>
   </g>
 </svg>
 
@@ -427,8 +440,8 @@ footer {
   <nav class="animate-1">
     <a class="nav-brand" href="https://mrichard333.com">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-        <path d="M12 2L4 6V12C4 17.5 7.5 22.5 12 24C16.5 22.5 20 17.5 20 12V6L12 2Z" fill="rgba(0,220,90,0.12)" stroke="rgba(0,220,90,0.6)" stroke-width="1.5"/>
-        <path d="M9 12L11.2 14.2L15.5 9.5" stroke="#00e664" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M12 2L4 6V12C4 17.5 7.5 22.5 12 24C16.5 22.5 20 17.5 20 12V6L12 2Z" fill="var(--acid-faint)" stroke="var(--acid-dim)" stroke-width="1.5"/>
+        <path d="M9 12L11.2 14.2L15.5 9.5" stroke="var(--acid)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
       Zero<em>Trust</em>
     </a>
