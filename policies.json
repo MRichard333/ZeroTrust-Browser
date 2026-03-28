@@ -1,5 +1,6 @@
 {
   "policies": {
+
     "ExtensionSettings": {
       "uBlock0@raymondhill.net": {
         "installation_mode": "force_installed",
@@ -26,37 +27,29 @@
       "{b86e4813-687a-43e6-ab65-0bde4ab75758}": {
         "installation_mode": "force_installed",
         "install_url": "https://addons.mozilla.org/firefox/downloads/latest/localcdn-fork-of-decentraleyes/latest.xpi"
-      },
-      "zerotrust-newtab@mrichard333.com": {
-        "installation_mode": "force_installed",
-        "install_url": "https://raw.githubusercontent.com/MRichard333/ZeroTrust-Browser/main/zerotrust-newtab.xpi"
-      },
-      "zerotrust-mountain-theme@mrichard333.com": {
-        "installation_mode": "force_installed",
-        "install_url": "https://raw.githubusercontent.com/MRichard333/ZeroTrust-Browser/main/zerotrust-theme.xpi"
       }
     },
+
     "SearchEngines": {
       "Default": "DuckDuckGo",
-      "Remove": ["Google", "Bing", "Amazon.com", "eBay", "Wikipedia (en)", "Twitter"],
-      "PreventInstalls": true
+      "PreventInstalls": true,
+      "Remove": ["Google", "Bing", "Amazon.com", "eBay", "Twitter"]
     },
-    "SearchSuggestEnabled": false,
+
     "SearchBar": "unified",
     "DisplayBookmarksToolbar": "never",
     "DisablePocket": true,
     "DisableTelemetry": true,
     "DisableFirefoxStudies": true,
     "DisableFeedbackCommands": true,
-    "DisableFormHistory": false,
+    "DisableFormHistory": true,
     "DontCheckDefaultBrowser": true,
-    "OverrideFirstRunPage": "",
-    "OverridePostUpdatePage": "",
+
     "Permissions": {
-      "Autoplay": {
-        "Default": "block-audio"
-      }
+      "Autoplay": { "Default": "block-audio" },
+      "Location": { "BlockNewRequests": true, "Locked": true }
     },
+
     "UserMessaging": {
       "WhatsNew": false,
       "ExtensionRecommendations": false,
@@ -65,6 +58,7 @@
       "SkipOnboarding": true,
       "MoreFromMozilla": false
     },
+
     "FirefoxHome": {
       "Search": false,
       "TopSites": false,
@@ -75,35 +69,60 @@
       "Snippets": false,
       "Locked": true
     },
+
     "DNSOverHTTPS": {
       "Enabled": true,
       "ProviderURL": "https://dns.quad9.net/dns-query",
-      "Locked": false
+      "Locked": false,
+      "ExcludedDomains": []
     },
+
     "HttpsOnlyMode": "force_enabled",
     "SSLVersionMin": "tls1.2",
+
     "EnableTrackingProtection": {
       "Value": true,
       "Locked": true,
       "Cryptomining": true,
-      "Fingerprinting": true
+      "Fingerprinting": true,
+      "EmailTracking": true
     },
+
     "EncryptedMediaExtensions": {
-      "Enabled": true,
-      "Locked": false
+      "Enabled": false,
+      "Locked": true
     },
+
     "PopupBlocking": {
-      "Default": true
+      "Default": true,
+      "Locked": true
     },
+
     "Cookies": {
       "Behavior": "reject-tracker-and-partition-foreign",
-      "BehaviorPrivateBrowsing": "reject-tracker-and-partition-foreign"
+      "BehaviorPrivateBrowsing": "reject-tracker-and-partition-foreign",
+      "Locked": true
     },
+
     "PasswordManagerEnabled": true,
+
     "Homepage": {
-      "URL": "https://mrichard333.com/start",
+      "URL": "about:newtab",
       "Locked": true,
-      "StartPage": "homepage"
+      "StartPage": "none"
+    },
+
+    "SanitizeOnShutdown": {
+      "Cache": true,
+      "Cookies": true,
+      "Downloads": true,
+      "FormData": true,
+      "History": true,
+      "Sessions": true,
+      "SiteSettings": false,
+      "OfflineApps": true,
+      "Locked": true
     }
+
   }
 }
